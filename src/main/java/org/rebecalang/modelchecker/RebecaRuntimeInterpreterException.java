@@ -1,4 +1,4 @@
-package org.rebecalang.interpreter;
+package org.rebecalang.modelchecker;
 
 public class RebecaRuntimeInterpreterException extends RuntimeException {
 	

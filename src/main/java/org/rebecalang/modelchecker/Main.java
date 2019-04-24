@@ -1,4 +1,4 @@
-package org.rebecalang.interpreter;
+package org.rebecalang.modelchecker;
 
 import java.io.File;
 import java.util.HashSet;
@@ -29,15 +29,15 @@ import org.rebecalang.compiler.utils.CodeCompilationException;
 import org.rebecalang.compiler.utils.CompilerFeature;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.compiler.utils.TypesUtilities;
-import org.rebecalang.interpreter.statementinterpreter.BinaryExpressionInterpreter;
-import org.rebecalang.interpreter.statementinterpreter.BlockStatementInterpreter;
-import org.rebecalang.interpreter.statementinterpreter.ConditionalStatementInterpreter;
-import org.rebecalang.interpreter.statementinterpreter.DotPrimaryExpressionInterpreter;
-import org.rebecalang.interpreter.statementinterpreter.ExpressionInterpreter;
-import org.rebecalang.interpreter.statementinterpreter.LiteralInterpreter;
-import org.rebecalang.interpreter.statementinterpreter.StatementContainer;
-import org.rebecalang.interpreter.statementinterpreter.TermPrimaryExpressionInterpreter;
-import org.rebecalang.interpreter.statementinterpreter.UnaryExpressionInterpreter;
+import org.rebecalang.modelchecker.statementinterpreter.BinaryExpressionInterpreter;
+import org.rebecalang.modelchecker.statementinterpreter.BlockStatementInterpreter;
+import org.rebecalang.modelchecker.statementinterpreter.ConditionalStatementInterpreter;
+import org.rebecalang.modelchecker.statementinterpreter.DotPrimaryExpressionInterpreter;
+import org.rebecalang.modelchecker.statementinterpreter.ExpressionInterpreter;
+import org.rebecalang.modelchecker.statementinterpreter.LiteralInterpreter;
+import org.rebecalang.modelchecker.statementinterpreter.StatementContainer;
+import org.rebecalang.modelchecker.statementinterpreter.TermPrimaryExpressionInterpreter;
+import org.rebecalang.modelchecker.statementinterpreter.UnaryExpressionInterpreter;
 
 import com.rits.cloning.Cloner;
 

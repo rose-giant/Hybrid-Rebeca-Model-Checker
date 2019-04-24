@@ -1,10 +1,10 @@
-package org.rebecalang.interpreter.statementinterpreter;
+package org.rebecalang.modelchecker.statementinterpreter;
 
 import java.util.Hashtable;
 
 import org.rebecalang.compiler.modelcompiler.SymbolTable;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Statement;
-import org.rebecalang.interpreter.ActorState;
+import org.rebecalang.modelchecker.ActorState;
 
 public class StatementContainer {
 

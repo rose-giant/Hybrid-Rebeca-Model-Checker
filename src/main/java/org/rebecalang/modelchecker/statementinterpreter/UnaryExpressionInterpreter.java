@@ -1,10 +1,10 @@
-package org.rebecalang.interpreter.statementinterpreter;
+package org.rebecalang.modelchecker.statementinterpreter;
 
 import org.rebecalang.compiler.modelcompiler.SemanticCheckerUtils;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Statement;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.UnaryExpression;
-import org.rebecalang.interpreter.ActorState;
-import org.rebecalang.interpreter.RebecaRuntimeInterpreterException;
+import org.rebecalang.modelchecker.ActorState;
+import org.rebecalang.modelchecker.RebecaRuntimeInterpreterException;
 
 public class UnaryExpressionInterpreter implements StatementInterpreter {
 

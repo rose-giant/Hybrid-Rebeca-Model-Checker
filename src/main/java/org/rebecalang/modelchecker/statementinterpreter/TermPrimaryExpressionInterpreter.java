@@ -1,4 +1,4 @@
-package org.rebecalang.interpreter.statementinterpreter;
+package org.rebecalang.modelchecker.statementinterpreter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,9 +14,9 @@ import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.TermPrimary;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
 import org.rebecalang.compiler.utils.CodeCompilationException;
 import org.rebecalang.compiler.utils.TypesUtilities;
-import org.rebecalang.interpreter.ActorState;
-import org.rebecalang.interpreter.MessageSpecification;
-import org.rebecalang.interpreter.RebecaRuntimeInterpreterException;
+import org.rebecalang.modelchecker.ActorState;
+import org.rebecalang.modelchecker.MessageSpecification;
+import org.rebecalang.modelchecker.RebecaRuntimeInterpreterException;
 
 public class TermPrimaryExpressionInterpreter implements StatementInterpreter {
 	public Object interpret(Statement statement, ActorState baseActorState, ActorState contextActorState) {
