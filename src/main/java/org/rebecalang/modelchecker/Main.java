@@ -2,216 +2,44 @@ package org.rebecalang.modelchecker;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
-import org.rebecalang.compiler.modelcompiler.RebecaCompiler;
-import org.rebecalang.compiler.modelcompiler.SymbolTable;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.BinaryExpression;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.BlockStatement;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ConditionalStatement;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ConstructorDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.DotPrimary;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Expression;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.FieldDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Literal;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.MainRebecDefinition;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.MethodDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.TermPrimary;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.UnaryExpression;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.VariableDeclarator;
 import org.rebecalang.compiler.utils.CodeCompilationException;
 import org.rebecalang.compiler.utils.CompilerFeature;
+import org.rebecalang.compiler.utils.ExceptionContainer;
 import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.compiler.utils.TypesUtilities;
-import org.rebecalang.modelchecker.statementinterpreter.BinaryExpressionInterpreter;
-import org.rebecalang.modelchecker.statementinterpreter.BlockStatementInterpreter;
-import org.rebecalang.modelchecker.statementinterpreter.ConditionalStatementInterpreter;
-import org.rebecalang.modelchecker.statementinterpreter.DotPrimaryExpressionInterpreter;
-import org.rebecalang.modelchecker.statementinterpreter.ExpressionInterpreter;
-import org.rebecalang.modelchecker.statementinterpreter.LiteralInterpreter;
-import org.rebecalang.modelchecker.statementinterpreter.StatementContainer;
-import org.rebecalang.modelchecker.statementinterpreter.TermPrimaryExpressionInterpreter;
-import org.rebecalang.modelchecker.statementinterpreter.UnaryExpressionInterpreter;
-
-import com.rits.cloning.Cloner;
+import org.rebecalang.modelchecker.corerebeca.CoreRebecaModelChecker;
+import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
+import org.rebecalang.modelchecker.corerebeca.State;
 
 public class Main {
 
-	public static void main(String[] args) throws CodeCompilationException {
+	public static void main(String[] args) throws ModelCheckingException {
 
-		StatementContainer.getInstance().registerInterpreter(Expression.class, new ExpressionInterpreter());
-		StatementContainer.getInstance().registerInterpreter(BinaryExpression.class, new BinaryExpressionInterpreter());
-		StatementContainer.getInstance().registerInterpreter(UnaryExpression.class, new UnaryExpressionInterpreter());
-		StatementContainer.getInstance().registerInterpreter(Literal.class, new LiteralInterpreter());
-		StatementContainer.getInstance().registerInterpreter(DotPrimary.class, new DotPrimaryExpressionInterpreter());
-		StatementContainer.getInstance().registerInterpreter(TermPrimary.class, new TermPrimaryExpressionInterpreter());
-		StatementContainer.getInstance().registerInterpreter(BlockStatement.class, new BlockStatementInterpreter());
-		StatementContainer.getInstance().registerInterpreter(ConditionalStatement.class,
-				new ConditionalStatementInterpreter());
-		RebecaCompiler rebecaCompiler = new RebecaCompiler();
 		Set<CompilerFeature> compilerFeatures = new HashSet<CompilerFeature>();
 		compilerFeatures.add(CompilerFeature.CORE_2_1);
-		compilerFeatures.add(CompilerFeature.TIMED_REBECA);
 
-//		 File rebecaFile = new File("src/test/resources/train-controller-two-trains.rebeca");
-		File rebecaFile = new File("src/test/resources/phils.rebeca");
-		Pair<RebecaModel, SymbolTable> compilationResult = rebecaCompiler.compileRebecaFile(rebecaFile,
-				compilerFeatures);
-
-		StatementContainer.getInstance().registerSymbolTable(compilationResult.getSecond());
-
-		interpret(compilationResult.getFirst());
-		System.out.println(statespace.size());
-	}
-
-	static Hashtable<Long, State> statespace = new Hashtable<Long, State>();
-
-	private static void interpret(RebecaModel model) throws CodeCompilationException {
-		State state = new State();
-
-		List<MainRebecDefinition> mainRebecDefinitions = model.getRebecaCode().getMainDeclaration()
-				.getMainRebecDefinition();
-		for (MainRebecDefinition definition : mainRebecDefinitions) {
-			ActorState actorState = new ActorState();
-			actorState.initializeScopeStack();
-			actorState.pushInActorScope();
-			ReactiveClassDeclaration metaData = (ReactiveClassDeclaration) TypesUtilities.getInstance()
-					.getMetaData(definition.getType());
-			for (FieldDeclaration fieldDeclaration : metaData.getStatevars()) {
-				for (VariableDeclarator variableDeclator : fieldDeclaration.getVariableDeclarators()) {
-					actorState.addVariableToRecentScope(variableDeclator.getVariableName(), 0);
-				}
-			}
-			actorState.addVariableToRecentScope("self", actorState);
-
-			actorState.setTypeName(TypesUtilities.getTypeName(definition.getType()));
-			actorState.setQueue(new LinkedList<MessageSpecification>());
-			actorState.setName(definition.getName());
-			state.putActorState(definition.getName(), actorState);
-		}
-
-		for (MainRebecDefinition definition : mainRebecDefinitions) {
-			ReactiveClassDeclaration metaData = (ReactiveClassDeclaration) TypesUtilities.getInstance()
-					.getMetaData(definition.getType());
-			List<FieldDeclaration> knownRebecs = metaData.getKnownRebecs();
-			for (int i = 0; i < definition.getBindings().size(); i++) {
-				Expression knownRebecDefExp = definition.getBindings().get(i);
-				if (!(knownRebecDefExp instanceof TermPrimary))
-					throw new RebecaRuntimeInterpreterException("not handled yet!");
-				String name = ((TermPrimary) knownRebecDefExp).getName();
-				String knownRebecName = getKnownRebecName(knownRebecs, i);
-				ActorState actState = state.getActorState(name);
-				state.getActorState(definition.getName()).addVariableToRecentScope(knownRebecName, actState);
-			}
-
-		}
-
-		for (MainRebecDefinition definition : mainRebecDefinitions) {
-			ReactiveClassDeclaration metaData = (ReactiveClassDeclaration) TypesUtilities.getInstance()
-					.getMetaData(definition.getType());
-			ConstructorDeclaration constructorDeclaration = metaData.getConstructors().get(0);
-
-			StatementContainer.getInstance().interpret(constructorDeclaration.getBlock(),
-					state.getActorState(definition.getName()));
-
-		}
-
-		statespace.put(new Long(state.hashCode()), state);
-		doModelChecking();
-		printStateSpace(state);
-
-	}
-
-	private static String getKnownRebecName(List<FieldDeclaration> knownRebecs, int i) {
-		int cnt = 0;
-		for (FieldDeclaration fd : knownRebecs) {
-			for (VariableDeclarator vd : fd.getVariableDeclarators()) {
-				if (cnt == i)
-					return vd.getVariableName();
-				cnt++;
-			}
-		}
-		throw new RebecaRuntimeInterpreterException("this case should not happen!!");
-	}
-
-	private static void doModelChecking() {
-		int stateCounter = 0;
-		State initialState = statespace.get(statespace.keySet().iterator().next());
-		LinkedList<State> nextStatesQueue = new LinkedList<State>();
-		nextStatesQueue.add(initialState);
-		Cloner cloner = new Cloner();
-		while (!nextStatesQueue.isEmpty()) {
-			State currentState = nextStatesQueue.pollFirst();
-			for (ActorState actorState : currentState.getEnabledActors()) {
-				State newState = cloner.deepClone(currentState);
-				ActorState newActorState = newState.getActorState(actorState.getName());
-				MessageSpecification executableMessage = newActorState.getQueue().poll();
-				runMessageServer(executableMessage, newState, newActorState.getName());
-				Long stateKey = new Long(newState.hashCode());
-				String transitionMessageName = actorState.getName() + "." + executableMessage.getMessageName();
-				if (!statespace.containsKey(stateKey)) {
-					newState.setId(++stateCounter);
-					nextStatesQueue.add(newState);
-					statespace.put(stateKey, newState);
-					newState.clearLinks();
-					currentState.addChildState(transitionMessageName, newState);
-					newState.addParentState(transitionMessageName, currentState);
-				} else {
-					State repeatedState = statespace.get(stateKey);
-					currentState.addChildState(transitionMessageName, repeatedState);
-					repeatedState.addParentState(transitionMessageName, currentState);
-				}
-			}
-		}
-	}
-
-	private static void runMessageServer(MessageSpecification executableMessage, State newState, String owner) {
-
-		Type ownerType;
+		File rebecaFile = new File("src/test/resources/phils-site.rebeca");
+		CoreRebecaModelChecker coreRebecaModelChecker = new CoreRebecaModelChecker(compilerFeatures, rebecaFile);
+		coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.FINE_GRAINED_POLICY);
 		try {
-			ActorState actorState = newState.getActorState(owner);
-			ownerType = TypesUtilities.getInstance().getType(actorState.getTypeName());
-			ReactiveClassDeclaration actorMetaData = (ReactiveClassDeclaration) TypesUtilities.getInstance()
-					.getMetaData(ownerType);
-			List<Type> argumentsTypes = new LinkedList<Type>();
-			for (Object argument : executableMessage.getParameters()) {
-				argumentsTypes.add(((Expression) argument).getType());
-			}
-
-			MethodDeclaration messageServerDeclaration = getMessageServer(actorMetaData,
-					executableMessage.getMessageName(), argumentsTypes);
-			actorState.pushInActorScope();
-			actorState.addVariableToRecentScope("sender", executableMessage.getSenderActorState());
-			StatementContainer.getInstance().interpret(messageServerDeclaration.getBlock(), actorState);
-
-			actorState.popFromActorScope();
-		} catch (CodeCompilationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			coreRebecaModelChecker.modelCheck();
+		} catch (ExceptionContainer e) {
+			reportCompilerErrors(e);
 		}
-
 	}
 
-	public static MethodDeclaration getMessageServer(ReactiveClassDeclaration rcd, String msgsrvName,
-			List<Type> parameters) {
-		next: for (MethodDeclaration md : rcd.getMsgsrvs()) {
-			if (!md.getName().equals(msgsrvName))
-				continue;
-			if (md.getFormalParameters().size() != parameters.size())
-				continue;
-			for (int i = 0; i < md.getFormalParameters().size(); i++) {
-				if (md.getFormalParameters().get(i).getType() != parameters.get(i))
-					continue next;
+	private static void reportCompilerErrors(ExceptionContainer exceptionContainer) {
+		for (Exception e : exceptionContainer.getExceptions()) {
+			if (e instanceof CodeCompilationException) {
+				CodeCompilationException ce = (CodeCompilationException) e;
+				System.out.println("Line " + ce.getLine() + ", Error: " + ce.getMessage());
+			} else {
+				System.out.println(e.getMessage());
+				e.printStackTrace(System.out);
 			}
-			return md;
 		}
-		throw new RebecaRuntimeInterpreterException("should not happen!!");
 	}
 
 	public static void printStateSpace(State state) {
@@ -225,10 +53,14 @@ public class Main {
 			for (Pair<String, State> child : polledFirst.getChildStates()) {
 				int childId = child.getSecond().getId();
 				System.out.println("S" + childId + "[label=\"S" + childId + "\"];");
-				System.out.println("S" + polledFirst.getId() + " -> S"+ childId + "[label=\"" + child.getFirst() + "\"];");
+				String transitionLabel = child.getFirst();
+				transitionLabel = transitionLabel.split("\\.")[0] + "." + transitionLabel.split("\\.")[2].toUpperCase();
+				System.out.println(
+						"S" + polledFirst.getId() + " -> S" + childId + "[label=\"" + transitionLabel + "\"];");
 
-//				System.out
-//						.println(polledFirst.getId() + "---[" + child.getFirst() + "]--->" + childId);
+				// System.out
+				// .println(polledFirst.getId() + "---[" + child.getFirst() + "]--->" +
+				// childId);
 				if (!visitedSet.contains(childId)) {
 					openBorderList.add(child.getSecond());
 					visitedSet.add(childId);
@@ -236,4 +68,34 @@ public class Main {
 			}
 		}
 	}
+
+	// static public State deepCopy(State oldObj) {
+	// ObjectOutputStream oos = null;
+	// ObjectInputStream ois = null;
+	// try {
+	// ByteArrayOutputStream bos = new ByteArrayOutputStream(); // A
+	// oos = new ObjectOutputStream(bos); // B
+	// // serialize and pass the object
+	// oos.writeObject(oldObj); // C
+	// oos.flush(); // D
+	// ByteArrayInputStream bin = new ByteArrayInputStream(bos.toByteArray()); // E
+	// byte[] byteArray = bos.toByteArray();
+	// System.out.println("bos: " + byteArray.length);
+	// ois = new ObjectInputStream(bin); // F
+	// // return the new object
+	// return (State) ois.readObject(); // G
+	// } catch (Exception e) {
+	// System.out.println("Exception in ObjectCloner = " + e);
+	// throw (new RuntimeException(e));
+	// } finally {
+	// try {
+	// oos.close();
+	// ois.close();
+	//
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	// }
 }
