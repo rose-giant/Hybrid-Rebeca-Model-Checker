@@ -1,4 +1,4 @@
-package org.rebecalang.modelchecker;
+package org.rebecalang.coarsegrainedmodelchecker;
 
 import java.util.Hashtable;
 

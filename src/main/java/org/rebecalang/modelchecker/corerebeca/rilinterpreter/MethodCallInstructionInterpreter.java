@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
-import org.rebecalang.modeltransformer.ril.rilinstructions.InstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.MethodCallInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.Variable;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MethodCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 
 public class MethodCallInstructionInterpreter extends InstructionInterpreter {
 

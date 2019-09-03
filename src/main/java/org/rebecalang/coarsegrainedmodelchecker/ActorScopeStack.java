@@ -1,6 +1,8 @@
-package org.rebecalang.modelchecker;
+package org.rebecalang.coarsegrainedmodelchecker;
 
 import java.util.LinkedList;
+
+import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 
 public class ActorScopeStack {
 

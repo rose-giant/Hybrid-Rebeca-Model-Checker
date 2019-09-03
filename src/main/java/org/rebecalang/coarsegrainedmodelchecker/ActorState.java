@@ -1,4 +1,4 @@
-package org.rebecalang.modelchecker;
+package org.rebecalang.coarsegrainedmodelchecker;
 
 import java.util.LinkedList;
 
@@ -71,40 +71,6 @@ public class ActorState {
 	public void addToQueue(MessageSpecification msgSpec) {
 		queue.add(msgSpec);
 	}
-
-	// public LinkedList<Hashtable<String, Object>> getActorScopeStack() {
-	// return actorScopeStack;
-	// }
-	// public void setActorScopeStack(LinkedList<Hashtable<String, Object>>
-	// actorScopeStack) {
-	// this.actorScopeStack = actorScopeStack;
-	// }
-
-	// public Object retreiveVariableValue(String varName) {
-	// Iterator<Hashtable<String, Object>> iterator =
-	// actorScopeStack.descendingIterator();
-	// while (iterator.hasNext()) {
-	// Hashtable<String, Object> next = iterator.next();
-	// if (next.containsKey(varName))
-	// return next.get(varName);
-	// }
-	// throw new RebecaRuntimeInterpreterException("Failure in retreiving variable "
-	// + varName + " from scope");
-	// }
-	//
-	// public void setVariableValue(String varName, Object valueObject) {
-	// Iterator<Hashtable<String, Object>> iterator =
-	// actorScopeStack.descendingIterator();
-	// while (iterator.hasNext()) {
-	// Hashtable<String, Object> next = iterator.next();
-	// if (next.containsKey(varName)) {
-	// next.put(varName, valueObject);
-	// return;
-	// }
-	// }
-	// throw new RebecaRuntimeInterpreterException("Failure in retreiving variable "
-	// + varName + " from scope");
-	// }
 
 	public boolean actorQueueIsEmpty() {
 		return queue.isEmpty();

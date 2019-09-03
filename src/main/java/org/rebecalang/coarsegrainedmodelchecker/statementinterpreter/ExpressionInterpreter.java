@@ -1,9 +1,9 @@
-package org.rebecalang.modelchecker.statementinterpreter;
+package org.rebecalang.coarsegrainedmodelchecker.statementinterpreter;
 
+import org.rebecalang.coarsegrainedmodelchecker.ActorState;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.BinaryExpression;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Expression;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Statement;
-import org.rebecalang.modelchecker.ActorState;
 
 public class ExpressionInterpreter implements StatementInterpreter {
 

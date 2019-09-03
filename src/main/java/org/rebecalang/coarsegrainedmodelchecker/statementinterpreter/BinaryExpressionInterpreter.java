@@ -1,8 +1,9 @@
-package org.rebecalang.modelchecker.statementinterpreter;
+package org.rebecalang.coarsegrainedmodelchecker.statementinterpreter;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.rebecalang.coarsegrainedmodelchecker.ActorState;
 import org.rebecalang.compiler.modelcompiler.SemanticCheckerUtils;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.BinaryExpression;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.DotPrimary;
@@ -10,8 +11,8 @@ import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Statement;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.TermPrimary;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
 import org.rebecalang.compiler.utils.TypesUtilities;
-import org.rebecalang.modelchecker.ActorState;
-import org.rebecalang.modelchecker.RebecaRuntimeInterpreterException;
+import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
+import org.rebecalang.modelchecker.corerebeca.StatementContainer;
 
 public class BinaryExpressionInterpreter implements StatementInterpreter {
 

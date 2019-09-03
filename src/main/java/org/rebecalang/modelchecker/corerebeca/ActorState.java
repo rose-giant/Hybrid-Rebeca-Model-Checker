@@ -9,14 +9,14 @@ import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
-import org.rebecalang.modeltransformer.ril.rilinstructions.InstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.Variable;
-import org.rebecalang.modeltransformer.ril.translator.AbstractStatementTranslator;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
+import org.rebecalang.modeltransformer.ril.corerebeca.translator.AbstractStatementTranslator;
 
 @SuppressWarnings("serial")
 public class ActorState implements Serializable {
 	private LinkedList<MessageSpecification> queue;
-	private ActorScopeStack actorScopeStack;
+	protected ActorScopeStack actorScopeStack;
 	private String name;
 	private String typeName;
 

@@ -3,7 +3,7 @@ package org.rebecalang.modelchecker.corerebeca;
 import java.util.Hashtable;
 
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
-import org.rebecalang.modeltransformer.ril.rilinstructions.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 
 public class StatementInterpreterContainer {
 

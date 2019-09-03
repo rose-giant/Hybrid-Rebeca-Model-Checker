@@ -1,7 +1,7 @@
 package org.rebecalang.modelchecker.corerebeca.rilinterpreter;
 
 import org.rebecalang.modelchecker.corerebeca.ActorState;
-import org.rebecalang.modeltransformer.ril.rilinstructions.Variable;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 
 public class InstructionUtilities {
 	public static final String PC_STRING = "$PC$";

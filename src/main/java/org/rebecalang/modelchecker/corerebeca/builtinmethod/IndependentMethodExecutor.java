@@ -7,8 +7,8 @@ import java.lang.reflect.Method;
 
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
-import org.rebecalang.modeltransformer.ril.rilinstructions.ExternalMethodCallInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.Variable;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.ExternalMethodCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 
 public class IndependentMethodExecutor implements ExternalMethodExecutor {
 

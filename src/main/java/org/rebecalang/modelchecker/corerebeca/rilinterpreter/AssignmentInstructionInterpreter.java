@@ -4,9 +4,9 @@ import org.rebecalang.compiler.modelcompiler.SemanticCheckerUtils;
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.modelchecker.corerebeca.State;
-import org.rebecalang.modeltransformer.ril.rilinstructions.AssignmentInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.InstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.Variable;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AssignmentInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 
 public class AssignmentInstructionInterpreter extends InstructionInterpreter {
 

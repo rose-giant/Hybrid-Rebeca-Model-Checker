@@ -1,10 +1,10 @@
 package org.rebecalang.modelchecker.corerebeca.policy;
 
 import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
-import org.rebecalang.modeltransformer.ril.rilinstructions.DeclarationInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.InstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.PopARInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.PushARInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.DeclarationInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PopARInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PushARInstructionBean;
 
 public class FineGrainedPolicy extends AbstractPolicy{
 

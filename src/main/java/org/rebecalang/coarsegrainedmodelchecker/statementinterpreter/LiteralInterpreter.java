@@ -1,9 +1,9 @@
-package org.rebecalang.modelchecker.statementinterpreter;
+package org.rebecalang.coarsegrainedmodelchecker.statementinterpreter;
 
+import org.rebecalang.coarsegrainedmodelchecker.ActorState;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Literal;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Statement;
 import org.rebecalang.compiler.utils.TypesUtilities;
-import org.rebecalang.modelchecker.ActorState;
 
 public class LiteralInterpreter implements StatementInterpreter {
 

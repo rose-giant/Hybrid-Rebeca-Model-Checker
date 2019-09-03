@@ -4,7 +4,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.rebecalang</groupId>
 	<artifactId>modelchecker</artifactId>
-	<version>1.0</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -50,4 +49,5 @@
 			<version>1.0</version> <scope>system</scope> <systemPath>${lib.path}/ltl2ba4j.jar</systemPath> 
 			</dependency> -->
 	</dependencies>
+	<version>2.0</version>
 </project>

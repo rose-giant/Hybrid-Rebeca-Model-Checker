@@ -1,8 +1,9 @@
-package org.rebecalang.modelchecker.statementinterpreter;
+package org.rebecalang.coarsegrainedmodelchecker.statementinterpreter;
 
+import org.rebecalang.coarsegrainedmodelchecker.ActorState;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ConditionalStatement;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Statement;
-import org.rebecalang.modelchecker.ActorState;
+import org.rebecalang.modelchecker.corerebeca.StatementContainer;
 
 public class ConditionalStatementInterpreter implements StatementInterpreter {
 

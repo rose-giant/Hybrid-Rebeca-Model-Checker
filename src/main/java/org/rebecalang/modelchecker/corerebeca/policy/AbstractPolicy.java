@@ -1,7 +1,7 @@
 package org.rebecalang.modelchecker.corerebeca.policy;
 
 import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
-import org.rebecalang.modeltransformer.ril.rilinstructions.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 
 public abstract class AbstractPolicy {
 	boolean breakable;

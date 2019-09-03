@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.rebecalang.coarsegrainedmodelchecker.statementinterpreter.StatementContainer;
 import org.rebecalang.compiler.modelcompiler.RebecaCompiler;
 import org.rebecalang.compiler.modelcompiler.SymbolTable;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ConstructorDeclaration;
@@ -29,7 +28,6 @@ import org.rebecalang.modelchecker.corerebeca.builtinmethod.ExternalMethodReposi
 import org.rebecalang.modelchecker.corerebeca.builtinmethod.IndependentMethodExecutor;
 import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
 import org.rebecalang.modelchecker.corerebeca.policy.FineGrainedPolicy;
-import org.rebecalang.modelchecker.corerebeca.policy.CoarseGrainedPolicy;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.AssignmentInstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.CallMsgSrvInstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.DeclarationInstructionInterpreter;
@@ -42,38 +40,38 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.MethodCallInstructi
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PopARInstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PushARInstructionInterpreter;
+import org.rebecalang.modelchecker.corerebeca.policy.CoarseGrainedPolicy;
 import org.rebecalang.modeltransformer.TransformingFeature;
 import org.rebecalang.modeltransformer.ril.RILUtilities;
 import org.rebecalang.modeltransformer.ril.Rebeca2RILTransformer;
 import org.rebecalang.modeltransformer.ril.StatementTranslatorContainer;
-import org.rebecalang.modeltransformer.ril.rilinstructions.AssignmentInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.CallMsgSrvInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.DeclarationInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.EndMethodInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.EndMsgSrvInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.ExternalMethodCallInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.InstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.JumpIfNotInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.MethodCallInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.PopARInstructionBean;
-import org.rebecalang.modeltransformer.ril.rilinstructions.PushARInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AssignmentInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.CallMsgSrvInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.DeclarationInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.EndMethodInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.EndMsgSrvInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.ExternalMethodCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.JumpIfNotInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MethodCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PopARInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PushARInstructionBean;
 
 import com.rits.cloning.Cloner;
 
 public class CoreRebecaModelChecker {
 
-	private Hashtable<Long, State> statespace;
-	private Hashtable<String, ArrayList<InstructionBean>> transformedRILModel;
+	protected Hashtable<Long, State> statespace;
+	protected Hashtable<String, ArrayList<InstructionBean>> transformedRILModel;
 	private Set<CompilerFeature> compilerFeatures;
 	private File rebecaFile;
-	private AbstractPolicy modelCheckingPolicy;
+	protected AbstractPolicy modelCheckingPolicy;
 
 	public final static String FINE_GRAINED_POLICY = "fine";
 	public final static String COARSE_GRAINED_POLICY = "coarse";
 	private Cloner cloner;
 
 	public CoreRebecaModelChecker(Set<CompilerFeature> compilerFeatures, File rebecaFile) {
-		super();
 		this.statespace = new Hashtable<Long, State>();
 		this.transformedRILModel = new Hashtable<String, ArrayList<InstructionBean>>();
 		this.compilerFeatures = compilerFeatures;
@@ -86,7 +84,7 @@ public class CoreRebecaModelChecker {
 		return statespace;
 	}
 	
-	public void modelCheck() throws ExceptionContainer {
+	public void modelCheck() throws ExceptionContainer, ModelCheckingException {
 		RebecaCompiler rebecaCompiler = new RebecaCompiler();
 		Pair<RebecaModel, SymbolTable> compilationResult = rebecaCompiler.compileRebecaFile(rebecaFile,
 				compilerFeatures);
@@ -106,9 +104,9 @@ public class CoreRebecaModelChecker {
 		doFineGrainedModelChecking();
 	}
 
-	private void generateFirstState(RebecaModel model) {
+	protected void generateFirstState(RebecaModel model) {
 
-		State initialState = new State();
+		State initialState = createFreshState();
 		List<MainRebecDefinition> mainRebecDefinitions = model.getRebecaCode().getMainDeclaration()
 				.getMainRebecDefinition();
 		generateInitialActorStates(initialState, mainRebecDefinitions);
@@ -118,7 +116,10 @@ public class CoreRebecaModelChecker {
 		callConstructorsOfActors(initialState, mainRebecDefinitions);
 
 		statespace.put(new Long(initialState.hashCode()), initialState);
+	}
 
+	protected State createFreshState() {
+		return new State();
 	}
 
 	private void callConstructorsOfActors(State initialState, List<MainRebecDefinition> mainRebecDefinitions) {
@@ -168,7 +169,7 @@ public class CoreRebecaModelChecker {
 
 	private void generateInitialActorStates(State initialState, List<MainRebecDefinition> mainRebecDefinitions) {
 		for (MainRebecDefinition definition : mainRebecDefinitions) {
-			ActorState actorState = new ActorState();
+			ActorState actorState = createFreshActorState();
 			actorState.initializeScopeStack();
 			actorState.pushInActorScope();
 			ReactiveClassDeclaration metaData;
@@ -193,7 +194,11 @@ public class CoreRebecaModelChecker {
 		}
 	}
 
-	private void initializeStatementInterpreterContainer() {
+	protected ActorState createFreshActorState() {
+		return new ActorState();
+	}
+
+	protected void initializeStatementInterpreterContainer() {
 		StatementInterpreterContainer.getInstance().registerInterpreter(AssignmentInstructionBean.class,
 				new AssignmentInstructionInterpreter());
 		StatementInterpreterContainer.getInstance().registerInterpreter(CallMsgSrvInstructionBean.class,
@@ -231,14 +236,17 @@ public class CoreRebecaModelChecker {
 		throw new RebecaRuntimeInterpreterException("this case should not happen!!");
 	}
 
-	private void doFineGrainedModelChecking() {
+	protected void doFineGrainedModelChecking() throws ModelCheckingException {
 		int stateCounter = 1;
 		State initialState = statespace.get(statespace.keySet().iterator().next());
 		LinkedList<State> nextStatesQueue = new LinkedList<State>();
 		nextStatesQueue.add(initialState);
 		while (!nextStatesQueue.isEmpty()) {
 			State currentState = nextStatesQueue.pollFirst();
-			for (ActorState actorState : currentState.getEnabledActors()) {
+			List<ActorState> enabledActors = currentState.getEnabledActors();
+			if (enabledActors.isEmpty())
+				throw new ModelCheckingException("Deadlock");
+			for (ActorState actorState : enabledActors) {
 
 				State newState = cloneState(currentState);
 
@@ -264,7 +272,7 @@ public class CoreRebecaModelChecker {
 		Main.printStateSpace(initialState);
 	}
 
-	private String calculateTransitionLabel(ActorState actorState, ActorState newActorState) {
+	protected String calculateTransitionLabel(ActorState actorState, ActorState newActorState) {
 
 		String executingMessageName;
 
@@ -288,7 +296,7 @@ public class CoreRebecaModelChecker {
 		return actorState.getName() + "." + executingMessageName;
 	}
 
-	private State cloneState(State currentState) {
+	protected State cloneState(State currentState) {
 		List<Pair<String, State>> childStates = currentState.getChildStates();
 		List<Pair<String, State>> parentStates = currentState.getParentStates();
 		currentState.clearLinks();

@@ -1,4 +1,4 @@
-package org.rebecalang.modelchecker;
+package org.rebecalang.coarsegrainedmodelchecker;
 
 import java.util.List;
 
@@ -44,11 +44,11 @@ public class MessageSpecification {
 
 	ActorState senderActorState;
 
-	public MessageSpecification(String messageName, List<Object> parameters, ActorState senderActorState) {
+	public MessageSpecification(String messageName, List<Object> parameters, ActorState actorState) {
 		super();
 		this.messageName = messageName;
 		this.parameters = parameters;
-		this.senderActorState = senderActorState;
+		this.senderActorState = actorState;
 	}
 
 	public String getMessageName() {

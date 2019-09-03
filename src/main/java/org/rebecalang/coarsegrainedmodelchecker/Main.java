@@ -13,7 +13,6 @@ import org.rebecalang.coarsegrainedmodelchecker.statementinterpreter.Conditional
 import org.rebecalang.coarsegrainedmodelchecker.statementinterpreter.DotPrimaryExpressionInterpreter;
 import org.rebecalang.coarsegrainedmodelchecker.statementinterpreter.ExpressionInterpreter;
 import org.rebecalang.coarsegrainedmodelchecker.statementinterpreter.LiteralInterpreter;
-import org.rebecalang.coarsegrainedmodelchecker.statementinterpreter.StatementContainer;
 import org.rebecalang.coarsegrainedmodelchecker.statementinterpreter.TermPrimaryExpressionInterpreter;
 import org.rebecalang.coarsegrainedmodelchecker.statementinterpreter.UnaryExpressionInterpreter;
 import org.rebecalang.compiler.modelcompiler.RebecaCompiler;
@@ -39,6 +38,7 @@ import org.rebecalang.compiler.utils.CompilerFeature;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.compiler.utils.TypesUtilities;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
+import org.rebecalang.modelchecker.corerebeca.StatementContainer;
 
 import com.rits.cloning.Cloner;
 
