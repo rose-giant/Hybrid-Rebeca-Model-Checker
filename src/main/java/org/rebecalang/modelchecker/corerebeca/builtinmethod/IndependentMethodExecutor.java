@@ -1,7 +1,5 @@
 package org.rebecalang.modelchecker.corerebeca.builtinmethod;
 
-import static org.junit.Assert.assertTrue;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -30,7 +28,7 @@ public class IndependentMethodExecutor implements ExternalMethodExecutor {
 		if(methodCallInstructionBean.getMethodName().equals("assertion$boolean")) {
 			Boolean firstValue = null;
 			firstValue = callGetBoolean(methodCallInstructionBean.getParameters().get(0), actorState);
-			assertTrue(firstValue);
+			assert(firstValue);
 			return null;
 		}
 		if(methodCallInstructionBean.getMethodName().equals("assertion$boolean$String")) {
@@ -38,7 +36,7 @@ public class IndependentMethodExecutor implements ExternalMethodExecutor {
 			String secondValue = null;
 			firstValue = callGetBoolean(methodCallInstructionBean.getParameters().get(0), actorState);
 			secondValue = callGetString(methodCallInstructionBean.getParameters().get(1), actorState);
-			assertTrue(secondValue, firstValue);
+			assert(firstValue) : secondValue;
 			return null;
 		}
 		if(methodCallInstructionBean.getMethodName().equals("getAllActors")) {
