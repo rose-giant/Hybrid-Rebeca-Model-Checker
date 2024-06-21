@@ -8,7 +8,11 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<springframework.version>6.0.8</springframework.version>
+		<springframework.version>6.1.1</springframework.version>
+		<junit.jupiter.version>5.10.1</junit.jupiter.version>
+		<org.apache.maven.plugins.surefire.version>3.2.2</org.apache.maven.plugins.surefire.version>
+		<org.apache.maven.plugins.compiler.version>3.11.0</org.apache.maven.plugins.compiler.version>
+		<org.projectlombok.version>1.18.30</org.projectlombok.version>
 		<compilerversion>17</compilerversion>
 	</properties>
 
@@ -24,15 +28,11 @@
 			<artifactId>modeltransformer</artifactId>
 			<version>LATEST</version>
 		</dependency>
+
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.7</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.20.0</version>
 		</dependency>
 
 		<dependency>
@@ -40,32 +40,18 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.4</version>
 		</dependency>
-
-		<dependency>
-			<groupId>uk.com.robust-it</groupId>
-			<artifactId>cloning</artifactId>
-			<version>1.9.12</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.20</version>
+			<version>${org.projectlombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.7.2</version>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.7.2</version>
-			<scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -87,9 +73,7 @@
 			<version>${springframework.version}</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
-
 
 
 	<build>
@@ -98,24 +82,23 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>${compilerversion}</source>
-					<target>${compilerversion}</target>
+					<release>${compilerversion}</release>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.20</version>
+							<version>${org.projectlombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>${org.apache.maven.plugins.surefire.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>${org.apache.maven.plugins.surefire.version}</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -133,7 +116,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>3.0.0-M3</version>
+						<version>${org.apache.maven.plugins.surefire.version}</version>
 						<configuration>
 							<useSystemClassLoader>false</useSystemClassLoader>
 						</configuration>
@@ -141,15 +124,14 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.8.1</version>
+						<version>${org.apache.maven.plugins.compiler.version}</version>
 						<configuration>
-							<source>${compilerversion}</source>
-							<target>${compilerversion}</target>
+							<release>${compilerversion}</release>
 							<annotationProcessorPaths>
 								<path>
 									<groupId>org.projectlombok</groupId>
 									<artifactId>lombok</artifactId>
-									<version>1.18.20</version>
+									<version>${org.projectlombok.version}</version>
 								</path>
 							</annotationProcessorPaths>
 						</configuration>
@@ -169,7 +151,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>3.0.0-M3</version>
+						<version>${org.apache.maven.plugins.surefire.version}</version>
 						<configuration>
 							<useSystemClassLoader>false</useSystemClassLoader>
 						</configuration>
@@ -178,13 +160,12 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<configuration>
-							<source>${compilerversion}</source>
-							<target>${compilerversion}</target>
+							<release>${compilerversion}</release>
 							<annotationProcessorPaths>
 								<path>
 									<groupId>org.projectlombok</groupId>
 									<artifactId>lombok</artifactId>
-									<version>1.18.20</version>
+									<version>${org.projectlombok.version}</version>
 								</path>
 							</annotationProcessorPaths>
 						</configuration>
@@ -196,7 +177,8 @@
 							<appendAssemblyId>false</appendAssemblyId>
 							<archive>
 								<manifest>
-									<mainClass>org.rebecalang.modelchecker.RebecaModelChecker</mainClass>
+									<mainClass>
+										org.rebecalang.modelchecker.RebecaModelChecker</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>

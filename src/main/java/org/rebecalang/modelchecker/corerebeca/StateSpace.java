@@ -1,5 +1,6 @@
 package org.rebecalang.modelchecker.corerebeca;
 
+import java.io.PrintStream;
 import java.util.Hashtable;
 
 public class StateSpace {
@@ -38,5 +39,11 @@ public class StateSpace {
 
 	public int size() {
 		return statespace.size();
+	}
+
+	public void exportStateSpace(PrintStream output) {
+		output.println("<transitionsystem>");
+		initialState.exportState(output);
+		output.println("</transitionsystem>");
 	}
 }

@@ -8,15 +8,6 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Instruction
 public class StatementInterpreterContainer {
 
 	Hashtable<Class<? extends InstructionBean>, InstructionInterpreter> interpreters;
-	private static StatementInterpreterContainer instance = new StatementInterpreterContainer();
-
-	private StatementInterpreterContainer() {
-		interpreters = new Hashtable<Class<? extends InstructionBean>, InstructionInterpreter>();
-	}
-
-	public static StatementInterpreterContainer getInstance() {
-		return instance;
-	}
 
 	public void registerInterpreter(Class<? extends InstructionBean> clazz,
 			InstructionInterpreter instructionInterpreter) {
@@ -36,6 +27,10 @@ public class StatementInterpreterContainer {
 	}
 	public boolean hasNondeterminism() {
 		return hasNonterminism;
+	}
+	public void clear() {
+		interpreters.clear();
+		clearNondeterminism();
 	}
 	
 }

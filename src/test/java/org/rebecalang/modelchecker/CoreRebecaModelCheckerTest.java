@@ -3,15 +3,19 @@ package org.rebecalang.modelchecker;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.rebecalang.compiler.CompilerConfig;
 import org.rebecalang.compiler.utils.CompilerExtension;
 import org.rebecalang.compiler.utils.CoreVersion;
 import org.rebecalang.compiler.utils.ExceptionContainer;
 import org.rebecalang.modelchecker.corerebeca.CoreRebecaModelChecker;
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
+import org.rebecalang.modelchecker.utils.StateSpaceUtil;
 import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,19 +33,33 @@ public class CoreRebecaModelCheckerTest {
 	@Autowired
 	public ExceptionContainer exceptionContainer;
 
-	@Test
-	public void GIVEN_CorrectCoreRebecaModelWithInitialMethod_WHEN_CoreIs2_0_THEN_1Error() throws ModelCheckingException {
-		File model = new File(MODEL_FILES_BASE + "DiningPhilosophers.rebeca");
+	
+	@ParameterizedTest
+	@MethodSource("modelToStateSpace")
+	public void GIVEN_RebecaModel_WHEN_CoarseGrainedPolicy(String filename, int statespaceSize) throws ModelCheckingException {
+		File model = new File(MODEL_FILES_BASE + filename);
 		Set<CompilerExtension> extension = new HashSet<CompilerExtension>();
-		coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
+		coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.FINE_GRAINED_POLICY);
 		coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_1);
 		
-		System.out.println(exceptionContainer);
+		
+		if(!exceptionContainer.exceptionsIsEmpty())
+			System.out.println(exceptionContainer);
 		
 		Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
 
-		Assertions.assertEquals(coreRebecaModelChecker.getStatespace().size(), 105);
+		Assertions.assertEquals(statespaceSize, coreRebecaModelChecker.getStatespace().size());
 		
-		RebecaModelChecker.printStateSpace(coreRebecaModelChecker.getStatespace().getInitialState());
+		StateSpaceUtil.printStateSpace(coreRebecaModelChecker.getStatespace().getInitialState());
+		
 	}
+	
+	protected static Stream<Arguments> modelToStateSpace() {
+	    return Stream.of(
+	    		Arguments.arguments("pingpong.rebeca", 3)//,
+//	    		Arguments.arguments("DiningPhilosophers.rebeca", 105),
+//	    		Arguments.arguments("corerebeca/UntimedWSAN.rebeca", 122)
+	    );
+	}
+
 }

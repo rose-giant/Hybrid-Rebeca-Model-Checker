@@ -1,23 +1,25 @@
 package org.rebecalang.modelchecker.corerebeca;
 
-import java.io.Serializable;
-import java.util.LinkedList;
-
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
+import org.rebecalang.compiler.utils.CodeCompilationException;
 import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
-import org.rebecalang.modeltransformer.ril.corerebeca.translator.expresiontranslator.AbstractExpressionTranslator;
+
+import java.io.PrintStream;
+import java.util.LinkedList;
 
 @SuppressWarnings("serial")
-public class ActorState implements Serializable {
+public class ActorState extends BaseActorState {
 	private LinkedList<MessageSpecification> queue;
-	protected ActorScopeStack actorScopeStack;
-	private String name;
-	private String typeName;
+
+	public ActorState() {
+		setQueue(new LinkedList<>());
+	}
 
 	@Override
 	public int hashCode() {
@@ -55,133 +57,154 @@ public class ActorState implements Serializable {
 		} else if (!queue.equals(other.queue))
 			return false;
 		if (typeName == null) {
-			if (other.typeName != null)
-				return false;
-		} else if (!typeName.equals(other.typeName))
-			return false;
-		return true;
+			return other.typeName == null;
+		} else
+			return typeName.equals(other.typeName);
+	}
+
+	public MessageSpecification getMessage() {
+		return queue.peek();
 	}
 
 	public LinkedList<MessageSpecification> getQueue() {
 		return queue;
 	}
 
-	public void initializePC(String methodName, int lineNum) {
-//		String location = getLocationName(methodName);
-		addVariableToRecentScope(InstructionUtilities.PC_STRING, new ProgramCounter(methodName, lineNum));
-		addVariableToRecentScope(AbstractExpressionTranslator.RETURN_VALUE,0);
-		
-	}
-
-	public void clearPC() {
-		actorScopeStack.removeVariable(InstructionUtilities.PC_STRING);
-		;
-	}
-
-	public void setPC(String methodName, int lineNum) {
-		ProgramCounter pc = (ProgramCounter) retreiveVariableValue(InstructionUtilities.PC_STRING);
-		pc.setLineNumber(lineNum);
-		pc.setMethodName(methodName);
-	}
-
-	public void increasePC() {
-		ProgramCounter pc = (ProgramCounter) retreiveVariableValue(InstructionUtilities.PC_STRING);
-		pc.setLineNumber(pc.getLineNumber() + 1);
-	}
-
-	public ProgramCounter getPC() {
-		return (ProgramCounter) retreiveVariableValue(InstructionUtilities.PC_STRING);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public void setQueue(LinkedList<MessageSpecification> queue) {
 		this.queue = queue;
 	}
 
+	@Override
 	public void addToQueue(MessageSpecification msgSpec) {
 		queue.add(msgSpec);
 	}
 
+	@Override
 	public boolean actorQueueIsEmpty() {
 		return queue.isEmpty();
 	}
 
-	public void pushInActorScope() {
-		actorScopeStack.pushInScopeStack();
-	}
+	private String getMessageName(String messageName, RILModel transformedRILModel) {
+		String msgName = messageName;
+		Type currentType = null;
+		try {
+			currentType = typeSystem.getType(messageName.split("\\.")[0]);
+		} catch (CodeCompilationException e) {
+			e.printStackTrace();
+		}
 
-	public void popFromActorScope() {
-		actorScopeStack.popFromScopeStack();
+		while (!transformedRILModel.getMethodNames().contains(msgName)) {
+			try {
+				ReactiveClassDeclaration rcd = (ReactiveClassDeclaration) typeSystem.getMetaData(currentType);
+				if (rcd.getExtends() == null)
+					break;
+				currentType = rcd.getExtends();
+				msgName = currentType.getTypeName() + "." + messageName.split("\\.")[1];
+			} catch (CodeCompilationException e) {
+				e.printStackTrace();
+			}
+		}
+		return msgName;
 	}
-
-	public void addVariableToRecentScope(String varName, Object valueObject) {
-		actorScopeStack.addVariable(varName, valueObject);
-	}
-
-	public String getTypeName() {
-		return typeName;
-	}
-
-	public void setTypeName(String typeName) {
-		this.typeName = typeName;
-	}
-
-	public void initializeScopeStack() {
-		actorScopeStack = new ActorScopeStack();
-		actorScopeStack.initialize();
-	}
-
-	public Object retreiveVariableValue(Variable variable) {
-		return retreiveVariableValue(variable.getVarName());
-	}
-
-	public Object retreiveVariableValue(String varName) {
-		return actorScopeStack.retreiveVariableValue(varName);
-	}
-
-	public void setVariableValue(String varName, Object valueObject) {
-		actorScopeStack.setVariableValue(varName, valueObject);
-	}
-
-	public boolean variableIsDefined(String varName) {
-		return actorScopeStack.variableIsDefined(varName);
-	}
-
-	public void execute(State state, RILModel transformedRILModel,
-			AbstractPolicy policy) {
+	
+	public void execute(State systemState,
+			StatementInterpreterContainer statementInterpreterContainer,
+			RILModel transformedRILModel, AbstractPolicy policy) {
 
 		do {
-			if (variableIsDefined(InstructionUtilities.PC_STRING)) {
+			if(startExecutionOfNewMessageServer()) {
+				MessageSpecification executableMessage = queue.poll();
+				policy.pick(executableMessage);
+
+				String msgName = getMessageName(executableMessage.getMessageName(), 
+						transformedRILModel);
+
+				String relatedRebecType = msgName.split("\\.")[0];
+				actorScopeStack.pushInScopeStack(getTypeName(), relatedRebecType);
+				addVariableToRecentScope("sender", executableMessage.getSenderActorState());
+				initializePC(msgName, 0);
+
+			}
+			if (continueExecutionOfMessageServer()) {
 				ProgramCounter pc = getPC();
+
 				String methodName = pc.getMethodName();
+				Type currentType = null;
+				try {
+					currentType = typeSystem.getType(typeName);
+				} catch (CodeCompilationException e) {
+					throw new RebecaRuntimeInterpreterException(e.getMessage());
+				}
+
+				while (transformedRILModel.getInstructionList(methodName) == null) {
+					try {
+						ReactiveClassDeclaration rcd = (ReactiveClassDeclaration) typeSystem.getMetaData(currentType);
+						if (rcd.getExtends() == null)
+							break;
+						currentType = rcd.getExtends();
+						methodName = currentType.getTypeName() + "." + pc.getMethodName().split("\\.")[1];
+					} catch (CodeCompilationException e) {
+						e.printStackTrace();
+					}
+				}
+
 				int lineNumber = pc.getLineNumber();
+
 				InstructionBean instruction = transformedRILModel.getInstructionList(methodName).get(lineNumber);
-				InstructionInterpreter interpreter = StatementInterpreterContainer.getInstance()
-						.retrieveInterpreter(instruction);
+				InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
 				policy.executedInstruction(instruction);
-				interpreter.interpret(instruction, this, state);
+				interpreter.interpret(instruction, this, systemState);
 
 			} else if (!queue.isEmpty()) {
 				MessageSpecification executableMessage = queue.poll();
 				policy.pick(executableMessage);
-				actorScopeStack.pushInScopeStack();
+
+				String msgName = executableMessage.getMessageName();
+				Type currentType = null;
+				try {
+					currentType = typeSystem.getType(executableMessage.getMessageName().split("\\.")[0]);
+				} catch (CodeCompilationException e) {
+					e.printStackTrace();
+				}
+
+				while (!transformedRILModel.getMethodNames().contains(msgName)) {
+					try {
+						ReactiveClassDeclaration rcd = (ReactiveClassDeclaration) typeSystem.getMetaData(currentType);
+						if (rcd.getExtends() == null)
+							break;
+						currentType = rcd.getExtends();
+						msgName = currentType.getTypeName() + "." + executableMessage.getMessageName().split("\\.")[1];
+					} catch (CodeCompilationException e) {
+						e.printStackTrace();
+					}
+				}
+
+				String relatedRebecType = msgName.split("\\.")[0];
+				actorScopeStack.pushInScopeStack(getTypeName(), relatedRebecType);
 				addVariableToRecentScope("sender", executableMessage.getSenderActorState());
-				initializePC(executableMessage.getMessageName(), 0);
+				initializePC(msgName, 0);
+
 			} else
 				throw new RebecaRuntimeInterpreterException("this case should not happen!");
 		} while (!policy.isBreakable());
 	}
 
-	public void adjustLinkToPreviousScopeForMethodCall() {
 
-		actorScopeStack.adjustLinkToPreviousScopeForMethodCall();
+
+	private boolean startExecutionOfNewMessageServer() {
+		return !variableIsDefined(InstructionUtilities.PC_STRING);
 	}
 
+	private boolean continueExecutionOfMessageServer() {
+		return variableIsDefined(InstructionUtilities.PC_STRING);
+	}
+
+	@Override
+	protected void exportQueueContent(PrintStream output) {
+		output.println("<queue>");
+		for (MessageSpecification messageSpecification : queue) {
+			messageSpecification.export(output);
+		}
+		output.println("</queue>");
+	}
 }

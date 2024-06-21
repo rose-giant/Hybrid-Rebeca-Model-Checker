@@ -5,6 +5,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class ProgramCounter implements Serializable {
 	private String methodName;
+	private String reactiveclassName;
 	private int lineNumber;
 	
 	public ProgramCounter() {}
@@ -25,6 +26,18 @@ public class ProgramCounter implements Serializable {
 	}
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
+	}
+
+	public String getActorName() {
+		return methodName.split("\\.")[0];
+	}
+
+	public String getReactiveclassName() {
+		return reactiveclassName;
+	}
+
+	public void setReactiveclassName(String reactiveclassName) {
+		this.reactiveclassName = reactiveclassName;
 	}
 	
 	

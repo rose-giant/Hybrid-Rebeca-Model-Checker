@@ -1,5 +1,6 @@
 package org.rebecalang.modelchecker.corerebeca;
 
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -11,7 +12,7 @@ public class ActorScopeStack implements Serializable {
 
 	public boolean variableIsDefined(String varName) {
 		try {
-			retreiveVariableValue(varName);
+			retrieveVariableValue(varName);
 			return true;
 		} catch (RebecaRuntimeInterpreterException e) {
 		}
@@ -19,7 +20,7 @@ public class ActorScopeStack implements Serializable {
 
 	}
 
-	public Object retreiveVariableValue(String varName) {
+	public Object retrieveVariableValue(String varName) {
 
 		ActivationRecord cursor = activationRecords.getLast();
 		while (cursor != null) {
@@ -28,7 +29,7 @@ public class ActorScopeStack implements Serializable {
 				return variableValue;
 			cursor = cursor.getPreviousScope();
 		}
-		throw new RebecaRuntimeInterpreterException("Failure in retreiving variable " + varName + " from scope");
+		throw new RebecaRuntimeInterpreterException("Failure in retrieving variable " + varName + " from scope");
 
 	}
 
@@ -50,18 +51,38 @@ public class ActorScopeStack implements Serializable {
 		cursor.addVariable(name, valueObject);
 	}
 
-	public void pushInScopeStack() {
-		ActivationRecord newRecord = new ActivationRecord();
+
+    public void addVariable(String name, Object valueObject, int index) {
+        ActivationRecord cursor = activationRecords.get(index);
+        cursor.addVariable(name, valueObject);
+    }
+
+    public void pushInScopeStack(String relatedRebecType) {
+    	ActivationRecord newRecord = new ActivationRecord();
 		newRecord.initialize();
 		ActivationRecord last = null;
 		try {
 			last = activationRecords.getLast();
 		} catch (NoSuchElementException e) {
 
-		}
-		newRecord.setPreviousScope(last);
-		activationRecords.addLast(newRecord);
-	}
+		}newRecord.setPreviousScope(last);
+        newRecord.setRelatedRebecType(relatedRebecType);
+        activationRecords.addLast(newRecord);
+    }
+
+    public void pushInScopeStack(String relatedRebecType, String previousRebecType) {
+        ActivationRecord newRecord = new ActivationRecord();
+        newRecord.initialize();
+        ActivationRecord prev = null;
+        for (ActivationRecord record: activationRecords) {
+            if (record.getRelatedRebecType().equals(previousRebecType)) {
+                prev = record;
+            }
+        }
+        newRecord.setPreviousScope(prev);
+        newRecord.setRelatedRebecType(relatedRebecType);
+        activationRecords.addLast(newRecord);
+    }
 
 	public void popFromScopeStack() {
 		activationRecords.removeLast();
@@ -89,11 +110,8 @@ public class ActorScopeStack implements Serializable {
 			return false;
 		ActorScopeStack other = (ActorScopeStack) obj;
 		if (activationRecords == null) {
-			if (other.activationRecords != null)
-				return false;
-		} else if (!activationRecords.equals(other.activationRecords))
-			return false;
-		return true;
+			return other.activationRecords == null;
+        } else return activationRecords.equals(other.activationRecords);
 	}
 
 	public void removeVariable(String varName) {
@@ -104,13 +122,21 @@ public class ActorScopeStack implements Serializable {
 				return;
 			}
 		} while ((cursor = cursor.getPreviousScope()) != null);
-		throw new RebecaRuntimeInterpreterException("Failure in retreiving variable " + varName + " from scope");
+		throw new RebecaRuntimeInterpreterException("Failure in retrieving variable " + varName + " from scope");
 
 	}
 
-	public void adjustLinkToPreviousScopeForMethodCall() {
+    public LinkedList<ActivationRecord> getActivationRecords() {
+        return activationRecords;
+    }
+//    public void adjustLinkToPreviousScopeForMethodCall() {
+//
+//		activationRecords.getLast().setPreviousScope(activationRecords.getFirst());
+//	}
 
-		activationRecords.getLast().setPreviousScope(activationRecords.getFirst());
+	public void export(PrintStream output) {
+		for(ActivationRecord activationRecord : activationRecords) {
+			activationRecord.export(output);
+		}
 	}
-
 }

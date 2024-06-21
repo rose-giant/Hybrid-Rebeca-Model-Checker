@@ -2,7 +2,7 @@ package org.rebecalang.modelchecker.corerebeca.rilinterpreter;
 
 import java.util.ArrayList;
 
-import org.rebecalang.modelchecker.corerebeca.ActorState;
+import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
 import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.CallMsgSrvInstructionBean;
@@ -11,11 +11,11 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Instruction
 public class CallMsgSrvInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
-	public void interpret(InstructionBean ib, ActorState actorState, State globalState) {
+	public void interpret(InstructionBean ib, BaseActorState baseActorState, State globalState) {
 		CallMsgSrvInstructionBean cmib = (CallMsgSrvInstructionBean) ib;
-		MessageSpecification msgSpec = new MessageSpecification(cmib.getMsgsrvName(), new ArrayList<Object>(), actorState);
-		ActorState receiverState = (ActorState) actorState.retreiveVariableValue(cmib.getReceiver());
+		MessageSpecification msgSpec = new MessageSpecification(cmib.getMsgsrvName(), new ArrayList<Object>(), baseActorState);
+		BaseActorState receiverState = (BaseActorState) baseActorState.retrieveVariableValue(cmib.getReceiver());
 		receiverState.addToQueue(msgSpec);
-		actorState.increasePC();
+		baseActorState.increasePC();
 	}
 }
