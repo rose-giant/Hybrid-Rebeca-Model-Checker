@@ -8,16 +8,14 @@ import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MethodCallInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
-import org.rebecalang.modeltransformer.ril.corerebeca.translator.expressiontranslator.AbstractExpressionTranslator;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class MethodCallInstructionInterpreter extends InstructionInterpreter {
+public class RebecInstantiationInstructionInterpreter extends InstructionInterpreter {
 
-	public final static String CALL_RESULT = "$CALL_RESULT$";
 	
     @Override
     public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState) {
@@ -31,9 +29,6 @@ public class MethodCallInstructionInterpreter extends InstructionInterpreter {
                 paramValue = baseActorState.retrieveVariableValue((Variable) paramValue);
 			baseActorState.addVariableToRecentScope(paramName, paramValue);
         }
-        baseActorState.addVariableToRecentScope(AbstractExpressionTranslator.RETURN_VALUE, 0);
-        baseActorState.addVariableToRecentScope(CALL_RESULT, 
-        		mcib.getFunctionCallResult() == null ? null : mcib.getFunctionCallResult().getVarName());
         baseActorState.initializePC(mcib.getMethodName(), 0);
     }
 }

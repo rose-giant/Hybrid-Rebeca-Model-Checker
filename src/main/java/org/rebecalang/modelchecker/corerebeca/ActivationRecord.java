@@ -2,16 +2,21 @@ package org.rebecalang.modelchecker.corerebeca;
 
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 @SuppressWarnings("serial")
 public class ActivationRecord implements Serializable {
 
-    private Hashtable<String, Object> definedVariables;
+    private HashMap<String, Object> definedVariables;
     private ActivationRecord previousScope;
     private String relatedRebecType;
 
+    public ActivationRecord() {
+    	definedVariables = new HashMap<String, Object>();
+    }
+    
     public void setVariableValue(String name, Object value) {
         definedVariables.put(name, value);
     }
@@ -24,13 +29,31 @@ public class ActivationRecord implements Serializable {
         definedVariables.put(name, valueObject);
     }
 
+
     @Override
-    public int hashCode() {
+    /**
+     * There is no need to consider the values of previousScope
+     * and relatedRebecType. Equal values for variables of the
+     * scope (including the program counter) results in having
+     * the same values for those two.
+     */
+	public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((definedVariables == null) ? 0 : definedVariables.hashCode());
+        int h = 0;
+        for (Entry<String, Object> entry : definedVariables.entrySet()) {
+        	Object value = entry.getValue();
+        	String key = entry.getKey();
+			if (value instanceof BaseActorState)
+        		h+= key.hashCode() ^ ((BaseActorState)value).getName().hashCode();
+			else
+				h += key.hashCode() ^ value.hashCode();
+        }
+        
+        result = prime * result + h;
+        
         return result;
-    }
+    }    
 
     @Override
     public boolean equals(Object obj) {
@@ -63,12 +86,11 @@ public class ActivationRecord implements Serializable {
                 }
         	}
         	return true;
-        	//return definedVariables.equals(other.definedVariables);
         }
     }
 
     public void initialize() {
-        definedVariables = new Hashtable<>();
+        definedVariables = new HashMap<String, Object>();
     }
 
     public void remove(String varName) {
@@ -101,5 +123,18 @@ public class ActivationRecord implements Serializable {
 			output.print(definedVariables.get(key));
 			output.println("</variable>");
 		}
+	}
+
+	public String toString() {
+		String retValue = "(";
+		for(String key : definedVariables.keySet()) {
+			Object value = definedVariables.get(key);
+			retValue += key + "->";
+			retValue += (value instanceof ActorState) ? 
+					((ActorState)value).getName(): 
+					value;
+			retValue += ",";
+		}
+		return retValue + ")";
 	}
 }

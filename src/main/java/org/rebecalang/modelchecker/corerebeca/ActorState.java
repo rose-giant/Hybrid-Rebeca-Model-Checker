@@ -7,11 +7,17 @@ import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
+import org.rebecalang.modelchecker.corerebeca.utils.RILUtils;
 import org.rebecalang.modeltransformer.ril.RILModel;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AbstractCallingInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MethodCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MsgsrvCallInstructionBean;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 @SuppressWarnings("serial")
 public class ActorState extends BaseActorState {
@@ -24,43 +30,29 @@ public class ActorState extends BaseActorState {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((actorScopeStack == null) ? 0 : actorScopeStack.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		int result = super.hashCode();
 		result = prime * result + ((queue == null) ? 0 : queue.hashCode());
-		result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		ActorState other = (ActorState) obj;
-		if (actorScopeStack == null) {
-			if (other.actorScopeStack != null)
-				return false;
-		} else if (!actorScopeStack.equals(other.actorScopeStack))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
 		if (queue == null) {
 			if (other.queue != null)
 				return false;
 		} else if (!queue.equals(other.queue))
 			return false;
-		if (typeName == null) {
-			return other.typeName == null;
-		} else
-			return typeName.equals(other.typeName);
+		return true;
 	}
+
 
 	public MessageSpecification getMessage() {
 		return queue.peek();
@@ -107,97 +99,99 @@ public class ActorState extends BaseActorState {
 		return msgName;
 	}
 	
-	public void execute(State systemState,
+	public void execute(State<? extends ActorState> systemState,
 			StatementInterpreterContainer statementInterpreterContainer,
 			RILModel transformedRILModel, AbstractPolicy policy) {
 
+		startExecutionOfNewMessageServer(transformedRILModel, policy);
 		do {
-			if(startExecutionOfNewMessageServer()) {
-				MessageSpecification executableMessage = queue.poll();
-				policy.pick(executableMessage);
+			ProgramCounter pc = getPC();
+			int lineNumber = pc.getLineNumber();
+			String methodName = getPC().getMethodName();
+			
+			ArrayList<InstructionBean> instructionsList = 
+					transformedRILModel.getInstructionList(methodName);
 
-				String msgName = getMessageName(executableMessage.getMessageName(), 
-						transformedRILModel);
-
-				String relatedRebecType = msgName.split("\\.")[0];
-				actorScopeStack.pushInScopeStack(getTypeName(), relatedRebecType);
-				addVariableToRecentScope("sender", executableMessage.getSenderActorState());
-				initializePC(msgName, 0);
-
+			InstructionBean instruction = instructionsList.get(lineNumber);
+			InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
+			policy.executedInstruction(instruction);
+			
+			if(instruction instanceof MsgsrvCallInstructionBean) {
+				MsgsrvCallInstructionBean mcib = (MsgsrvCallInstructionBean) instruction;
+				String newMethodName = resolveDynamicBindingOfMethodCall(transformedRILModel, mcib);
+				if(!mcib.getMethodName().equals(newMethodName)) {
+					instruction = new MsgsrvCallInstructionBean(
+							mcib.getBase(), newMethodName);
+					((MsgsrvCallInstructionBean)instruction).setParameters(
+							mcib.getParameters());
+				}
+			} else if(instruction instanceof MethodCallInstructionBean) {
+				MethodCallInstructionBean mcib = (MethodCallInstructionBean) instruction;
+				String newMethodName = resolveDynamicBindingOfMethodCall(transformedRILModel, mcib);
+				if(!mcib.getMethodName().equals(newMethodName)) {
+					instruction = new MethodCallInstructionBean(
+							mcib.getBase(), newMethodName, mcib.getParameters(), mcib.getFunctionCallResult());
+					((MethodCallInstructionBean)instruction).setParameters(
+							mcib.getParameters());
+				}
 			}
-			if (continueExecutionOfMessageServer()) {
-				ProgramCounter pc = getPC();
-
-				String methodName = pc.getMethodName();
-				Type currentType = null;
-				try {
-					currentType = typeSystem.getType(typeName);
-				} catch (CodeCompilationException e) {
-					throw new RebecaRuntimeInterpreterException(e.getMessage());
-				}
-
-				while (transformedRILModel.getInstructionList(methodName) == null) {
-					try {
-						ReactiveClassDeclaration rcd = (ReactiveClassDeclaration) typeSystem.getMetaData(currentType);
-						if (rcd.getExtends() == null)
-							break;
-						currentType = rcd.getExtends();
-						methodName = currentType.getTypeName() + "." + pc.getMethodName().split("\\.")[1];
-					} catch (CodeCompilationException e) {
-						e.printStackTrace();
-					}
-				}
-
-				int lineNumber = pc.getLineNumber();
-
-				InstructionBean instruction = transformedRILModel.getInstructionList(methodName).get(lineNumber);
-				InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
-				policy.executedInstruction(instruction);
-				interpreter.interpret(instruction, this, systemState);
-
-			} else if (!queue.isEmpty()) {
-				MessageSpecification executableMessage = queue.poll();
-				policy.pick(executableMessage);
-
-				String msgName = executableMessage.getMessageName();
-				Type currentType = null;
-				try {
-					currentType = typeSystem.getType(executableMessage.getMessageName().split("\\.")[0]);
-				} catch (CodeCompilationException e) {
-					e.printStackTrace();
-				}
-
-				while (!transformedRILModel.getMethodNames().contains(msgName)) {
-					try {
-						ReactiveClassDeclaration rcd = (ReactiveClassDeclaration) typeSystem.getMetaData(currentType);
-						if (rcd.getExtends() == null)
-							break;
-						currentType = rcd.getExtends();
-						msgName = currentType.getTypeName() + "." + executableMessage.getMessageName().split("\\.")[1];
-					} catch (CodeCompilationException e) {
-						e.printStackTrace();
-					}
-				}
-
-				String relatedRebecType = msgName.split("\\.")[0];
-				actorScopeStack.pushInScopeStack(getTypeName(), relatedRebecType);
-				addVariableToRecentScope("sender", executableMessage.getSenderActorState());
-				initializePC(msgName, 0);
-
-			} else
-				throw new RebecaRuntimeInterpreterException("this case should not happen!");
+			interpreter.interpret(instruction, this, systemState);
 		} while (!policy.isBreakable());
 	}
-
-
-
-	private boolean startExecutionOfNewMessageServer() {
-		return !variableIsDefined(InstructionUtilities.PC_STRING);
+	
+	private String resolveDynamicBindingOfMethodCall(
+			RILModel transformedRILModel, 
+			AbstractCallingInstructionBean instruction) {
+		ActorState callerActor = 
+				(ActorState) actorScopeStack.retrieveVariableValue(
+						instruction.getBase().getVarName());
+		String methodName = 
+				rewriteMethodNameType(callerActor.getTypeName(), 
+						instruction.getMethodName());
+		try {
+			Type currentType = typeSystem.getType(callerActor.getTypeName());
+			while (transformedRILModel.getInstructionList(methodName) == null) {
+				ReactiveClassDeclaration rcd = (ReactiveClassDeclaration) typeSystem.getMetaData(currentType);
+				currentType = rcd.getExtends();
+				methodName = rewriteMethodNameType(currentType.getTypeName(), methodName);
+			}
+			return methodName;
+		} catch (CodeCompilationException e) {
+			throw new RebecaRuntimeInterpreterException(e.getMessage());
+		}
 	}
 
-	private boolean continueExecutionOfMessageServer() {
-		return variableIsDefined(InstructionUtilities.PC_STRING);
+	private String rewriteMethodNameType(String typeName, String methodName) {
+		return typeName + "." + methodName.split("\\.")[1];
 	}
+
+	private void startExecutionOfNewMessageServer(RILModel transformedRILModel, AbstractPolicy policy) {
+		if(variableIsDefined(InstructionUtilities.PC_STRING))
+			return;
+
+		MessageSpecification executableMessage = queue.poll();
+		policy.pick(executableMessage);
+
+		String msgName = getMessageName(executableMessage.getMessageName(), 
+				transformedRILModel);
+
+		String relatedRebecType = msgName.split("\\.")[0];
+		actorScopeStack.pushInScopeStackForMethodCallInitialization(relatedRebecType);
+		addVariableToRecentScope("sender", executableMessage.getSenderActorState());
+		initializePC(msgName, 0);
+
+        addParamersValuesToScope(executableMessage);
+	}
+
+	public void addParamersValuesToScope(MessageSpecification executableMessage) {
+		for (Entry<String, Object> entry : executableMessage.getParameters().entrySet()) {
+        	addVariableToRecentScope(entry.getKey(), entry.getValue());
+        }
+	}
+//
+//	private boolean continueExecutionOfMessageServer() {
+//		return variableIsDefined(InstructionUtilities.PC_STRING);
+//	}
 
 	@Override
 	protected void exportQueueContent(PrintStream output) {
@@ -206,5 +200,14 @@ public class ActorState extends BaseActorState {
 			messageSpecification.export(output);
 		}
 		output.println("</queue>");
+	}
+
+	public String toString() {
+		String retValue = super.toString();
+		retValue += "\n queue:[";
+		for(MessageSpecification ms : queue) {
+			retValue += RILUtils.convertToString(ms) + ",";
+		}
+		return retValue + "]";
 	}
 }

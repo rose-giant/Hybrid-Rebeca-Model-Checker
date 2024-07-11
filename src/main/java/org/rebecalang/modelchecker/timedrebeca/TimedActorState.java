@@ -106,70 +106,66 @@ public class TimedActorState extends BaseActorState {
         return queue.isEmpty();
     }
 
-    public void resumeExecution(State state, RILModel transformedRILModel, AbstractPolicy policy) {
-        do {
-            ProgramCounter pc = getPC();
-
-            String methodName = pc.getMethodName();
-            Type currentType = null;
-            try {
-                currentType = typeSystem.getType(pc.getMethodName().split("\\.")[0]);
-            } catch (CodeCompilationException e) {
-                e.printStackTrace();
-            }
-
-            while (transformedRILModel.getInstructionList(methodName) == null) {
-                try {
-                    ReactiveClassDeclaration rcd = (ReactiveClassDeclaration)typeSystem.getMetaData(currentType);
-                    if (rcd.getExtends() == null)
-                        break;
-                    currentType = rcd.getExtends();
-                    methodName = currentType.getTypeName() + "." + pc.getMethodName().split("\\.")[1];
-                } catch (CodeCompilationException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            int lineNumber = pc.getLineNumber();
-            InstructionBean instruction = transformedRILModel.getInstructionList(methodName).get(lineNumber);
-            InstructionInterpreter interpreter = StatementInterpreterContainer.getInstance().retrieveInterpreter(instruction);
-            policy.executedInstruction(instruction);
-            interpreter.interpret(instruction, this, state);
-        } while (!policy.isBreakable());
+    public void resumeExecution(State<? extends TimedActorState> state, RILModel transformedRILModel, AbstractPolicy policy) {
+//        do {
+//            ProgramCounter pc = getPC();
+//
+//            String methodName = pc.getMethodName();
+//            Type currentType = null;
+//            try {
+//                currentType = typeSystem.getType(pc.getMethodName().split("\\.")[0]);
+//            } catch (CodeCompilationException e) {
+//                e.printStackTrace();
+//            }
+//
+//            while (transformedRILModel.getInstructionList(methodName) == null) {
+//                try {
+//                    ReactiveClassDeclaration rcd = (ReactiveClassDeclaration)typeSystem.getMetaData(currentType);
+//                    if (rcd.getExtends() == null)
+//                        break;
+//                    currentType = rcd.getExtends();
+//                    methodName = currentType.getTypeName() + "." + pc.getMethodName().split("\\.")[1];
+//                } catch (CodeCompilationException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            int lineNumber = pc.getLineNumber();
+//            InstructionBean instruction = transformedRILModel.getInstructionList(methodName).get(lineNumber);
+//            InstructionInterpreter interpreter = StatementInterpreterContainer.getInstance().retrieveInterpreter(instruction);
+//            policy.executedInstruction(instruction);
+//            interpreter.interpret(instruction, this, state);
+//        } while (!policy.isBreakable());
     }
 
-    public void execute(State state, RILModel transformedRILModel, AbstractPolicy policy, TimedMessageSpecification executableMessage) {
-        policy.pick(executableMessage);
-//        String msgName = getTypeName() + "." + executableMessage.getMessageName().split("\\.")[1];
-//        if (!transformedRILModel.getMethodNames().contains(msgName)) {
-//            msgName = executableMessage.getMessageName();
+    public void execute(State<? extends TimedActorState> state, RILModel transformedRILModel, AbstractPolicy policy, TimedMessageSpecification executableMessage) {
+//        policy.pick(executableMessage);
+//
+//        String msgName = executableMessage.getMessageName();
+//        Type currentType = null;
+//        try {
+//            currentType = typeSystem.getType(executableMessage.getMessageName().split("\\.")[0]);
+//        } catch (CodeCompilationException e) {
+//            e.printStackTrace();
 //        }
-
-        String msgName = executableMessage.getMessageName();
-        Type currentType = null;
-        try {
-            currentType = typeSystem.getType(executableMessage.getMessageName().split("\\.")[0]);
-        } catch (CodeCompilationException e) {
-            e.printStackTrace();
-        }
-
-        while (!transformedRILModel.getMethodNames().contains(msgName)) {
-            try {
-                ReactiveClassDeclaration rcd = (ReactiveClassDeclaration)typeSystem.getMetaData(currentType);
-                if (rcd.getExtends() == null)
-                    break;
-                currentType = rcd.getExtends();
-                msgName = currentType.getTypeName() + "." + executableMessage.getMessageName().split("\\.")[1];
-            } catch (CodeCompilationException e) {
-                e.printStackTrace();
-            }
-        }
-
-        String relatedRebecType = msgName.split("\\.")[0];
-        actorScopeStack.pushInScopeStack(getTypeName(), relatedRebecType);
-        addVariableToRecentScope("sender", executableMessage.getSenderActorState());
-        initializePC(msgName, 0);
-        resumeExecution(state, transformedRILModel, policy);
+//
+//        while (!transformedRILModel.getMethodNames().contains(msgName)) {
+//            try {
+//                ReactiveClassDeclaration rcd = (ReactiveClassDeclaration)typeSystem.getMetaData(currentType);
+//                if (rcd.getExtends() == null)
+//                    break;
+//                currentType = rcd.getExtends();
+//                msgName = currentType.getTypeName() + "." + executableMessage.getMessageName().split("\\.")[1];
+//            } catch (CodeCompilationException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        String relatedRebecType = msgName.split("\\.")[0];
+//        actorScopeStack.pushInScopeStack(getTypeName(), relatedRebecType);
+//        addVariableToRecentScope("sender", executableMessage.getSenderActorState());
+//        initializePC(msgName, 0);
+//        resumeExecution(state, transformedRILModel, policy);
     }
 
     @Override

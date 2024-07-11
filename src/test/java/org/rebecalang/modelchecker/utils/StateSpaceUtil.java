@@ -1,27 +1,29 @@
 package org.rebecalang.modelchecker.utils;
 
+import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
 import org.rebecalang.compiler.utils.Pair;
+import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
 
 public class StateSpaceUtil {
-	public static void printStateSpace(State state) {
+	public static void printStateSpace(State<ActorState> state, PrintStream ps) {
 		Set<Integer> visitedSet = new HashSet<Integer>();
-		LinkedList<State> openBorderList = new LinkedList<State>();
+		LinkedList<State<ActorState>> openBorderList = new LinkedList<State<ActorState>>();
 		openBorderList.add(state);
 		visitedSet.add(state.getId());
-		System.out.println("S0 [label=\"S0\"];");
+		ps.println("S0 [label=\"S0\"];");
 		while (!openBorderList.isEmpty()) {
-			State polledFirst = openBorderList.pollFirst();
-			for (Pair<String, State> child : polledFirst.getChildStates()) {
+			State<ActorState> polledFirst = openBorderList.pollFirst();
+			for (Pair<String, State<ActorState>> child : polledFirst.getChildStates()) {
 				int childId = child.getSecond().getId();
-				System.out.println("S" + childId + "[label=\"S" + childId + "\"];");
+				ps.println("S" + childId + "[label=\"S" + childId + "\"];");
 				String transitionLabel = child.getFirst();
 				transitionLabel = transitionLabel.split("\\.")[0] + "." + transitionLabel.split("\\.")[2].toUpperCase();
-				System.out.println(
+				ps.println(
 						"S" + polledFirst.getId() + " -> S" + childId + "[label=\"" + transitionLabel + "\"];");
 
 				// System.out

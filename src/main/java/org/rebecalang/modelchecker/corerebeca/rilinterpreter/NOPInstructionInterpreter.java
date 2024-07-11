@@ -1,13 +1,19 @@
 package org.rebecalang.modelchecker.corerebeca.rilinterpreter;
 
+import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NOPInstructionInterpreter extends InstructionInterpreter{
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State globalState) {
+	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState) {
 		baseActorState.increasePC();
 	}
 

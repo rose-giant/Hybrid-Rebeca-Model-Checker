@@ -5,7 +5,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class ProgramCounter implements Serializable {
 	private String methodName;
-	private String reactiveclassName;
+//	private String reactiveclassName;
 	private int lineNumber;
 	
 	public ProgramCounter() {}
@@ -32,13 +32,36 @@ public class ProgramCounter implements Serializable {
 		return methodName.split("\\.")[0];
 	}
 
-	public String getReactiveclassName() {
-		return reactiveclassName;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + lineNumber;
+		result = prime * result + ((methodName == null) ? 0 : methodName.hashCode());
+		return result;
 	}
 
-	public void setReactiveclassName(String reactiveclassName) {
-		this.reactiveclassName = reactiveclassName;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ProgramCounter other = (ProgramCounter) obj;
+		if (lineNumber != other.lineNumber)
+			return false;
+		if (methodName == null) {
+			if (other.methodName != null)
+				return false;
+		} else if (!methodName.equals(other.methodName))
+			return false;
+		return true;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "(" + methodName + ":" + lineNumber + ")";
+	}
 }

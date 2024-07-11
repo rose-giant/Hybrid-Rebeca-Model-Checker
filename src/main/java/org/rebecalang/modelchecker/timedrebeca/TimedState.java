@@ -1,16 +1,15 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
 import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 @SuppressWarnings("serial")
-public class TimedState extends State {
+public class TimedState extends State<BaseActorState> {
     public void checkForTimeStep(int enablingTime) {
         List<BaseActorState> allActorStates = getAllActorStates();
         if (!allActorStates.isEmpty()) {

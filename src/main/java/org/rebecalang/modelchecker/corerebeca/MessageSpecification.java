@@ -2,13 +2,13 @@ package org.rebecalang.modelchecker.corerebeca;
 
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @SuppressWarnings("serial")
 public class MessageSpecification implements Serializable {
 	protected String messageName;
-	protected List<Object> parameters;
+	protected Map<String, Object> parameters;
 	protected BaseActorState senderActorState;
 
     @Override
@@ -45,7 +45,7 @@ public class MessageSpecification implements Serializable {
         } else return senderActorState.getName().equals(other.senderActorState.getName());
 	}
 
-    public MessageSpecification(String messageName, ArrayList<Object> parameters, BaseActorState baseActorState) {
+    public MessageSpecification(String messageName, Map<String, Object> parameters, BaseActorState baseActorState) {
         super();
         this.messageName = messageName;
         this.parameters = parameters;
@@ -60,11 +60,11 @@ public class MessageSpecification implements Serializable {
         this.messageName = messageName;
     }
 
-    public List<Object> getParameters() {
+    public Map<String, Object> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<Object> parameters) {
+    public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 
@@ -78,8 +78,8 @@ public class MessageSpecification implements Serializable {
 
 	public void export(PrintStream output) {
 		output.print("<message sender=\"" + senderActorState.getName() + "\">" + messageName + "(");
-		for(Object object : parameters)
-			output.print(object);
+		for(Entry<String, Object> entry : parameters.entrySet())
+			output.print(entry.getKey() + "->" + entry.getValue() + ", ");
 		output.println(")</message>");
 	}
 }

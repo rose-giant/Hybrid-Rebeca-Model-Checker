@@ -4,7 +4,8 @@ import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @SuppressWarnings("serial")
 public class TimedMessageSpecification extends MessageSpecification {
@@ -13,7 +14,7 @@ public class TimedMessageSpecification extends MessageSpecification {
 
     public TimedMessageSpecification(
             String messageName,
-            ArrayList<Object> parameters,
+            Map<String, Object> parameters,
             BaseActorState baseActorState,
             int minStartTime,
             int maxStartTime) {
@@ -27,8 +28,8 @@ public class TimedMessageSpecification extends MessageSpecification {
 				"\" arrival=\"" + minStartTime + "\"" +
 				" deadline=\"" + maxStartTime + "\">");
 		output.print(messageName + "(");
-		for(Object object : parameters)
-			output.print(object);
+		for(Entry<String, Object> entry : parameters.entrySet())
+			output.print(entry.getKey() + "->" + entry.getValue() + ", ");
 		output.println(")</message>");
 	}
 }

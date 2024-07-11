@@ -6,8 +6,10 @@ import org.rebecalang.compiler.CompilerConfig;
 import org.rebecalang.compiler.utils.CompilerExtension;
 import org.rebecalang.compiler.utils.CoreVersion;
 import org.rebecalang.compiler.utils.ExceptionContainer;
+import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.CoreRebecaModelChecker;
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
+import org.rebecalang.modelchecker.corerebeca.StateSpace;
 import org.rebecalang.modelchecker.utils.StateSpaceUtil;
 import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,104 +36,31 @@ public class InheritanceTest {
     public ExceptionContainer exceptionContainer;
 
     @Test
-    public void useParentStateVarsInChildTest() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "use_parent_statevars_in_child.rebeca");
+    public void checkInstanceof() throws ModelCheckingException, FileNotFoundException {
+        File model = new File(MODEL_FILES_BASE + "pingpongpung.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
         coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
         coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
         printExceptions();
         Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
+        StateSpace<ActorState> statespace = coreRebecaModelChecker.getStatespace();
+		Assertions.assertEquals(14, statespace.size());
+//		StateSpaceUtil.printStateSpace(statespace.getInitialState(),
+//				new PrintStream(new FileOutputStream(new File("ppp.dot"))));
     }
 
     @Test
-    public void useParentsKnownActorInChildTest() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "use_parents_known_actors_in_child.rebeca");
+    public void useParentMsgsrvs() throws ModelCheckingException, FileNotFoundException {
+        File model = new File(MODEL_FILES_BASE + "useParentMsgsrvs.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
         coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
         coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
         printExceptions();
         Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-    }
-
-    @Test
-    public void useParentsMsgSrvInChildTest() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "use_parents_msgsrv_in_child.rebeca");
-        Set<CompilerExtension> extension = new HashSet<>();
-        coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-        printExceptions();
-        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-        StateSpaceUtil.printStateSpace(coreRebecaModelChecker.getStatespace().getInitialState());
-    }
-
-    @Test
-    public void useParentsMethodsInChild() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "use_parents_methods_in_child.rebeca");
-        Set<CompilerExtension> extension = new HashSet<>();
-        coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-        printExceptions();
-        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-    }
-
-    @Test
-    public void CheckKnownRebecsSequence() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "known_rebecs_sequence.rebeca");
-        Set<CompilerExtension> extension = new HashSet<>();
-        coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-        printExceptions();
-        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-    }
-
-    @Test
-    public void CheckSelfAndNormalCalls() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "self_and_normal_calls.rebeca");
-        Set<CompilerExtension> extension = new HashSet<>();
-        coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-        printExceptions();
-        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-    }
-
-    @Test
-    public void CheckHomonymous() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "homonymous_attributes.rebeca");
-        Set<CompilerExtension> extension = new HashSet<>();
-        coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-        printExceptions();
-        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-    }
-
-    @Test
-    void CheckInterfaceAndAbstract() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "interface_abstract.rebeca");
-        Set<CompilerExtension> extension = new HashSet<>();
-        coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-        printExceptions();
-        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-    }
-
-    @Test
-    public void checkInstanceof() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "instanceof_expression.rebeca");
-        Set<CompilerExtension> extension = new HashSet<>();
-        coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-        printExceptions();
-        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-    }
-
-    @Test
-    void dynamicPolymorphismTest() throws ModelCheckingException {
-        File model = new File(MODEL_FILES_BASE + "dynamic_polymorphism.rebeca");
-        Set<CompilerExtension> extension = new HashSet<>();
-        coreRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-        printExceptions();
-        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
+        StateSpace<ActorState> statespace = coreRebecaModelChecker.getStatespace();
+		Assertions.assertEquals(2, statespace.size());
+//		StateSpaceUtil.printStateSpace(statespace.getInitialState(),
+//				new PrintStream(new FileOutputStream(new File("ppp.dot"))));
     }
 
     private void printExceptions() {

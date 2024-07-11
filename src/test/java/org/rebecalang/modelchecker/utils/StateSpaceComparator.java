@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.rebecalang.compiler.utils.Pair;
+import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
 
 import com.ibm.icu.util.StringTokenizer;
@@ -70,25 +71,25 @@ public class StateSpaceComparator {
 
 	static Hashtable<Integer, Integer> visitedSet = new Hashtable<Integer, Integer>();
 
-	private static boolean compareGraphs(State s0, State p0) {
+	private static boolean compareGraphs(State<ActorState> s0, State<ActorState> p0) {
 		if (visitedSet.containsKey(p0.getId()))
 			return visitedSet.get(p0.getId()) == s0.getId();
 		visitedSet.put(p0.getId(), s0.getId());
 		Set<String> outLabelsS = new HashSet<String>();
 		Set<String> outLabelsP = new HashSet<String>();
-		for (Pair<String, State> child : s0.getChildStates()) {
+		for (Pair<String, State<ActorState>> child : s0.getChildStates()) {
 			outLabelsS.add(child.getFirst().toUpperCase());
 		}
-		for (Pair<String, State> child : p0.getChildStates()) {
+		for (Pair<String, State<ActorState>> child : p0.getChildStates()) {
 			outLabelsP.add(child.getFirst().toUpperCase());
 		}
 		if (!outLabelsP.equals(outLabelsS)) {
 			System.out.println(s0.getId() + ",\t" + p0.getId());
 			return false;
 		}
-		for (Pair<String, State> childP : p0.getChildStates()) {
+		for (Pair<String, State<ActorState>> childP : p0.getChildStates()) {
 			State st = null;
-			for (Pair<String, State> childS : s0.getChildStates()) {
+			for (Pair<String, State<ActorState>> childS : s0.getChildStates()) {
 				if (childP.getFirst().equalsIgnoreCase(childS.getFirst())) {
 					st = childS.getSecond();
 					break;
@@ -105,14 +106,14 @@ public class StateSpaceComparator {
 	private static void compareBFSGraphs(State s0, State p0) {
 		Hashtable<Integer, Pair<Integer, String>> parentTableS = new Hashtable<Integer, Pair<Integer, String>>();
 		Hashtable<Integer, Pair<Integer, String>> parentTableP = new Hashtable<Integer, Pair<Integer, String>>();
-		LinkedList<Pair<State, State>> openBorder = new LinkedList<Pair<State, State>>();
+		LinkedList<Pair<State<ActorState>, State<ActorState>>> openBorder = new LinkedList<Pair<State<ActorState>, State<ActorState>>>();
 		visitedSet.put(s0.getId(), p0.getId());
-		openBorder.add(new Pair<State, State>(s0, p0));
+		openBorder.add(new Pair<State<ActorState>, State<ActorState>>(s0, p0));
 		while (!openBorder.isEmpty()) {
-			Pair<State, State> current = openBorder.poll();
-			for (Pair<String, State> childS : current.getFirst().getChildStates()) {
+			Pair<State<ActorState>, State<ActorState>> current = openBorder.poll();
+			for (Pair<String, State<ActorState>> childS : current.getFirst().getChildStates()) {
 				State PChild = null;
-				for (Pair<String, State> childP : current.getSecond().getChildStates()) {
+				for (Pair<String, State<ActorState>> childP : current.getSecond().getChildStates()) {
 					if (childP.getFirst().equalsIgnoreCase(childS.getFirst())) {
 						PChild = childP.getSecond();
 						parentTableP.put(childP.getSecond().getId(),
@@ -134,7 +135,7 @@ public class StateSpaceComparator {
 					}
 				} else {
 					visitedSet.put(childS.getSecond().getId(), PChild.getId());
-					openBorder.add(new Pair<State, State>(childS.getSecond(), PChild));
+					openBorder.add(new Pair<State<ActorState>, State<ActorState>>(childS.getSecond(), PChild));
 				}
 				// if(!compareGraphs(st, childP.getSecond())) {
 				// System.out.println("S" + s0.getId() + ",\tP" + p0.getId() +",\t" +
@@ -145,7 +146,7 @@ public class StateSpaceComparator {
 		}
 	}
 
-	private static void reportCounterExample(Pair<State, State> current,
+	private static void reportCounterExample(Pair<State<ActorState>, State<ActorState>> current,
 			Hashtable<Integer, Pair<Integer, String>> parentTableS,
 			Hashtable<Integer, Pair<Integer, String>> parentTableP) {
 		int idS = current.getFirst().getId();

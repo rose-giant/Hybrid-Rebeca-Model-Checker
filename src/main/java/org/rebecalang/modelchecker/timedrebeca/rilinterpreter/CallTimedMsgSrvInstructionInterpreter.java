@@ -1,5 +1,6 @@
 package org.rebecalang.modelchecker.timedrebeca.rilinterpreter;
 
+import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
 import org.rebecalang.modelchecker.corerebeca.State;
@@ -7,20 +8,43 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpre
 import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
 import org.rebecalang.modelchecker.timedrebeca.TimedMessageSpecification;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
-import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.CallTimedMsgSrvInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MsgsrvCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
+import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgSrvCallInstructionBean;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 public class CallTimedMsgSrvInstructionInterpreter extends InstructionInterpreter {
 
-    @Override
-    public void interpret(InstructionBean ib, BaseActorState baseActorState, State globalState) {
-        CallTimedMsgSrvInstructionBean ctmib = (CallTimedMsgSrvInstructionBean) ib;
-        TimedActorState receiverState = (TimedActorState) baseActorState.retrieveVariableValue(ctmib.getReceiver());
-        String msgSrvName = receiverState.getTypeName() + "." + ctmib.getMsgsrvName().split("\\.")[1];
-        MessageSpecification msgSpec = new TimedMessageSpecification(msgSrvName, new ArrayList<>(),
-                baseActorState, (int)ctmib.getAfter(), (int)ctmib.getDeadline());
-        receiverState.addToQueue(msgSpec);
-        baseActorState.increasePC();
-    }
+	@Override
+	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState) {
+		TimedMsgSrvCallInstructionBean tmcib = (TimedMsgSrvCallInstructionBean) ib;
+		Map<String, Object> parameters = new TreeMap<String, Object>();
+		for (Entry<String, Object> entry : tmcib.getParameters().entrySet()) {
+            String paramName = entry.getKey();
+			Object paramValue = entry.getValue();
+            if (paramValue instanceof Variable)
+                paramValue = baseActorState.retrieveVariableValue((Variable) paramValue);
+            parameters.put(paramName, paramValue);
+        }
+
+		TimedMessageSpecification msgSpec = new TimedMessageSpecification(
+				tmcib.getMethodName(), parameters, baseActorState, 
+				0, 0);
+		TimedActorState receiverState = (TimedActorState) baseActorState.retrieveVariableValue(tmcib.getBase());
+		receiverState.addToQueue(msgSpec);
+		baseActorState.increasePC();
+		
+		
+//        TimedMsgSrvCallInstructionBean ctmib = (TimedMsgSrvCallInstructionBean) ib;
+//        TimedActorState receiverState = (TimedActorState) baseActorState.retrieveVariableValue(ctmib.getReceiver());
+//        String msgSrvName = receiverState.getTypeName() + "." + ctmib.getMsgsrvName().split("\\.")[1];
+//        MessageSpecification msgSpec = new TimedMessageSpecification(msgSrvName, new ArrayList<>(),
+//                baseActorState, (int)ctmib.getAfter(), (int)ctmib.getDeadline());
+//        receiverState.addToQueue(msgSpec);
+//        baseActorState.increasePC();
+	}
 }

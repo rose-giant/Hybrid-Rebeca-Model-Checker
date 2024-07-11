@@ -22,7 +22,7 @@ public class InstructionUtilities {
 				} else
 					nonDetValue.reset();
 			}
-			return getValue(value, baseActorState);
+			return getValue(statementInterpreterContainer, value, baseActorState);
 		}
 		return operand;
 	}

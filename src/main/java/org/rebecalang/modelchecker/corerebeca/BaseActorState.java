@@ -4,7 +4,6 @@ import org.rebecalang.compiler.modelcompiler.corerebeca.CoreRebecaTypeSystem;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
-import org.rebecalang.modeltransformer.ril.corerebeca.translator.expresiontranslator.AbstractExpressionTranslator;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -24,11 +23,7 @@ public abstract class BaseActorState implements Serializable {
 
     public void initializePC(String methodName, int lineNum) {
         addVariableToRecentScope(InstructionUtilities.PC_STRING, new ProgramCounter(methodName, lineNum));
-        addVariableToRecentScope(AbstractExpressionTranslator.RETURN_VALUE, 0);
-    }
-
-    public void clearPC() {
-        actorScopeStack.removeVariable(InstructionUtilities.PC_STRING);
+//        addVariableToRecentScope(AbstractExpressionTranslator.RETURN_VALUE, 0);
     }
 
     public void setPC(String methodName, int lineNum) {
@@ -52,14 +47,6 @@ public abstract class BaseActorState implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void pushInActorScope(String relatedRebecType) {
-        actorScopeStack.pushInScopeStack(relatedRebecType);
-    }
-
-    public void pushInActorScope(String relatedRebecType, String prevRebecType) {
-        actorScopeStack.pushInScopeStack(relatedRebecType, prevRebecType);
     }
 
     public void popFromActorScope() {
@@ -111,6 +98,10 @@ public abstract class BaseActorState implements Serializable {
         this.typeSystem = typeSystem;
     }
     
+	public CoreRebecaTypeSystem getTypeSystem() {
+		return typeSystem;
+	}
+
 	public void export(PrintStream output) {
 		output.println("<rebec name=\""+ name + "\">");
 		output.println("<statevariables>");
@@ -121,4 +112,63 @@ public abstract class BaseActorState implements Serializable {
 	}
 
 	protected abstract void exportQueueContent(PrintStream output);
+
+	public String toString() {
+		String retValue = "name:" + typeName + "." + name;
+		retValue += "\n vars: [";
+		for(ActivationRecord ar : actorScopeStack.getActivationRecords()) {
+			retValue += ar;
+		}
+		return retValue + "]";
+	}
+
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((actorScopeStack == null) ? 0 : actorScopeStack.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BaseActorState other = (BaseActorState) obj;
+		if (actorScopeStack == null) {
+			if (other.actorScopeStack != null)
+				return false;
+		} else if (!actorScopeStack.equals(other.actorScopeStack))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (typeName == null) {
+			if (other.typeName != null)
+				return false;
+		} else if (!typeName.equals(other.typeName))
+			return false;
+		return true;
+	}
+
+	public void pushInScopeStackForInsideMethod() {
+		actorScopeStack.pushInScopeStackForInsideMethod();
+	}
+
+	public void pushInScopeStackForMethodCallInitialization(String relatedRebecType) {
+		actorScopeStack.pushInScopeStackForMethodCallInitialization(relatedRebecType);
+	}
+	
+	public void pushInScopeStackForInheritanceStack(String typeName) {
+		actorScopeStack.pushInScopeStackForInheritanceStack(typeName);
+	}
 }

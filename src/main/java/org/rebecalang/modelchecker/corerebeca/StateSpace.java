@@ -3,29 +3,29 @@ package org.rebecalang.modelchecker.corerebeca;
 import java.io.PrintStream;
 import java.util.Hashtable;
 
-public class StateSpace {
-	Hashtable<Long, State> statespace;
-	State initialState;
+public class StateSpace<T extends BaseActorState> {
+	Hashtable<Long, State<T>> statespace;
+	State<T> initialState;
 	
 	public StateSpace() {
-		statespace = new Hashtable<Long, State>();
+		statespace = new Hashtable<Long, State<T>>();
 	}
 
-	public void addState(State state) {
+	public void addState(State<T> state) {
 		addState(Long.valueOf(state.hashCode()), state);
 	}
 	
-	public void addInitialState(State initialState) {
+	public void addInitialState(State<T> initialState) {
 		this.initialState = initialState;
 		addState(initialState);
 	}
 
-	public void addState(Long stateKey, State state) {
+	public void addState(Long stateKey, State<T> state) {
 		statespace.put(stateKey, state);
 		
 	}
 
-	public State getState(Long stateKey) {
+	public State<T> getState(Long stateKey) {
 		return statespace.get(stateKey);
 	}
 
@@ -33,7 +33,7 @@ public class StateSpace {
 		return statespace.containsKey(stateKey);
 	}
 
-	public State getInitialState() {
+	public State<T> getInitialState() {
 		return initialState;
 	}
 

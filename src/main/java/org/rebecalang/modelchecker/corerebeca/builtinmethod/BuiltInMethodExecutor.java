@@ -3,39 +3,40 @@ package org.rebecalang.modelchecker.corerebeca.builtinmethod;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.ExternalMethodCallInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 
-public class IndependentMethodExecutor implements ExternalMethodExecutor {
+public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 
-	public static final String KEY = "Independent";
+	public static final String KEY = "BuiltIn";
 
 	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState baseActorState,
-			State globalState) {
+			State<? extends ActorState> globalState) {
 		if(methodCallInstructionBean.getMethodName().equals("pow$double$double")) {
 			Double firstValue = null, secondValue = null;
-			firstValue = callGetDouble(methodCallInstructionBean.getParameters().get(0), baseActorState);
-			secondValue = callGetDouble(methodCallInstructionBean.getParameters().get(1), baseActorState);
+			firstValue = callGetDouble(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
+			secondValue = callGetDouble(methodCallInstructionBean.getParameters().get("arg1"), baseActorState);
 			return Math.pow(firstValue, secondValue);
 		}
 		if(methodCallInstructionBean.getMethodName().equals("sqrt$double")) {
 			Double firstValue = null;
-			firstValue = callGetDouble(methodCallInstructionBean.getParameters().get(0), baseActorState);
+			firstValue = callGetDouble(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
 			return Math.sqrt(firstValue);
 		}
 		if(methodCallInstructionBean.getMethodName().equals("assertion$boolean")) {
 			Boolean firstValue = null;
-			firstValue = callGetBoolean(methodCallInstructionBean.getParameters().get(0), baseActorState);
+			firstValue = callGetBoolean(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
 			assert(firstValue);
 			return null;
 		}
 		if(methodCallInstructionBean.getMethodName().equals("assertion$boolean$String")) {
 			Boolean firstValue = null;
 			String secondValue = null;
-			firstValue = callGetBoolean(methodCallInstructionBean.getParameters().get(0), baseActorState);
-			secondValue = callGetString(methodCallInstructionBean.getParameters().get(1), baseActorState);
+			firstValue = callGetBoolean(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
+			secondValue = callGetString(methodCallInstructionBean.getParameters().get("arg1"), baseActorState);
 			assert(firstValue) : secondValue;
 			return null;
 		}
@@ -82,5 +83,4 @@ public class IndependentMethodExecutor implements ExternalMethodExecutor {
 		}
 		return null;
 	}
-
 }

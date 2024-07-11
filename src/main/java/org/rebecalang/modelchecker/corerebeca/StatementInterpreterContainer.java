@@ -4,10 +4,18 @@ import java.util.Hashtable;
 
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class StatementInterpreterContainer {
 
 	Hashtable<Class<? extends InstructionBean>, InstructionInterpreter> interpreters;
+	
+	public StatementInterpreterContainer() {
+		interpreters = new Hashtable<Class<? extends InstructionBean>, 
+				InstructionInterpreter>();
+	}
 
 	public void registerInterpreter(Class<? extends InstructionBean> clazz,
 			InstructionInterpreter instructionInterpreter) {

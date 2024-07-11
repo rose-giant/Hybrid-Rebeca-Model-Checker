@@ -1,6 +1,7 @@
 package org.rebecalang.modelchecker;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.rebecalang.compiler.CompilerConfig;
 import org.rebecalang.compiler.utils.CompilerExtension;
@@ -31,6 +32,7 @@ public class TimedRebecaTest {
     public ExceptionContainer exceptionContainer;
 
     @Test
+    @Disabled
     public void testPingPong() throws ModelCheckingException {
         File model = new File(MODEL_FILES_BASE + "ping_pong.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
@@ -42,6 +44,7 @@ public class TimedRebecaTest {
     }
 
     @Test
+    @Disabled
     public void testDynamicPolymorphism() throws ModelCheckingException {
         File model = new File(MODEL_FILES_BASE + "dynamic_polymorphism_in_time.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();

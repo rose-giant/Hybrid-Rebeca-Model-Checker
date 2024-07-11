@@ -3,7 +3,7 @@ package org.rebecalang.modelchecker.corerebeca;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.ListIterator;
 
 @SuppressWarnings("serial")
 public class ActorScopeStack implements Serializable {
@@ -57,32 +57,62 @@ public class ActorScopeStack implements Serializable {
         cursor.addVariable(name, valueObject);
     }
 
-    public void pushInScopeStack(String relatedRebecType) {
+    private void pushInScopeStack(String typeName, ActivationRecord prev) {
     	ActivationRecord newRecord = new ActivationRecord();
 		newRecord.initialize();
-		ActivationRecord last = null;
-		try {
-			last = activationRecords.getLast();
-		} catch (NoSuchElementException e) {
-
-		}newRecord.setPreviousScope(last);
-        newRecord.setRelatedRebecType(relatedRebecType);
+		newRecord.setPreviousScope(prev);
+        newRecord.setRelatedRebecType(typeName);
         activationRecords.addLast(newRecord);
     }
-
-    public void pushInScopeStack(String relatedRebecType, String previousRebecType) {
-        ActivationRecord newRecord = new ActivationRecord();
-        newRecord.initialize();
-        ActivationRecord prev = null;
-        for (ActivationRecord record: activationRecords) {
-            if (record.getRelatedRebecType().equals(previousRebecType)) {
-                prev = record;
-            }
-        }
-        newRecord.setPreviousScope(prev);
-        newRecord.setRelatedRebecType(relatedRebecType);
-        activationRecords.addLast(newRecord);
+    
+    public void pushInScopeStackForMethodCallInitialization(
+    		String relatedRebecType) {
+    	ListIterator<ActivationRecord> iterator = activationRecords.listIterator(
+    			activationRecords.size());
+    	while(iterator.hasPrevious()) {
+            ActivationRecord ar = iterator.previous();
+			if (relatedRebecType.equals(ar.getRelatedRebecType())) {
+                pushInScopeStack(null, ar);
+                return;
+            }    		
+    	}
     }
+    
+    public void pushInScopeStackForInsideMethod() {
+    	pushInScopeStack(null, activationRecords.getLast());
+    }
+    
+    public void pushInScopeStackForInheritanceStack(String typeName) {
+    	pushInScopeStack(typeName, activationRecords.isEmpty()? null : activationRecords.getLast());
+    }
+    
+//    public void pushInScopeStack(String relatedRebecType) {
+//    	ActivationRecord newRecord = new ActivationRecord();
+//		newRecord.initialize();
+//		ActivationRecord last = null;
+//		try {
+//			last = activationRecords.getLast();
+//		} catch (NoSuchElementException e) {
+//
+//		}
+//		newRecord.setPreviousScope(last);
+//        newRecord.setRelatedRebecType(relatedRebecType);
+//        activationRecords.addLast(newRecord);
+//    }
+
+//    public void pushInScopeStack(String relatedRebecType, String previousRebecType) {
+//        ActivationRecord newRecord = new ActivationRecord();
+//        newRecord.initialize();
+//        ActivationRecord prev = null;
+//        for (ActivationRecord record: activationRecords) {
+//            if (record.getRelatedRebecType().equals(previousRebecType)) {
+//                prev = record;
+//            }
+//        }
+//        newRecord.setPreviousScope(prev);
+//        newRecord.setRelatedRebecType(relatedRebecType);
+//        activationRecords.addLast(newRecord);
+//    }
 
 	public void popFromScopeStack() {
 		activationRecords.removeLast();
@@ -114,27 +144,11 @@ public class ActorScopeStack implements Serializable {
         } else return activationRecords.equals(other.activationRecords);
 	}
 
-	public void removeVariable(String varName) {
-		ActivationRecord cursor = activationRecords.getLast();
-		do {
-			if (cursor.hasVariable(varName)) {
-				cursor.remove(varName);
-				return;
-			}
-		} while ((cursor = cursor.getPreviousScope()) != null);
-		throw new RebecaRuntimeInterpreterException("Failure in retrieving variable " + varName + " from scope");
-
-	}
-
     public LinkedList<ActivationRecord> getActivationRecords() {
         return activationRecords;
     }
-//    public void adjustLinkToPreviousScopeForMethodCall() {
-//
-//		activationRecords.getLast().setPreviousScope(activationRecords.getFirst());
-//	}
 
-	public void export(PrintStream output) {
+    public void export(PrintStream output) {
 		for(ActivationRecord activationRecord : activationRecords) {
 			activationRecord.export(output);
 		}

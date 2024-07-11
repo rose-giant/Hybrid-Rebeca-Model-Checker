@@ -5,37 +5,37 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilitie
 
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-public class State implements Serializable {
+public class State<T extends BaseActorState>  implements Serializable {
 
-    protected Hashtable<String, BaseActorState> stateInfo;
-    protected List<Pair<String, State>> childStates;
-    protected List<Pair<String, State>> parentStates;
+    protected HashMap<String, T> stateInfo;
+    protected List<Pair<String, State<T>>> childStates;
+    protected List<Pair<String, State<T>>> parentStates;
     private int id;
 
     public State() {
         super();
-        stateInfo = new Hashtable<String, BaseActorState>();
-        childStates = new LinkedList<Pair<String, State>>();
-        parentStates = new LinkedList<Pair<String, State>>();
+        stateInfo = new HashMap<String, T>();
+        childStates = new LinkedList<Pair<String, State<T>>>();
+        parentStates = new LinkedList<Pair<String, State<T>>>();
     }
 
-    public void putActorState(String name, BaseActorState baseActorState) {
+    public void putActorState(String name, T actorState) {
 
-        stateInfo.put(name, baseActorState);
+        stateInfo.put(name, actorState);
     }
 
     public BaseActorState getActorState(String name) {
         return stateInfo.get(name);
     }
 
-    public List<BaseActorState> getAllActorStates() {
-        LinkedList<BaseActorState> allActorsState = new LinkedList<BaseActorState>();
+    public List<T> getAllActorStates() {
+        LinkedList<T> allActorsState = new LinkedList<T>();
         Iterator<String> iterator = stateInfo.keySet().iterator();
         while (iterator.hasNext()) {
             allActorsState.add(stateInfo.get(iterator.next()));
@@ -43,9 +43,9 @@ public class State implements Serializable {
         return allActorsState;
     }
 
-    public List<BaseActorState> getEnabledActors()  {
-        LinkedList<BaseActorState> enabledActors = new LinkedList<BaseActorState>();
-        for (BaseActorState baseActorState : getAllActorStates()) {
+    public List<T> getEnabledActors()  {
+        LinkedList<T> enabledActors = new LinkedList<T>();
+        for (T baseActorState : getAllActorStates()) {
             if (!baseActorState.actorQueueIsEmpty())
                 enabledActors.add(baseActorState);
             else if (baseActorState.variableIsDefined(InstructionUtilities.PC_STRING))
@@ -63,6 +63,7 @@ public class State implements Serializable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -70,7 +71,7 @@ public class State implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        State other = (State) obj;
+		State<T> other = (State<T>) obj;
         if (stateInfo == null) {
 			return other.stateInfo == null;
         } else return stateInfo.equals(other.stateInfo);
@@ -84,33 +85,33 @@ public class State implements Serializable {
         this.id = id;
     }
 
-    public void addChildState(String label, State childState) {
-        childStates.add(new Pair<String, State>(label, childState));
+    public void addChildState(String label, State<T> childState) {
+        childStates.add(new Pair<String, State<T>>(label, childState));
     }
 
-    public void addParentState(String label, State parentState) {
-        parentStates.add(new Pair<String, State>(label, parentState));
+    public void addParentState(String label, State<T> parentState) {
+        parentStates.add(new Pair<String, State<T>>(label, parentState));
     }
 
-    public List<Pair<String, State>> getChildStates() {
+    public List<Pair<String, State<T>>> getChildStates() {
         return childStates;
     }
 
-    public List<Pair<String, State>> getParentStates() {
+    public List<Pair<String, State<T>>> getParentStates() {
         return parentStates;
     }
 
-    public void setChildStates(List<Pair<String, State>> childStates) {
+    public void setChildStates(List<Pair<String, State<T>>> childStates) {
         this.childStates = childStates;
     }
 
-    public void setParentStates(List<Pair<String, State>> parentStates) {
+    public void setParentStates(List<Pair<String, State<T>>> parentStates) {
         this.parentStates = parentStates;
     }
 
     public void clearLinks() {
-        childStates = new LinkedList<Pair<String, State>>();
-        parentStates = new LinkedList<Pair<String, State>>();
+        childStates = new LinkedList<Pair<String, State<T>>>();
+        parentStates = new LinkedList<Pair<String, State<T>>>();
     }
 
 	public void exportState(PrintStream output) {
@@ -121,5 +122,16 @@ public class State implements Serializable {
 		}
 		output.println("</state>");
 	}
-
+	
+	public String toString() {
+		String retValue = String.valueOf(id);
+		for(String key : stateInfo.keySet()) {
+			retValue += "\n" + stateInfo.get(key);
+		}
+		retValue += "\n next: ";
+		for(Pair<String, State<T>> child : childStates) {
+			retValue += "[" + child.getFirst() + "] " + child.getSecond().id + ",";
+		}
+		return retValue;
+	}
 }
