@@ -27,7 +27,7 @@ public class AssignmentInstructionInterpreter extends InstructionInterpreter {
 	}
 	
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
 		AssignmentInstructionBean aib = (AssignmentInstructionBean) ib;
 		Object valueFirst = InstructionUtilities.getValue(statementInterpreterContainer, aib.getFirstOperand(), baseActorState);
 		Object valueSecond = InstructionUtilities.getValue(statementInterpreterContainer, aib.getSecondOperand(), baseActorState);

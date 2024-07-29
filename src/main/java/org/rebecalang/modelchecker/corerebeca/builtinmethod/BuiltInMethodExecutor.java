@@ -14,7 +14,7 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 	public static final String KEY = "BuiltIn";
 
 	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState baseActorState,
-			State<? extends ActorState> globalState) {
+			State<? extends BaseActorState> globalState) {
 		if(methodCallInstructionBean.getMethodName().equals("pow$double$double")) {
 			Double firstValue = null, secondValue = null;
 			firstValue = callGetDouble(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);

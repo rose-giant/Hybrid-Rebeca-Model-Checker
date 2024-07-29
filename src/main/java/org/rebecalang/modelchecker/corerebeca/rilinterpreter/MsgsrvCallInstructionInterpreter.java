@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class MsgsrvCallInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
 		MsgsrvCallInstructionBean mcib = (MsgsrvCallInstructionBean) ib;
 		Map<String, Object> parameters = new TreeMap<String, Object>();
 		for (Entry<String, Object> entry : mcib.getParameters().entrySet()) {

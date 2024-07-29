@@ -18,7 +18,7 @@ public class RebecInstantiationInstructionInterpreter extends InstructionInterpr
 
 	
     @Override
-    public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState) {
+    public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
         baseActorState.increasePC();
         MethodCallInstructionBean mcib = (MethodCallInstructionBean) ib;
         baseActorState.pushInScopeStackForMethodCallInitialization(mcib.getMethodName().split("\\.")[0]);

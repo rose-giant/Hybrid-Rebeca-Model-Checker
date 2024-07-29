@@ -6,5 +6,5 @@ import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.ExternalMethodCallInstructionBean;
 
 public interface ExternalMethodExecutor {
-	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState baseActorState, State<? extends ActorState> globalState);
+	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState baseActorState, State<? extends BaseActorState> globalState);
 }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class JumpIfNotInstructionInterpreter extends InstructionInterpreter {
 	
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
 	JumpIfNotInstructionBean jiib = (JumpIfNotInstructionBean) ib;
 		if (jiib.getCondition() == null) {
 			baseActorState.setPC(jiib.getMethodName(), jiib.getLineNumber());

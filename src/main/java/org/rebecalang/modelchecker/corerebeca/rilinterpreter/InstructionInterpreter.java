@@ -17,5 +17,5 @@ public abstract class InstructionInterpreter {
 	@Autowired
 	StatementInterpreterContainer statementInterpreterContainer;
 
-	public abstract void interpret (InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState);
+	public abstract void interpret (InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState);
 }
