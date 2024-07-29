@@ -5,7 +5,6 @@ import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.RE
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
@@ -19,6 +18,17 @@ import org.rebecalang.modeltransformer.ril.RILModel;
 @SuppressWarnings("serial")
 public class TimedActorState extends BaseActorState {
     private PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> queue;
+
+    // Flag to distinguish between FTTS and FGTS
+    private boolean isFTTS;
+
+    public void setFTTS(boolean isFTTS) {
+        this.isFTTS = isFTTS;
+    }
+
+    public boolean isFTTS() {
+        return isFTTS;
+    }
 
     public void initializeQueue() {
         setQueue(new PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>>());
