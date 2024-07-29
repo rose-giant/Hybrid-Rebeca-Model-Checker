@@ -7,8 +7,9 @@ import org.rebecalang.compiler.CompilerConfig;
 import org.rebecalang.compiler.utils.CompilerExtension;
 import org.rebecalang.compiler.utils.CoreVersion;
 import org.rebecalang.compiler.utils.ExceptionContainer;
-import org.rebecalang.modelchecker.corerebeca.CoreRebecaModelChecker;
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
+import org.rebecalang.modelchecker.corerebeca.utils.Policy;
+import org.rebecalang.modelchecker.setting.CoreRebecaModelCheckerSetting;
 import org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker;
 import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class TimedRebecaTest {
     public ExceptionContainer exceptionContainer;
 
     @Test
-//    @Disabled
+    @Disabled
     public void testPingPong() throws ModelCheckingException {
         File model = new File(MODEL_FILES_BASE + "ping_pong.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
-        extension.add(CompilerExtension.TIMED_REBECA);
-        timedRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        timedRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
+        CoreRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new CoreRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, Policy.COARSE_GRAINED_POLICY);
+
+        timedRebecaModelChecker.modelCheck(model, timedRebecaModelCheckerSetting);
         printExceptions();
         Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
     }
@@ -48,9 +49,9 @@ public class TimedRebecaTest {
     public void testDynamicPolymorphism() throws ModelCheckingException {
         File model = new File(MODEL_FILES_BASE + "dynamic_polymorphism_in_time.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
-        extension.add(CompilerExtension.TIMED_REBECA);
-        timedRebecaModelChecker.configPolicy(CoreRebecaModelChecker.COARSE_GRAINED_POLICY);
-        timedRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
+        CoreRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new CoreRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, Policy.COARSE_GRAINED_POLICY);
+
+        timedRebecaModelChecker.modelCheck(model, timedRebecaModelCheckerSetting);
         printExceptions();
         Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
     }

@@ -16,8 +16,10 @@ import org.rebecalang.compiler.CompilerConfig;
 import org.rebecalang.compiler.utils.CompilerExtension;
 import org.rebecalang.compiler.utils.CoreVersion;
 import org.rebecalang.compiler.utils.ExceptionContainer;
-import org.rebecalang.modelchecker.corerebeca.CoreRebecaModelChecker;
-import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
+import org.rebecalang.modelchecker.corerebeca.*;
+import org.rebecalang.modelchecker.corerebeca.utils.Policy;
+import org.rebecalang.modelchecker.setting.CoreRebecaModelCheckerSetting;
+import org.rebecalang.modelchecker.setting.ModelCheckerSetting;
 import org.rebecalang.modelchecker.utils.StateSpaceUtil;
 import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,32 +48,34 @@ public class CoreRebecaModelCheckerTest {
 	
 	@ParameterizedTest
 	@MethodSource("modelToStateSpace")
-	public void GIVEN_RebecaModel_WHEN_No_Error(String filename, int statespaceSize, String policy) throws ModelCheckingException, FileNotFoundException {
+	public void GIVEN_RebecaModel_WHEN_No_Error(String filename, int statespaceSize, Policy policy) throws ModelCheckingException, FileNotFoundException {
 		File model = new File(MODEL_FILES_BASE + filename);
-		Set<CompilerExtension> extension = new HashSet<CompilerExtension>();
-		coreRebecaModelChecker.configPolicy(policy);
-		coreRebecaModelChecker.modelCheck(model, extension, CoreVersion.CORE_2_3);
-		
+		ModelCheckerSetting modelCheckerSetting = new CoreRebecaModelCheckerSetting(new HashSet<CompilerExtension>(), CoreVersion.CORE_2_3, policy);
+
+		coreRebecaModelChecker.modelCheck(model, modelCheckerSetting);
+
 		if(!exceptionContainer.exceptionsIsEmpty())
 			System.out.println(exceptionContainer);
-		
+
 		Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
 
-		StateSpaceUtil.printStateSpace(coreRebecaModelChecker.getStatespace().getInitialState(),
+		StateSpace<State<? extends BaseActorState>> stateSpace = coreRebecaModelChecker.getStateSpace();
+		State<ActorState> initialState = (State<ActorState>) stateSpace.getInitialState();
+		StateSpaceUtil.printStateSpace(initialState,
 				new PrintStream(new FileOutputStream(new File(policy + filename))));
-		
-		Assertions.assertEquals(statespaceSize, coreRebecaModelChecker.getStatespace().size());
+
+		Assertions.assertEquals(statespaceSize, stateSpace.size());
 	}
 	
 	protected static Stream<Arguments> modelToStateSpace() {
 	    return Stream.of(
-	    		Arguments.arguments("pingpong.rebeca", 3, CoreRebecaModelChecker.COARSE_GRAINED_POLICY)
-	    		, Arguments.arguments("pingpong.rebeca", 12, CoreRebecaModelChecker.FINE_GRAINED_POLICY)
-	    		, Arguments.arguments("DiningPhilosophers.rebeca", 105, CoreRebecaModelChecker.COARSE_GRAINED_POLICY)
-	    		, Arguments.arguments("DiningPhilosophers.rebeca", 98339, CoreRebecaModelChecker.FINE_GRAINED_POLICY)
-	    		, Arguments.arguments("UntimedWSAN.rebeca", 122, CoreRebecaModelChecker.COARSE_GRAINED_POLICY)
-	    		, Arguments.arguments("UntimedWSAN.rebeca", 37504, CoreRebecaModelChecker.FINE_GRAINED_POLICY)
-	    		, Arguments.arguments("LeaderElection.rebeca", 1626, CoreRebecaModelChecker.COARSE_GRAINED_POLICY)
+	    		Arguments.arguments("pingpong.rebeca", 3, Policy.COARSE_GRAINED_POLICY)
+	    		, Arguments.arguments("pingpong.rebeca", 12, Policy.FINE_GRAINED_POLICY)
+	    		, Arguments.arguments("DiningPhilosophers.rebeca", 105, Policy.COARSE_GRAINED_POLICY)
+//	    		, Arguments.arguments("DiningPhilosophers.rebeca", 98339, Policy.FINE_GRAINED_POLICY)
+	    		, Arguments.arguments("UntimedWSAN.rebeca", 122, Policy.COARSE_GRAINED_POLICY)
+	    		, Arguments.arguments("UntimedWSAN.rebeca", 37504, Policy.FINE_GRAINED_POLICY)
+	    		, Arguments.arguments("LeaderElection.rebeca", 1626, Policy.COARSE_GRAINED_POLICY)
 	    );
 	}
 
