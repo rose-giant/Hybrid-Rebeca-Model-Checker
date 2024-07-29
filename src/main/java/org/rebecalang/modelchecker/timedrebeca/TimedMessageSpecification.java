@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 
 @SuppressWarnings("serial")
 public class TimedMessageSpecification extends MessageSpecification {
-    int minStartTime;
-    int maxStartTime;
+    private int minStartTime;
+	private int maxStartTime;
 
     public TimedMessageSpecification(
             String messageName,
@@ -22,7 +22,23 @@ public class TimedMessageSpecification extends MessageSpecification {
         this.maxStartTime = maxStartTime;
         this.minStartTime = minStartTime;
     }
-    
+
+	public int getMinStartTime() {
+		return this.minStartTime;
+	}
+
+	public void setMinStartTime(int minStartTime) {
+		this.minStartTime = minStartTime;
+	}
+
+	public void setMaxStartTime(int maxStartTime) {
+		this.maxStartTime = maxStartTime;
+	}
+
+	public int getMaxStartTime() {
+		return this.maxStartTime;
+	}
+
 	public void export(PrintStream output) {
 		output.print("<message sender=\"" + senderActorState.getName() + 
 				"\" arrival=\"" + minStartTime + "\"" +

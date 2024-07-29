@@ -100,7 +100,7 @@ public class TimedActorState extends BaseActorState {
     public void addToQueue(MessageSpecification msgSpec) {
         TimedMessageSpecification timedMsgSpec = ((TimedMessageSpecification) msgSpec);
         queue.add(new TimedPriorityQueueItem<TimedMessageSpecification>
-        	(timedMsgSpec.minStartTime, timedMsgSpec));
+               (timedMsgSpec.getMinStartTime(), timedMsgSpec));
     }
 
     @Override
@@ -181,7 +181,7 @@ public class TimedActorState extends BaseActorState {
         } else {
             if (!this.actorQueueIsEmpty()) {
                 int resumingTime = getResumingTime();
-                int firstMsgTime = queue.peek().getItem().minStartTime;
+                int firstMsgTime = queue.peek().getItem().getMinStartTime();
                 return Math.max(resumingTime, firstMsgTime);
             }
         }
@@ -192,7 +192,7 @@ public class TimedActorState extends BaseActorState {
         ArrayList<TimedMessageSpecification> enabledMsgs = new ArrayList<>();
         while (this.queue.peek() != null && this.queue.peek().getTime() <= enablingTime) {
             TimedMessageSpecification curMsg = this.queue.poll().getItem();
-            if (curMsg.maxStartTime < getCurrentTime()) throw new ModelCheckingException("Deadlock");
+            if (curMsg.getMaxStartTime() < getCurrentTime()) throw new ModelCheckingException("Deadlock");
             enabledMsgs.add(curMsg);
         }
         return enabledMsgs;
