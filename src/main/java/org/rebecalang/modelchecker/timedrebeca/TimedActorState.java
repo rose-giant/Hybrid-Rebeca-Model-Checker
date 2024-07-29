@@ -5,6 +5,7 @@ import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.RE
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
@@ -18,6 +19,10 @@ import org.rebecalang.modeltransformer.ril.RILModel;
 @SuppressWarnings("serial")
 public class TimedActorState extends BaseActorState {
     private PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> queue;
+
+    public void initializeQueue() {
+        setQueue(new PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>>());
+    }
 
     public int getCurrentTime() {
         return (int) this.retrieveVariableValue(CURRENT_TIME);
@@ -40,7 +45,7 @@ public class TimedActorState extends BaseActorState {
     }
 
     public TimedActorState() {
-        setQueue(new PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>>());
+        initializeQueue();
     }
 
     @Override

@@ -24,6 +24,10 @@ public class ActorState extends BaseActorState {
 	private LinkedList<MessageSpecification> queue;
 
 	public ActorState() {
+		initializeQueue();
+	}
+
+	public void initializeQueue() {
 		setQueue(new LinkedList<>());
 	}
 

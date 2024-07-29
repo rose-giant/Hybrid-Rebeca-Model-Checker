@@ -15,6 +15,12 @@ public abstract class BaseActorState implements Serializable {
     protected String typeName;
     transient protected AbstractTypeSystem typeSystem;
 
+    public BaseActorState() {
+        initializeQueue();
+    }
+
+    public abstract void initializeQueue();
+
     public abstract void addToQueue(MessageSpecification msgSpec);
 
     public abstract boolean actorQueueIsEmpty();
