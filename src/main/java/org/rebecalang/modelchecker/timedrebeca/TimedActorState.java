@@ -7,13 +7,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-import org.rebecalang.modelchecker.corerebeca.BaseActorState;
-import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
-import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
-import org.rebecalang.modelchecker.corerebeca.State;
+import org.rebecalang.modelchecker.corerebeca.*;
 import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
+import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
+import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modeltransformer.ril.RILModel;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 
 @SuppressWarnings("serial")
 public class TimedActorState extends BaseActorState {
@@ -118,71 +118,35 @@ public class TimedActorState extends BaseActorState {
         return queue.isEmpty();
     }
 
-    public void resumeExecution(State<? extends TimedActorState> state, RILModel transformedRILModel, AbstractPolicy policy) {
+//    public void resumeExecution(TimedState systemState, StatementInterpreterContainer statementInterpreterContainer, RILModel transformedRILModel, AbstractPolicy policy) {
 //        do {
 //            ProgramCounter pc = getPC();
-//
-//            String methodName = pc.getMethodName();
-//            Type currentType = null;
-//            try {
-//                currentType = typeSystem.getType(pc.getMethodName().split("\\.")[0]);
-//            } catch (CodeCompilationException e) {
-//                e.printStackTrace();
-//            }
-//
-//            while (transformedRILModel.getInstructionList(methodName) == null) {
-//                try {
-//                    ReactiveClassDeclaration rcd = (ReactiveClassDeclaration)typeSystem.getMetaData(currentType);
-//                    if (rcd.getExtends() == null)
-//                        break;
-//                    currentType = rcd.getExtends();
-//                    methodName = currentType.getTypeName() + "." + pc.getMethodName().split("\\.")[1];
-//                } catch (CodeCompilationException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
 //            int lineNumber = pc.getLineNumber();
-//            InstructionBean instruction = transformedRILModel.getInstructionList(methodName).get(lineNumber);
-//            InstructionInterpreter interpreter = StatementInterpreterContainer.getInstance().retrieveInterpreter(instruction);
+//            String methodName = getPC().getMethodName();
+//
+//            ArrayList<InstructionBean> instructionsList =
+//                    transformedRILModel.getInstructionList(methodName);
+//
+//            InstructionBean instruction = instructionsList.get(lineNumber);
+//            InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
 //            policy.executedInstruction(instruction);
-//            interpreter.interpret(instruction, this, state);
+//
+//            interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState);
 //        } while (!policy.isBreakable());
-    }
-
-    public void execute(State<? extends TimedActorState> state, RILModel transformedRILModel, AbstractPolicy policy, TimedMessageSpecification executableMessage) {
-//        policy.pick(executableMessage);
+//    }
 //
-//        String msgName = executableMessage.getMessageName();
-//        Type currentType = null;
-//        try {
-//            currentType = typeSystem.getType(executableMessage.getMessageName().split("\\.")[0]);
-//        } catch (CodeCompilationException e) {
-//            e.printStackTrace();
-//        }
-//
-//        while (!transformedRILModel.getMethodNames().contains(msgName)) {
-//            try {
-//                ReactiveClassDeclaration rcd = (ReactiveClassDeclaration)typeSystem.getMetaData(currentType);
-//                if (rcd.getExtends() == null)
-//                    break;
-//                currentType = rcd.getExtends();
-//                msgName = currentType.getTypeName() + "." + executableMessage.getMessageName().split("\\.")[1];
-//            } catch (CodeCompilationException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        String relatedRebecType = msgName.split("\\.")[0];
-//        actorScopeStack.pushInScopeStack(getTypeName(), relatedRebecType);
-//        addVariableToRecentScope("sender", executableMessage.getSenderActorState());
-//        initializePC(msgName, 0);
-//        resumeExecution(state, transformedRILModel, policy);
-    }
+//    public void execute(TimedState state,
+//                        StatementInterpreterContainer statementInterpreterContainer,
+////                        RILModel transformedRILModel, AbstractPolicy policy, TimedMessageSpecification timedMessageSpecification) {
+////
+////        super.startExecutionOfNewMessageServer(transformedRILModel, policy, timedMessageSpecification);
+////
+////        resumeExecution(state, statementInterpreterContainer, transformedRILModel, policy);
+//    }
 
     @Override
-    public MessageSpecification getMessage() {
-        return queue.peek() != null ? queue.peek().getItem() : null;
+    public MessageSpecification getMessage(boolean isPeek) {
+        return queue.peek() != null ? (isPeek ? queue.peek() : queue.poll()).getItem() : null;
     }
 
     public int firstTimeActorCanPeekNewMessage() {

@@ -58,8 +58,8 @@ public class ActorState extends BaseActorState {
 	}
 
 
-	public MessageSpecification getMessage() {
-		return queue.peek();
+	public MessageSpecification getMessage(boolean isPeek) {
+		return queue.peek() != null ? (isPeek ? queue.peek() : queue.poll()) : null;
 	}
 
 	public LinkedList<MessageSpecification> getQueue() {

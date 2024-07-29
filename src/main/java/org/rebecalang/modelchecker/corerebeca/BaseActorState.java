@@ -25,7 +25,7 @@ public abstract class BaseActorState implements Serializable {
 
     public abstract boolean actorQueueIsEmpty();
 
-    public abstract MessageSpecification getMessage();
+    public abstract MessageSpecification getMessage(boolean isPeek);
 
     public void initializePC(String methodName, int lineNum) {
         addVariableToRecentScope(InstructionUtilities.PC_STRING, new ProgramCounter(methodName, lineNum));

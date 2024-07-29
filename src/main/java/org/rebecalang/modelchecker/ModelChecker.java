@@ -310,7 +310,7 @@ public abstract class ModelChecker {
             executingMessageName = pc.getMethodName();
             executingMessageName += " [" + pc.getLineNumber() + ",";
         } else {
-            executingMessageName = baseActorState.getMessage().getMessageName();
+            executingMessageName = baseActorState.getMessage(true).getMessageName();
             executingMessageName += " [START,";
 
         }
