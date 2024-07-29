@@ -32,7 +32,7 @@ public class TimedRebecaTest {
     public ExceptionContainer exceptionContainer;
 
     @Test
-    @Disabled
+//    @Disabled
     public void testPingPong() throws ModelCheckingException {
         File model = new File(MODEL_FILES_BASE + "ping_pong.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();

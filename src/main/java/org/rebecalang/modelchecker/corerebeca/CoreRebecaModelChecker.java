@@ -10,6 +10,7 @@ import java.util.Set;
 import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
 import org.rebecalang.compiler.modelcompiler.RebecaModelCompiler;
 import org.rebecalang.compiler.modelcompiler.SymbolTable;
+import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.CoreRebecaTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ConstructorDeclaration;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Expression;
@@ -58,13 +59,17 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PopARInstru
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PushARInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.RebecInstantiationInstructionBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.SerializationUtils;
 
 @Component
+@Qualifier("CORE_REBECA")
 //@Log4j2
 public class CoreRebecaModelChecker {
+	
+	protected AbstractTypeSystem typeSystem;
 	
 	@Autowired
 	protected RebecaModelCompiler rebecaModelCompiler;
@@ -76,24 +81,25 @@ public class CoreRebecaModelChecker {
 	protected Rebeca2RILModelTransformer rebeca2RILModelTransformer;
 	
 	@Autowired
-	protected CoreRebecaTypeSystem coreRebecaTypeSystem;
-	
-	@Autowired
 	protected StatementInterpreterContainer statementInterpreterContainer;
 
 	@Autowired
 	protected ExternalMethodRepository externalMethodRepository;
 	
 	@Autowired
-	private ConfigurableApplicationContext appContext;
+	protected ConfigurableApplicationContext appContext;
 
-	
 	protected StateSpace<ActorState> statespace;
 
 	protected AbstractPolicy modelCheckingPolicy;
 
 	public final static String FINE_GRAINED_POLICY = "fine";
 	public final static String COARSE_GRAINED_POLICY = "coarse";
+	
+	@Autowired
+	public void setTypeSystem(@Qualifier("CORE_REBECA") AbstractTypeSystem typeSystem) {
+		this.typeSystem = typeSystem;
+	}
 	
 	public StateSpace<ActorState> getStatespace() {
 		return statespace;
@@ -131,7 +137,7 @@ public class CoreRebecaModelChecker {
 		statementInterpreterContainer.clear();
 		statementInterpreterContainer.registerInterpreter(AssignmentInstructionBean.class,
 				appContext.getBean(AssignmentInstructionInterpreter.class, 
-						coreRebecaTypeSystem));
+						typeSystem));
 		statementInterpreterContainer.registerInterpreter(MsgsrvCallInstructionBean.class,
 				appContext.getBean(MsgsrvCallInstructionInterpreter.class));
 		statementInterpreterContainer.registerInterpreter(MethodCallInstructionBean.class,
@@ -178,7 +184,7 @@ public class CoreRebecaModelChecker {
 
 	protected ActorState createFreshActorState() {
 		ActorState actorState = new ActorState();
-		actorState.setTypeSystem(coreRebecaTypeSystem);
+		actorState.setTypeSystem(typeSystem);
 		return actorState;
 	}
 
@@ -243,7 +249,7 @@ public class CoreRebecaModelChecker {
 		while(type != null) {
 			ReactiveClassDeclaration metaData;
 			try {
-				metaData = (ReactiveClassDeclaration) coreRebecaTypeSystem.getMetaData(type);
+				metaData = (ReactiveClassDeclaration) typeSystem.getMetaData(type);
 			} catch (CodeCompilationException e) {
 				System.err.println("This exception should not happen!");
 				e.printStackTrace();
@@ -266,7 +272,7 @@ public class CoreRebecaModelChecker {
 		for (MainRebecDefinition definition : mainRebecDefinitions) {
 			ReactiveClassDeclaration metaData;
 			try {
-				metaData = (ReactiveClassDeclaration) coreRebecaTypeSystem.getMetaData(definition.getType());
+				metaData = (ReactiveClassDeclaration) typeSystem.getMetaData(definition.getType());
 				ConstructorDeclaration constructorDeclaration = metaData.getConstructors().get(0);
 				String computedConstructorName = RILUtilities.computeMethodName(metaData, constructorDeclaration);
 				ActorState actorState = (ActorState) initialState.getActorState(definition.getName());
@@ -401,7 +407,7 @@ public class CoreRebecaModelChecker {
 		currentState.clearLinks();
 		State<ActorState> newState = SerializationUtils.clone(currentState);
 		for(ActorState actorState : newState.getAllActorStates())
-			actorState.setTypeSystem(coreRebecaTypeSystem);
+			actorState.setTypeSystem(typeSystem);
 		currentState.setParentStates(parentStates);
 		currentState.setChildStates(childStates);
 		return newState;

@@ -21,6 +21,8 @@ import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
 import org.rebecalang.modelchecker.utils.StateSpaceUtil;
 import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -33,10 +35,14 @@ public class CoreRebecaModelCheckerTest {
 	public static final String MODEL_FILES_BASE = "src/test/resources/org/rebecalang/modelchecker/corerebeca/"; 
 
 	@Autowired
+	@Qualifier("CORE_REBECA")
 	public CoreRebecaModelChecker coreRebecaModelChecker;
 	
 	@Autowired
 	public ExceptionContainer exceptionContainer;
+	
+	@Autowired
+	protected GenericApplicationContext appContext;
 	
 	@ParameterizedTest
 	@MethodSource("modelToStateSpace")

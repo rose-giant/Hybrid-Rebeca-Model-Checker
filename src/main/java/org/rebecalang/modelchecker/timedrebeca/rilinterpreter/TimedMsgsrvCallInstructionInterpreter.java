@@ -1,27 +1,29 @@
 package org.rebecalang.modelchecker.timedrebeca.rilinterpreter;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
-import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
 import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
 import org.rebecalang.modelchecker.timedrebeca.TimedMessageSpecification;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MsgsrvCallInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
-import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgSrvCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgsrvCallInstructionBean;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
-public class CallTimedMsgSrvInstructionInterpreter extends InstructionInterpreter {
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
 	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends ActorState> globalState) {
-		TimedMsgSrvCallInstructionBean tmcib = (TimedMsgSrvCallInstructionBean) ib;
+		TimedMsgsrvCallInstructionBean tmcib = (TimedMsgsrvCallInstructionBean) ib;
 		Map<String, Object> parameters = new TreeMap<String, Object>();
 		for (Entry<String, Object> entry : tmcib.getParameters().entrySet()) {
             String paramName = entry.getKey();

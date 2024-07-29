@@ -1,6 +1,6 @@
 package org.rebecalang.modelchecker.corerebeca;
 
-import org.rebecalang.compiler.modelcompiler.corerebeca.CoreRebecaTypeSystem;
+import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
@@ -13,7 +13,7 @@ public abstract class BaseActorState implements Serializable {
     protected ActorScopeStack actorScopeStack;
     protected String name;
     protected String typeName;
-    transient protected CoreRebecaTypeSystem typeSystem;
+    transient protected AbstractTypeSystem typeSystem;
 
     public abstract void addToQueue(MessageSpecification msgSpec);
 
@@ -94,11 +94,11 @@ public abstract class BaseActorState implements Serializable {
         return actorScopeStack;
     }
 
-    public void setTypeSystem(CoreRebecaTypeSystem typeSystem) {
+    public void setTypeSystem(AbstractTypeSystem typeSystem) {
         this.typeSystem = typeSystem;
     }
     
-	public CoreRebecaTypeSystem getTypeSystem() {
+	public AbstractTypeSystem getTypeSystem() {
 		return typeSystem;
 	}
 

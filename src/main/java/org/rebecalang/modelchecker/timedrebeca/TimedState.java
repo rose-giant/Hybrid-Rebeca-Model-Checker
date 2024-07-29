@@ -9,9 +9,9 @@ import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 
 @SuppressWarnings("serial")
-public class TimedState extends State<BaseActorState> {
+public class TimedState extends State<TimedActorState> {
     public void checkForTimeStep(int enablingTime) {
-        List<BaseActorState> allActorStates = getAllActorStates();
+        List<TimedActorState> allActorStates = getAllActorStates();
         if (!allActorStates.isEmpty()) {
             int currentTime = ((TimedActorState) allActorStates.get(0)).getCurrentTime();
             if (enablingTime > currentTime) {

@@ -1,22 +1,19 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
-import org.rebecalang.compiler.utils.CodeCompilationException;
-import org.rebecalang.modelchecker.corerebeca.*;
-import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
-import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
-import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
-import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
-import org.rebecalang.modeltransformer.ril.RILModel;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.CURRENT_TIME;
+import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.RESUMING_TIME;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.CURRENT_TIME;
-import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.RESUMING_TIME;
+import org.rebecalang.modelchecker.corerebeca.BaseActorState;
+import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
+import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
+import org.rebecalang.modelchecker.corerebeca.State;
+import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
+import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
+import org.rebecalang.modeltransformer.ril.RILModel;
 
 @SuppressWarnings("serial")
 public class TimedActorState extends BaseActorState {
