@@ -34,8 +34,8 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
         }
 
 		TimedMessageSpecification msgSpec = new TimedMessageSpecification(
-				tmcib.getMethodName(), parameters, baseActorState, 
-				0, 0);
+				tmcib.getMethodName(), parameters, baseActorState,
+				(int)tmcib.getAfter(), (int)tmcib.getDeadline());
 		TimedActorState receiverState = (TimedActorState) baseActorState.retrieveVariableValue(tmcib.getBase());
 		receiverState.addToQueue(msgSpec);
 		baseActorState.increasePC();
