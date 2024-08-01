@@ -32,7 +32,7 @@ public class CoreRebecaModelChecker extends ModelChecker {
 	}
 
 	@Override
-	protected BaseActorState createInitialActorState() {
+	protected BaseActorState<MessageSpecification> createInitialActorState() {
 		return new ActorState();
 	}
 
@@ -91,7 +91,7 @@ public class CoreRebecaModelChecker extends ModelChecker {
 	}
 
 	@Override
-	protected State<? extends BaseActorState> createInitialStates(RebecaModel rebecaModel) {
+	protected State<? extends BaseActorState<MessageSpecification>> createInitialStates(RebecaModel rebecaModel) {
 
 		State<ActorState> initialState = createFreshState();
 		for (MainRebecDefinition definition : ObjectModelUtils.getMainRebecDefinition(rebecaModel)) {

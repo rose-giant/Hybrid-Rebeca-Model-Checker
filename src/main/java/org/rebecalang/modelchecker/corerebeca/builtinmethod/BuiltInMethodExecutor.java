@@ -14,8 +14,8 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 
 	public static final String KEY = "BuiltIn";
 
-	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState baseActorState,
-			State<? extends BaseActorState> globalState) {
+	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState<?> baseActorState,
+			State<? extends BaseActorState<?>> globalState) {
 		if(methodCallInstructionBean.getMethodName().equals("pow$double$double")) {
 			Double firstValue = null, secondValue = null;
 			firstValue = callGetDouble(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
@@ -54,20 +54,20 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 		throw new RuntimeException("unknown built-in method call");
 	}
 
-	private Integer callGetInteger(Object object, BaseActorState baseActorState) {
+	private Integer callGetInteger(Object object, BaseActorState<?> baseActorState) {
 		return (Integer) callAndGetResult(object, "intValue", baseActorState);
 	}
-	private Double callGetDouble(Object object, BaseActorState baseActorState) {
+	private Double callGetDouble(Object object, BaseActorState<?> baseActorState) {
 		return (Double) callAndGetResult(object, "doubleValue", baseActorState);
 	}
-	private Boolean callGetBoolean(Object object, BaseActorState baseActorState) {
+	private Boolean callGetBoolean(Object object, BaseActorState<?> baseActorState) {
 		return (Boolean) callAndGetResult(object, "booleanValue", baseActorState);
 	}
-	private String callGetString(Object object, BaseActorState baseActorState) {
+	private String callGetString(Object object, BaseActorState<?> baseActorState) {
 		return (String) callAndGetResult(object, "stringValue", baseActorState);
 	}
 	
-	private Object callAndGetResult(Object object, String methodName, BaseActorState baseActorState) {
+	private Object callAndGetResult(Object object, String methodName, BaseActorState<?> baseActorState) {
 		Method method;
 		try {
 			if(object instanceof Variable) {

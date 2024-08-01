@@ -9,7 +9,7 @@ public class InstructionUtilities {
 	public static final String PC_STRING = "$PC$";
 
 	public static Object getValue(StatementInterpreterContainer statementInterpreterContainer,
-			Object operand, BaseActorState baseActorState) {
+			Object operand, BaseActorState<?> baseActorState) {
 		if (operand instanceof Variable)
 			return baseActorState.retrieveVariableValue(((Variable)operand).getVarName());
 		if (operand instanceof NonDetValue) {

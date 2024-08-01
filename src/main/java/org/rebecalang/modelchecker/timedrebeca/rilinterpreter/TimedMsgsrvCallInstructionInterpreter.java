@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
 		TimedMsgsrvCallInstructionBean tmcib = (TimedMsgsrvCallInstructionBean) ib;
 		Map<String, Object> parameters = setMsgSrvParameters(baseActorState, tmcib.getParameters());
 

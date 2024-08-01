@@ -59,7 +59,7 @@ public class CoreRebecaModelCheckerTest {
 
 		Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
 
-		StateSpace<State<? extends BaseActorState>> stateSpace = coreRebecaModelChecker.getStateSpace();
+		StateSpace<State<? extends BaseActorState<?>>> stateSpace = coreRebecaModelChecker.getStateSpace();
 		State<ActorState> initialState = (State<ActorState>) stateSpace.getInitialState();
 		StateSpaceUtil.printStateSpace(initialState,
 				new PrintStream(new FileOutputStream(new File(policy + filename))));

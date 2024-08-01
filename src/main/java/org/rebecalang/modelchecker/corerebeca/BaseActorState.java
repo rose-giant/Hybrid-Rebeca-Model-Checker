@@ -1,15 +1,24 @@
 package org.rebecalang.modelchecker.corerebeca;
 
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
+import org.rebecalang.compiler.modelcompiler.corerebeca.CoreRebecaTypeSystem;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
+import org.rebecalang.compiler.utils.CodeCompilationException;
+import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
+import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
+import org.rebecalang.modeltransformer.ril.RILModel;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Map;
 
 @SuppressWarnings("serial")
-public abstract class BaseActorState implements Serializable {
+public abstract class BaseActorState<T extends MessageSpecification> implements Serializable {
     protected ActorScopeStack actorScopeStack;
     protected String name;
     protected String typeName;
@@ -147,7 +156,7 @@ public abstract class BaseActorState implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BaseActorState other = (BaseActorState) obj;
+		BaseActorState<?> other = (BaseActorState<?>) obj;
 		if (actorScopeStack == null) {
 			if (other.actorScopeStack != null)
 				return false;

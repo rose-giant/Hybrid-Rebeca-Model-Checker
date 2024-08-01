@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class EndMethodInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
 		try {
 			Object retreivedReturnVariableValue = baseActorState.retrieveVariableValue(AbstractExpressionTranslator.RETURN_VALUE);
 			Object callResultVariable = baseActorState.retrieveVariableValue(MethodCallInstructionInterpreter.CALL_RESULT);

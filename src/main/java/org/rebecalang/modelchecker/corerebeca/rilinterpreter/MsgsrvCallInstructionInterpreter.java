@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 public class MsgsrvCallInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
 		MsgsrvCallInstructionBean mcib = (MsgsrvCallInstructionBean) ib;
 		Map<String, Object> parameters = setMsgSrvParameters(baseActorState, mcib.getParameters());
 
 		MessageSpecification msgSpec = new MessageSpecification(mcib.getMethodName(), parameters, baseActorState);
 
-		BaseActorState receiverState = (BaseActorState) baseActorState.retrieveVariableValue(mcib.getBase());
+		BaseActorState<MessageSpecification> receiverState = (BaseActorState<MessageSpecification>) baseActorState.retrieveVariableValue(mcib.getBase());
 		receiverState.addToQueue(msgSpec);
 		baseActorState.increasePC();
 	}

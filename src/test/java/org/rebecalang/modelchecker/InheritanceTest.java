@@ -40,7 +40,7 @@ public class InheritanceTest {
 
         printExceptions();
         Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-        StateSpace<State<? extends BaseActorState>> statespace = coreRebecaModelChecker.getStateSpace();
+        StateSpace<State<? extends BaseActorState<?>>> statespace = coreRebecaModelChecker.getStateSpace();
 		Assertions.assertEquals(14, statespace.size());
 //		StateSpaceUtil.printStateSpace(statespace.getInitialState(),
 //				new PrintStream(new FileOutputStream(new File("ppp.dot"))));
@@ -53,7 +53,7 @@ public class InheritanceTest {
         coreRebecaModelChecker.modelCheck(model, modelCheckerSetting);
         printExceptions();
         Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
-        StateSpace<State<? extends BaseActorState>> statespace = coreRebecaModelChecker.getStateSpace();
+        StateSpace<State<? extends BaseActorState<?>>> statespace = coreRebecaModelChecker.getStateSpace();
 		Assertions.assertEquals(2, statespace.size());
 //		StateSpaceUtil.printStateSpace(statespace.getInitialState(),
 //				new PrintStream(new FileOutputStream(new File("ppp.dot"))));

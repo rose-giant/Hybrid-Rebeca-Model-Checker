@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class DeclarationInstructionInterpreter extends InstructionInterpreter{
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
 		DeclarationInstructionBean dib = (DeclarationInstructionBean) ib;
 		baseActorState.addVariableToRecentScope(dib.getVarName(), 0);
 		baseActorState.increasePC();

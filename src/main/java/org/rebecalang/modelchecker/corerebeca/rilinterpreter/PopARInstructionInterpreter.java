@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class PopARInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
 
 		PopARInstructionBean paib = (PopARInstructionBean) ib;
 		for (int i = 0; i < paib.getNumberOfPops(); i++)

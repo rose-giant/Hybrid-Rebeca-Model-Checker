@@ -16,7 +16,7 @@ import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 
 @SuppressWarnings("serial")
-public class TimedActorState extends BaseActorState {
+public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
     private PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> queue;
 
     // Flag to distinguish between FTTS and FGTS

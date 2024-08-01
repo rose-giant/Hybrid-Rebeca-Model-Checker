@@ -21,9 +21,9 @@ public abstract class InstructionInterpreter {
 	@Autowired
 	StatementInterpreterContainer statementInterpreterContainer;
 
-	public abstract void interpret (InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState);
+	public abstract void interpret (InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState);
 
-	public Map<String, Object> setMsgSrvParameters(BaseActorState baseActorState, Map<String, Object> parameters2) {
+	public Map<String, Object> setMsgSrvParameters(BaseActorState<?> baseActorState, Map<String, Object> parameters2) {
 		Map<String, Object> parameters = new TreeMap<String, Object>();
 		for (Map.Entry<String, Object> entry : parameters2.entrySet()) {
 			String paramName = entry.getKey();

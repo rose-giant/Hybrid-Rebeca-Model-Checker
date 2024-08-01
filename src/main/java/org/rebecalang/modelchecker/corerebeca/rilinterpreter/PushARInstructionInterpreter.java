@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class PushARInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
 		baseActorState.pushInScopeStackForInsideMethod();
 		baseActorState.increasePC();
 	}

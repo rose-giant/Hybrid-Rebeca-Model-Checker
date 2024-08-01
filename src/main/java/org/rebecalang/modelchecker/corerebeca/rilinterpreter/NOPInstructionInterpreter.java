@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class NOPInstructionInterpreter extends InstructionInterpreter{
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, State<? extends BaseActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
 		baseActorState.increasePC();
 	}
 

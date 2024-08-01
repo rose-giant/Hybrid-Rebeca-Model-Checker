@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 public class MessageSpecification implements Serializable {
 	protected String messageName;
 	protected Map<String, Object> parameters;
-	protected BaseActorState senderActorState;
+	protected BaseActorState<?> senderActorState;
 
 	@Override
 	public int hashCode() {
@@ -54,12 +54,12 @@ public class MessageSpecification implements Serializable {
 			return senderActorState.getName().equals(other.senderActorState.getName());
 	}
 
-	public MessageSpecification(String messageName, Map<String, Object> parameters, BaseActorState baseActorState) {
-		super();
-		this.messageName = messageName;
-		this.parameters = parameters;
-		this.senderActorState = baseActorState;
-	}
+    public MessageSpecification(String messageName, Map<String, Object> parameters, BaseActorState<?> baseActorState) {
+        super();
+        this.messageName = messageName;
+        this.parameters = parameters;
+        this.senderActorState = baseActorState;
+    }
 
 	public String getMessageName() {
 		return messageName;
@@ -77,11 +77,11 @@ public class MessageSpecification implements Serializable {
 		this.parameters = parameters;
 	}
 
-	public BaseActorState getSenderActorState() {
-		return senderActorState;
-	}
+    public BaseActorState<?> getSenderActorState() {
+        return senderActorState;
+    }
 
-	public void setSenderActorState(BaseActorState senderActorState) {
+	public void setSenderActorState(BaseActorState<MessageSpecification> senderActorState) {
 		this.senderActorState = senderActorState;
 	}
 

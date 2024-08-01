@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 @SuppressWarnings("serial")
-public class ActorState extends BaseActorState {
+public class ActorState extends BaseActorState<MessageSpecification> {
 	private LinkedList<MessageSpecification> queue;
 
 	public ActorState() {

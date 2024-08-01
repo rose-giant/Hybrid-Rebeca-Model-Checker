@@ -30,7 +30,7 @@ public class State<T extends BaseActorState>  implements Serializable {
         stateInfo.put(name, actorState);
     }
 
-    public BaseActorState getActorState(String name) {
+    public BaseActorState<?> getActorState(String name) {
         return stateInfo.get(name);
     }
 
@@ -117,7 +117,7 @@ public class State<T extends BaseActorState>  implements Serializable {
 	public void exportState(PrintStream output) {
 		output.println("<state id=\"" + id + "\" atomicpropositions=\"\"");
 		for(String stateKey : stateInfo.keySet()) {
-			BaseActorState baseActorState = stateInfo.get(stateKey);
+			BaseActorState<?> baseActorState = stateInfo.get(stateKey);
 			baseActorState.export(output);
 		}
 		output.println("</state>");

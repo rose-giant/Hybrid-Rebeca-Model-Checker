@@ -19,8 +19,8 @@ public class ExternalMethodCallInterpreter extends InstructionInterpreter {
 	ExternalMethodRepository externalMethodRepository;
 	
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState baseActorState, 
-			State<? extends BaseActorState> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState,
+			State<? extends BaseActorState<?>> globalState) {
 		ExternalMethodCallInstructionBean bimcib = (ExternalMethodCallInstructionBean) ib;
 		externalMethodRepository.execute(bimcib, baseActorState, globalState);
 		

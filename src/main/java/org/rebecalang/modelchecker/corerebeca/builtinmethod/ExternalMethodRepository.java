@@ -17,8 +17,8 @@ public class ExternalMethodRepository {
 		executors = new Hashtable<String, ExternalMethodExecutor>();
 	}
 
-	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState baseActorState,
-			State<? extends BaseActorState> globalState) {
+	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState<?> baseActorState,
+			State<? extends BaseActorState<?>> globalState) {
 		ExternalMethodExecutor externalMethodExecutor;
 		if (methodCallInstructionBean.getBase() != null)
 			throw new RuntimeException("This version does not support none-independent built-in method calls");

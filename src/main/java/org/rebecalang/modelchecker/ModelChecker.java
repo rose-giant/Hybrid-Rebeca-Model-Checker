@@ -54,7 +54,6 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.RebecInstan
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.util.SerializationUtils;
 
 @Component
 //@Log4j2
@@ -79,7 +78,7 @@ public abstract class ModelChecker {
     @Autowired
     protected ConfigurableApplicationContext appContext;
 
-    protected StateSpace<State<? extends BaseActorState>> stateSpace;
+    protected StateSpace<State<? extends BaseActorState<?>>> stateSpace;
 
     protected AbstractPolicy modelCheckingPolicy;
 
@@ -88,25 +87,25 @@ public abstract class ModelChecker {
     @Autowired
     protected abstract void setTypeSystem(AbstractTypeSystem typeSystem);
 
-    protected abstract BaseActorState createInitialActorState();
+    protected abstract BaseActorState<?> createInitialActorState();
 
-    protected abstract State<? extends BaseActorState> createFreshState();
+    protected abstract State<? extends BaseActorState<?>> createFreshState();
 
     protected abstract void doModelChecking(RILModel transformedRILModel) throws ModelCheckingException;
 
-    protected abstract State<? extends BaseActorState> createInitialStates(RebecaModel rebecaModel);
+    protected abstract State<? extends BaseActorState<?>> createInitialStates(RebecaModel rebecaModel);
 
-    protected abstract BaseActorState createAnActorInitialState(MainRebecDefinition mainDefinition);
+    protected abstract BaseActorState<?> createAnActorInitialState(MainRebecDefinition mainDefinition);
 
     protected void initialStateSpace() {
         this.stateSpace = new StateSpace<>();
     }
 
-    public StateSpace<State<? extends BaseActorState>> getStateSpace() {
+    public StateSpace<State<? extends BaseActorState<?>>> getStateSpace() {
         return stateSpace;
     }
 
-    protected void setStateSpace(StateSpace<State<? extends BaseActorState>> stateSpace) throws ModelCheckingException {
+    protected void setStateSpace(StateSpace<State<? extends BaseActorState<?>>> stateSpace) throws ModelCheckingException {
         this.stateSpace = stateSpace;
     }
 
@@ -177,7 +176,7 @@ public abstract class ModelChecker {
 
         RebecaModel rebecaModel = model.getFirst();
 
-        State<? extends BaseActorState> initialState = createInitialStates(rebecaModel);
+        State<? extends BaseActorState<?>> initialState = createInitialStates(rebecaModel);
 
         List<MainRebecDefinition> mainRebecDefinitions = ObjectModelUtils.getMainRebecDefinition(rebecaModel);
 
@@ -190,7 +189,7 @@ public abstract class ModelChecker {
 
     private void callConstructorsOfActors(
             RILModel transformedRILModel,
-            State<? extends BaseActorState> initialState,
+            State<? extends BaseActorState<?>> initialState,
             List<MainRebecDefinition> mainRebecDefinitions) {
         ArrayList<InstructionBean> mainInstructions =
                 transformedRILModel.getInstructionList("main");
@@ -201,7 +200,7 @@ public abstract class ModelChecker {
                 metaData = (ReactiveClassDeclaration) typeSystem.getMetaData(definition.getType());
                 ConstructorDeclaration constructorDeclaration = metaData.getConstructors().get(0);
                 String computedConstructorName = RILUtilities.computeMethodName(metaData, constructorDeclaration);
-                BaseActorState actorState = initialState.getActorState(definition.getName());
+                BaseActorState<?> actorState = initialState.getActorState(definition.getName());
                 actorState.pushInScopeStackForMethodCallInitialization(definition.getType().getTypeName());
                 RebecInstantiationInstructionBean riib = (RebecInstantiationInstructionBean) mainInstructions.get(cnt++);
                 for(Map.Entry<String, Object> constructorParameter : riib.getConstructorParameters().entrySet()) {
@@ -223,11 +222,11 @@ public abstract class ModelChecker {
         }
     }
 
-    private void setInitialKnownRebecsOfActors(State<? extends BaseActorState> initialState,
+    private void setInitialKnownRebecsOfActors(State<? extends BaseActorState<?>> initialState,
                                                List<MainRebecDefinition> mainRebecDefinitions) {
 
         for (MainRebecDefinition definition : mainRebecDefinitions) {
-            BaseActorState actorState = initialState.getActorState(definition.getName());
+            BaseActorState<?> actorState = initialState.getActorState(definition.getName());
             LinkedList<ReactiveClassDeclaration> actorDeclarationHierarchy =
                     extractActorDeclarationHierarchy(definition);
             ActorScopeStack actorScopeStack = actorState.getActorScopeStack();
@@ -238,7 +237,7 @@ public abstract class ModelChecker {
                 for (FieldDeclaration fieldDeclaration : rcd.getKnownRebecs()) {
                     for (VariableDeclarator variableDeclator : fieldDeclaration.getVariableDeclarators()) {
                         Expression knownRebecDefExp = bindings.get(bindingCounter++);
-                        BaseActorState knownRebecActorState =
+                        BaseActorState<?> knownRebecActorState =
                                 extractActorStateBasedOnTheRebecName(
                                         initialState, knownRebecDefExp);
                         actorScopeStack.addVariable(variableDeclator.getVariableName(),
@@ -250,16 +249,16 @@ public abstract class ModelChecker {
         }
     }
 
-    protected BaseActorState extractActorStateBasedOnTheRebecName(
-            State<? extends BaseActorState> initialState, Expression knownRebecDefExp) {
+    protected BaseActorState<?> extractActorStateBasedOnTheRebecName(
+            State<? extends BaseActorState<?>> initialState, Expression knownRebecDefExp) {
         if (!(knownRebecDefExp instanceof TermPrimary))
             throw new RebecaRuntimeInterpreterException("not handled yet!");
         String knownRebecName = ((TermPrimary) knownRebecDefExp).getName();
         return initialState.getActorState(knownRebecName);
     }
 
-    protected BaseActorState createFreshActorState() {
-        BaseActorState actorState = createInitialActorState();
+    protected BaseActorState<?> createFreshActorState() {
+        BaseActorState<?> actorState = createInitialActorState();
         actorState.setTypeSystem(typeSystem);
         return actorState;
     }
@@ -282,7 +281,7 @@ public abstract class ModelChecker {
         return actorDeclarationHierarchy;
     }
 
-    protected void addRequiredScopeToScopeStack(BaseActorState baseActorState, LinkedList<ReactiveClassDeclaration> actorDeclarationHierarchy) {
+    protected void addRequiredScopeToScopeStack(BaseActorState<?> baseActorState, LinkedList<ReactiveClassDeclaration> actorDeclarationHierarchy) {
         for (ReactiveClassDeclaration reactiveClassDeclaration : actorDeclarationHierarchy) {
             baseActorState.pushInScopeStackForInheritanceStack(reactiveClassDeclaration.getName());
 
@@ -293,7 +292,7 @@ public abstract class ModelChecker {
         }
     }
 
-    protected void addStateVarsToRelatedScope(BaseActorState baseActorState, ReactiveClassDeclaration reactiveClassDeclaration) {
+    protected void addStateVarsToRelatedScope(BaseActorState<?> baseActorState, ReactiveClassDeclaration reactiveClassDeclaration) {
         for (FieldDeclaration fieldDeclaration : reactiveClassDeclaration.getStatevars()) {
             for (VariableDeclarator variableDeclator : fieldDeclaration.getVariableDeclarators()) {
                 baseActorState.addVariableToRecentScope(variableDeclator.getVariableName(),
@@ -302,7 +301,7 @@ public abstract class ModelChecker {
         }
     }
 
-    protected String calculateTransitionLabel(BaseActorState baseActorState, BaseActorState newBaseActorState) {
+    protected String calculateTransitionLabel(BaseActorState<?> baseActorState, BaseActorState<?> newBaseActorState) {
         String executingMessageName;
 
         if (baseActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {

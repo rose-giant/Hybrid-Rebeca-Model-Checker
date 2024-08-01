@@ -15,7 +15,7 @@ public class TimedMessageSpecification extends MessageSpecification {
     public TimedMessageSpecification(
             String messageName,
             Map<String, Object> parameters,
-            BaseActorState baseActorState,
+            BaseActorState<?> baseActorState,
             int minStartTime,
             int maxStartTime) {
         super(messageName, parameters, baseActorState);
