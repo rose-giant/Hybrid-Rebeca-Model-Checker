@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
+import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.ExternalMethodCallInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 
@@ -25,6 +26,12 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 			Double firstValue = null;
 			firstValue = callGetDouble(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
 			return Math.sqrt(firstValue);
+		}
+		if(methodCallInstructionBean.getMethodName().equals("delay$int")) {
+			Integer delay = null;
+			delay = callGetInteger(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
+			((TimedActorState)baseActorState).increaseResumingTime(delay);
+			return null;
 		}
 		if(methodCallInstructionBean.getMethodName().equals("assertion$boolean")) {
 			Boolean firstValue = null;
@@ -47,6 +54,9 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 		throw new RuntimeException("unknown built-in method call");
 	}
 
+	private Integer callGetInteger(Object object, BaseActorState baseActorState) {
+		return (Integer) callAndGetResult(object, "intValue", baseActorState);
+	}
 	private Double callGetDouble(Object object, BaseActorState baseActorState) {
 		return (Double) callAndGetResult(object, "doubleValue", baseActorState);
 	}
