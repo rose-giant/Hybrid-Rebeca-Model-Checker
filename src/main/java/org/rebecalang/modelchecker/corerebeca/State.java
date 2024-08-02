@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-public class State<T extends BaseActorState>  implements Serializable {
+public class State<T extends BaseActorState<?>>  implements Serializable {
 
     protected HashMap<String, T> stateInfo;
     protected List<Pair<String, State<T>>> childStates;

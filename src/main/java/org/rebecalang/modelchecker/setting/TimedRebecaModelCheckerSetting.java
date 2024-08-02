@@ -14,8 +14,8 @@ public class TimedRebecaModelCheckerSetting extends CoreRebecaModelCheckerSettin
     public TimedRebecaModelCheckerSetting() {
     }
 
-    public TimedRebecaModelCheckerSetting(Set<CompilerExtension> extension, CoreVersion coreVersion, Policy policy, TransitionSystem transitionSystem, boolean isBounded) {
-        super(extension, coreVersion, policy);
+    public TimedRebecaModelCheckerSetting(Set<CompilerExtension> extension, CoreVersion coreVersion, TransitionSystem transitionSystem, boolean isBounded) {
+        super(extension, coreVersion, transitionSystem.getPolicy());
 
         setTransitionSystem(transitionSystem);
         setIsBounded(isBounded);
@@ -35,5 +35,9 @@ public class TimedRebecaModelCheckerSetting extends CoreRebecaModelCheckerSettin
 
     public void setIsBounded(boolean isBounded) {
         this.isBounded = isBounded;
+    }
+
+    public boolean isFTTS() {
+        return transitionSystem == TransitionSystem.TRANSITION_SYSTEM_FTTS;
     }
 }

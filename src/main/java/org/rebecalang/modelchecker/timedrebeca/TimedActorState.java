@@ -1,12 +1,5 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
-import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.CURRENT_TIME;
-import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.RESUMING_TIME;
-
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-
 import org.rebecalang.modelchecker.corerebeca.*;
 import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
@@ -14,13 +7,21 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilitie
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgsrvCallInstructionBean;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+
+import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.CURRENT_TIME;
+import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.RESUMING_TIME;
 
 @SuppressWarnings("serial")
 public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
-    private PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> queue;
-
     // Flag to distinguish between FTTS and FGTS
     private boolean isFTTS;
+
+    private PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> queue;
 
     public void setFTTS(boolean isFTTS) {
         this.isFTTS = isFTTS;
@@ -107,10 +108,9 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
     }
 
     @Override
-    public void addToQueue(MessageSpecification msgSpec) {
-        TimedMessageSpecification timedMsgSpec = ((TimedMessageSpecification) msgSpec);
-        queue.add(new TimedPriorityQueueItem<TimedMessageSpecification>
-               (timedMsgSpec.getMinStartTime(), timedMsgSpec));
+    public void addToQueue(TimedMessageSpecification timedMsgSpec) {
+        queue.add(new TimedPriorityQueueItem<>
+                (timedMsgSpec.getMinStartTime(), timedMsgSpec));
     }
 
     @Override
@@ -118,35 +118,37 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         return queue.isEmpty();
     }
 
-//    public void resumeExecution(TimedState systemState, StatementInterpreterContainer statementInterpreterContainer, RILModel transformedRILModel, AbstractPolicy policy) {
-//        do {
-//            ProgramCounter pc = getPC();
-//            int lineNumber = pc.getLineNumber();
-//            String methodName = getPC().getMethodName();
-//
-//            ArrayList<InstructionBean> instructionsList =
-//                    transformedRILModel.getInstructionList(methodName);
-//
-//            InstructionBean instruction = instructionsList.get(lineNumber);
-//            InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
-//            policy.executedInstruction(instruction);
-//
-//            interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState);
-//        } while (!policy.isBreakable());
-//    }
-//
-//    public void execute(TimedState state,
-//                        StatementInterpreterContainer statementInterpreterContainer,
-////                        RILModel transformedRILModel, AbstractPolicy policy, TimedMessageSpecification timedMessageSpecification) {
-////
-////        super.startExecutionOfNewMessageServer(transformedRILModel, policy, timedMessageSpecification);
-////
-////        resumeExecution(state, statementInterpreterContainer, transformedRILModel, policy);
-//    }
+    public void resumeExecution(TimedState systemState,
+                                StatementInterpreterContainer statementInterpreterContainer,
+                                RILModel transformedRILModel, AbstractPolicy policy) {
+        do {
+            ProgramCounter pc = getPC();
+            int lineNumber = pc.getLineNumber();
+            String methodName = getPC().getMethodName();
+
+            ArrayList<InstructionBean> instructionsList =
+                    transformedRILModel.getInstructionList(methodName);
+
+            InstructionBean instruction = instructionsList.get(lineNumber);
+            InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
+            policy.executedInstruction(instruction);
+
+            interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState);
+        } while (!policy.isBreakable());
+    }
+
+    public void execute(TimedState state,
+                        StatementInterpreterContainer statementInterpreterContainer,
+                        RILModel transformedRILModel, AbstractPolicy policy, TimedMessageSpecification timedMessageSpecification) {
+
+        super.startExecutionOfNewMessageServer(transformedRILModel, policy, timedMessageSpecification);
+
+        resumeExecution(state, statementInterpreterContainer, transformedRILModel, policy);
+    }
 
     @Override
-    public MessageSpecification getMessage(boolean isPeek) {
-        return queue.peek() != null ? (isPeek ? queue.peek() : queue.poll()).getItem() : null;
+    public TimedMessageSpecification getMessage(boolean isPeek) {
+        return getTimedPriorityQueueItem(isPeek) != null ? getTimedPriorityQueueItem(isPeek).getItem() : null;
     }
 
     public int firstTimeActorCanPeekNewMessage() {
@@ -155,7 +157,7 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         } else {
             if (!this.actorQueueIsEmpty()) {
                 int resumingTime = getResumingTime();
-                int firstMsgTime = queue.peek().getItem().getMinStartTime();
+                int firstMsgTime = getMessage(true).getMinStartTime();
                 return Math.max(resumingTime, firstMsgTime);
             }
         }
@@ -164,14 +166,40 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 
     public ArrayList<TimedMessageSpecification> getEnabledMsgs(int enablingTime) throws ModelCheckingException {
         ArrayList<TimedMessageSpecification> enabledMsgs = new ArrayList<>();
-        while (this.queue.peek() != null && this.queue.peek().getTime() <= enablingTime) {
-            TimedMessageSpecification curMsg = this.queue.poll().getItem();
+        while (this.getTimedPriorityQueueItem(true) != null && this.getTimedPriorityQueueItem(true).getTime() <= enablingTime) {
+            TimedMessageSpecification curMsg = getMessage(false);
             if (curMsg.getMaxStartTime() < getCurrentTime()) throw new ModelCheckingException("Deadlock");
             enabledMsgs.add(curMsg);
         }
         return enabledMsgs;
     }
-    
+
+    @Override
+    protected InstructionBean getInheritanceInstruction(RILModel transformedRILModel, InstructionBean instruction){
+        instruction = super.getInheritanceInstruction(transformedRILModel, instruction);
+
+        if (instruction instanceof TimedMsgsrvCallInstructionBean) {
+            TimedMsgsrvCallInstructionBean tmcib = (TimedMsgsrvCallInstructionBean) instruction;
+            String newMethodName = resolveDynamicBindingOfMethodCall(transformedRILModel, tmcib);
+            if(!tmcib.getMethodName().equals(newMethodName)) {
+                int currentTime = getCurrentTime();
+                int after = (int) tmcib.getAfter();
+                int deadline = (int) tmcib.getDeadline();
+
+                if (isFTTS()) {
+                    after += currentTime;
+                    deadline += currentTime;
+                }
+                instruction = new TimedMsgsrvCallInstructionBean(
+                        tmcib.getBase(), newMethodName, tmcib.getParameters(), after, deadline);
+                ((TimedMsgsrvCallInstructionBean)instruction).setParameters(
+                        tmcib.getParameters());
+            }
+        }
+
+        return instruction;
+    }
+
 	@Override
 	protected void exportQueueContent(PrintStream output) {
 		output.println("<queue>");
@@ -182,4 +210,7 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 		output.println("</queue>");
 	}
 
+    private TimedPriorityQueueItem<TimedMessageSpecification> getTimedPriorityQueueItem(boolean isPeek) {
+        return queue.peek() != null ? (isPeek ? queue.peek() : queue.poll()) : null;
+    }
 }

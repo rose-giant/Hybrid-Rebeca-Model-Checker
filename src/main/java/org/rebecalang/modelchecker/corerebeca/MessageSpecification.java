@@ -81,9 +81,9 @@ public class MessageSpecification implements Serializable {
         return senderActorState;
     }
 
-	public void setSenderActorState(BaseActorState<MessageSpecification> senderActorState) {
-		this.senderActorState = senderActorState;
-	}
+    public void setSenderActorState(BaseActorState<?> senderActorState) {
+        this.senderActorState = senderActorState;
+    }
 
 	public void export(PrintStream output) {
 		output.print("<message sender=\"" + senderActorState.getName() + "\">" + messageName + "(");

@@ -6,7 +6,6 @@ import java.util.List;
 import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.MainRebecDefinition;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
 import org.rebecalang.modelchecker.ModelChecker;
 import org.rebecalang.modeltransformer.ril.RILModel;
@@ -64,38 +63,11 @@ public class CoreRebecaModelChecker extends ModelChecker {
 	}
 
 	@Override
-	protected ActorState createAnActorInitialState(MainRebecDefinition mainDefinition) {
-		ActorState actorState = (ActorState) createFreshActorState();
-
-		LinkedList<ReactiveClassDeclaration> actorDeclarationHierarchy = extractActorDeclarationHierarchy(mainDefinition);
-
-		actorState.initializeScopeStack();
-
-		addRequiredScopeToScopeStack(actorState, actorDeclarationHierarchy);
-
-		actorState.setTypeName(mainDefinition.getType().getTypeName());
-		actorState.setName(mainDefinition.getName());
-		return actorState;
-	}
-
-	protected State<ActorState> cloneState(State<ActorState> currentState) {
-		List<Pair<String, State<ActorState>>> childStates = currentState.getChildStates();
-		List<Pair<String, State<ActorState>>> parentStates = currentState.getParentStates();
-		currentState.clearLinks();
-		State<ActorState> newState = SerializationUtils.clone(currentState);
-		for(ActorState actorState : newState.getAllActorStates())
-			actorState.setTypeSystem(typeSystem);
-		currentState.setParentStates(parentStates);
-		currentState.setChildStates(childStates);
-		return newState;
-	}
-
-	@Override
-	protected State<? extends BaseActorState<MessageSpecification>> createInitialStates(RebecaModel rebecaModel) {
+	protected State<ActorState> createInitialStates(RebecaModel rebecaModel) {
 
 		State<ActorState> initialState = createFreshState();
 		for (MainRebecDefinition definition : ObjectModelUtils.getMainRebecDefinition(rebecaModel)) {
-			ActorState actorState = createAnActorInitialState(definition);
+			ActorState actorState = (ActorState) createAnActorInitialState(definition);
 			initialState.putActorState(definition.getName(), actorState);
 		}
 		return initialState;
@@ -106,7 +78,7 @@ public class CoreRebecaModelChecker extends ModelChecker {
 			ActorState actorState,
 			RILModel transformedRILModel,
 			int stateCounter) {
-		State<ActorState> newState = cloneState(currentState);
+		State<ActorState> newState = (State<ActorState>) super.cloneState(currentState);
 
 		ActorState newActorState = (ActorState) newState.getActorState(actorState.getName());
 		newActorState.execute(newState, statementInterpreterContainer,

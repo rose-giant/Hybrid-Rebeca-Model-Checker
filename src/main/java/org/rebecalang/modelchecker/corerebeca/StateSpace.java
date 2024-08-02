@@ -3,7 +3,7 @@ package org.rebecalang.modelchecker.corerebeca;
 import java.io.PrintStream;
 import java.util.Hashtable;
 
-public class StateSpace<T extends State<? extends BaseActorState>> {
+public class StateSpace<T extends State<? extends BaseActorState<?>>> {
 	Hashtable<Long, T> statespace;
 	T initialState;
 

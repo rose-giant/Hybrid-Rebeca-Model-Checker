@@ -10,7 +10,9 @@ import org.rebecalang.compiler.utils.ExceptionContainer;
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
 import org.rebecalang.modelchecker.corerebeca.utils.Policy;
 import org.rebecalang.modelchecker.setting.CoreRebecaModelCheckerSetting;
+import org.rebecalang.modelchecker.setting.TimedRebecaModelCheckerSetting;
 import org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker;
+import org.rebecalang.modelchecker.timedrebeca.utils.TransitionSystem;
 import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,7 +39,7 @@ public class TimedRebecaTest {
     public void testPingPong() throws ModelCheckingException {
         File model = new File(MODEL_FILES_BASE + "ping_pong.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
-        CoreRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new CoreRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, Policy.COARSE_GRAINED_POLICY);
+        TimedRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new TimedRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, TransitionSystem.TRANSITION_SYSTEM_FGTS, true);
 
         timedRebecaModelChecker.modelCheck(model, timedRebecaModelCheckerSetting);
         printExceptions();
@@ -49,7 +51,7 @@ public class TimedRebecaTest {
     public void testDynamicPolymorphism() throws ModelCheckingException {
         File model = new File(MODEL_FILES_BASE + "dynamic_polymorphism_in_time.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
-        CoreRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new CoreRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, Policy.COARSE_GRAINED_POLICY);
+        TimedRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new TimedRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, TransitionSystem.TRANSITION_SYSTEM_FGTS, true);
 
         timedRebecaModelChecker.modelCheck(model, timedRebecaModelCheckerSetting);
         printExceptions();

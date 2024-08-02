@@ -30,11 +30,13 @@ public abstract class BaseActorState<T extends MessageSpecification> implements 
 
     public abstract void initializeQueue();
 
-    public abstract void addToQueue(MessageSpecification msgSpec);
+    public abstract void addToQueue(T msgSpec);
 
     public abstract boolean actorQueueIsEmpty();
 
-    public abstract MessageSpecification getMessage(boolean isPeek);
+    public abstract T getMessage(boolean isPeek);
+
+    protected abstract void exportQueueContent(PrintStream output);
 
     public void initializePC(String methodName, int lineNum) {
         addVariableToRecentScope(InstructionUtilities.PC_STRING, new ProgramCounter(methodName, lineNum));
@@ -126,8 +128,6 @@ public abstract class BaseActorState<T extends MessageSpecification> implements 
 		output.println("</rebec>");
 	}
 
-	protected abstract void exportQueueContent(PrintStream output);
-
 	public String toString() {
 		String retValue = "name:" + typeName + "." + name;
 		retValue += "\n vars: [";
@@ -156,7 +156,7 @@ public abstract class BaseActorState<T extends MessageSpecification> implements 
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BaseActorState<?> other = (BaseActorState<?>) obj;
+		BaseActorState<T> other = (BaseActorState<T>) obj;
 		if (actorScopeStack == null) {
 			if (other.actorScopeStack != null)
 				return false;
@@ -186,4 +186,107 @@ public abstract class BaseActorState<T extends MessageSpecification> implements 
 	public void pushInScopeStackForInheritanceStack(String typeName) {
 		actorScopeStack.pushInScopeStackForInheritanceStack(typeName);
 	}
+
+    public void addParamersValuesToScope(T executableMessage) {
+        for (Map.Entry<String, Object> entry : executableMessage.getParameters().entrySet()) {
+            addVariableToRecentScope(entry.getKey(), entry.getValue());
+        }
+    }
+
+    protected InstructionBean getInheritanceInstruction(RILModel transformedRILModel, InstructionBean instruction){
+        if(instruction instanceof MsgsrvCallInstructionBean) {
+            MsgsrvCallInstructionBean mcib = (MsgsrvCallInstructionBean) instruction;
+            String newMethodName = resolveDynamicBindingOfMethodCall(transformedRILModel, mcib);
+            if(!mcib.getMethodName().equals(newMethodName)) {
+                instruction = new MsgsrvCallInstructionBean(
+                        mcib.getBase(), newMethodName);
+                ((MsgsrvCallInstructionBean)instruction).setParameters(
+                        mcib.getParameters());
+            }
+        } else if(instruction instanceof MethodCallInstructionBean) {
+            MethodCallInstructionBean mcib = (MethodCallInstructionBean) instruction;
+            String newMethodName = resolveDynamicBindingOfMethodCall(transformedRILModel, mcib);
+            if(!mcib.getMethodName().equals(newMethodName)) {
+                instruction = new MethodCallInstructionBean(
+                        mcib.getBase(), newMethodName, mcib.getParameters(), mcib.getFunctionCallResult());
+                ((MethodCallInstructionBean)instruction).setParameters(
+                        mcib.getParameters());
+            }
+        }
+
+        return instruction;
+    }
+
+    protected String resolveDynamicBindingOfMethodCall(
+            RILModel transformedRILModel,
+            AbstractCallingInstructionBean instruction) {
+        String typeName = callActorTypeName((BaseActorState<T>) actorScopeStack.retrieveVariableValue(instruction.getBase().getVarName()));
+
+        String methodName =
+                rewriteMethodNameType(typeName,
+                        instruction.getMethodName());
+        try {
+            Type currentType = typeSystem.getType(typeName);
+            while (transformedRILModel.getInstructionList(methodName) == null) {
+                ReactiveClassDeclaration rcd = (ReactiveClassDeclaration) typeSystem.getMetaData(currentType);
+                currentType = rcd.getExtends();
+                methodName = rewriteMethodNameType(currentType.getTypeName(), methodName);
+            }
+            return methodName;
+        } catch (CodeCompilationException e) {
+            throw new RebecaRuntimeInterpreterException(e.getMessage());
+        }
+    }
+
+    protected void startExecutionOfNewMessageServer(RILModel transformedRILModel, AbstractPolicy policy, T executableMessage) {
+        if(variableIsDefined(InstructionUtilities.PC_STRING))
+            return;
+
+        if (executableMessage == null) {
+            executableMessage = getMessage(false);
+        }
+
+        policy.pick(executableMessage);
+
+        String msgName = getMessageName(executableMessage.getMessageName(),
+                transformedRILModel);
+
+        String relatedRebecType = msgName.split("\\.")[0];
+        actorScopeStack.pushInScopeStackForMethodCallInitialization(relatedRebecType);
+        addVariableToRecentScope("sender", executableMessage.getSenderActorState());
+        initializePC(msgName, 0);
+
+        addParamersValuesToScope((T) executableMessage);
+    }
+
+    protected String callActorTypeName(BaseActorState<T> baseActorState) {
+        return baseActorState.getTypeName();
+    };
+
+    protected String getMessageName(String messageName, RILModel transformedRILModel) {
+        String msgName = messageName;
+        Type currentType = null;
+        try {
+            currentType = typeSystem.getType(messageName.split("\\.")[0]);
+        } catch (CodeCompilationException e) {
+            e.printStackTrace();
+        }
+
+        while (!transformedRILModel.getMethodNames().contains(msgName)) {
+            try {
+                ReactiveClassDeclaration rcd = (ReactiveClassDeclaration) typeSystem.getMetaData(currentType);
+                if (rcd.getExtends() == null)
+                    break;
+                currentType = rcd.getExtends();
+                msgName = currentType.getTypeName() + "." + messageName.split("\\.")[1];
+            } catch (CodeCompilationException e) {
+                e.printStackTrace();
+            }
+        }
+        return msgName;
+    }
+
+    private String rewriteMethodNameType(String typeName, String methodName) {
+        return typeName + "." + methodName.split("\\.")[1];
+    }
 }

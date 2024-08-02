@@ -32,11 +32,11 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
 
 		TimedActorState receiverState = (TimedActorState) baseActorState.retrieveVariableValue(tmcib.getBase());
 
-//		if (((TimedState) globalState).isFTTS()) {
-//			int currentTime = ((TimedActorState)baseActorState).getCurrentTime();
-//			after += currentTime;
-//			deadline += currentTime;
-//		}
+		if (((TimedState) globalState).isFTTS()) {
+			int currentTime = ((TimedActorState)baseActorState).getCurrentTime();
+			after += currentTime;
+			deadline += currentTime;
+		}
 
 		TimedMessageSpecification msgSpec = new TimedMessageSpecification(
 				tmcib.getMethodName(), parameters, baseActorState, after, deadline);

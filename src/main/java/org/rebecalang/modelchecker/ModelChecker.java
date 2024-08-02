@@ -36,6 +36,8 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PopARInstructionInt
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PushARInstructionInterpreter;
 import org.rebecalang.modelchecker.setting.ModelCheckerSetting;
+import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
+import org.rebecalang.modelchecker.timedrebeca.TimedState;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.RILUtilities;
 import org.rebecalang.modeltransformer.ril.Rebeca2RILModelTransformer;
@@ -54,6 +56,7 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.RebecInstan
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.SerializationUtils;
 
 @Component
 //@Log4j2
@@ -95,7 +98,20 @@ public abstract class ModelChecker {
 
     protected abstract State<? extends BaseActorState<?>> createInitialStates(RebecaModel rebecaModel);
 
-    protected abstract BaseActorState<?> createAnActorInitialState(MainRebecDefinition mainDefinition);
+    protected BaseActorState<?> createAnActorInitialState(MainRebecDefinition mainDefinition) {
+        BaseActorState<?> actorState = createFreshActorState();
+
+        LinkedList<ReactiveClassDeclaration> actorDeclarationHierarchy = extractActorDeclarationHierarchy(mainDefinition);
+
+        actorState.initializeScopeStack();
+
+        addRequiredScopeToScopeStack(actorState, actorDeclarationHierarchy);
+
+        actorState.setTypeName(mainDefinition.getType().getTypeName());
+        actorState.setName(mainDefinition.getName());
+
+        return actorState;
+    }
 
     protected void initialStateSpace() {
         this.stateSpace = new StateSpace<>();
@@ -113,6 +129,10 @@ public abstract class ModelChecker {
         this.modelCheckerSetting = modelCheckerSetting;
 
         setModelCheckingPolicy();
+    }
+
+    protected ModelCheckerSetting getModelCheckerSetting() {
+        return modelCheckerSetting;
     }
 
     protected void setModelCheckingPolicy() throws ModelCheckingException {
@@ -322,6 +342,19 @@ public abstract class ModelChecker {
 
         }
         return baseActorState.getName() + "." + executingMessageName;
+    }
+
+    protected State<? extends BaseActorState<?>> cloneState(State<? extends BaseActorState<?>> currentState) {
+        List<Pair<String, State<? extends BaseActorState<?>>>> childStates = (List<Pair<String, State<? extends BaseActorState<?>>>>) (List<?>) currentState.getChildStates();
+        List<Pair<String, State<? extends BaseActorState<?>>>> parentStates = (List<Pair<String, State<? extends BaseActorState<?>>>>) (List<?>) currentState.getParentStates();
+        currentState.clearLinks();
+        State<? extends BaseActorState<?>> newState = SerializationUtils.clone(currentState);
+        for (BaseActorState<?> actorState : newState.getAllActorStates()) {
+            actorState.setTypeSystem(typeSystem);
+        }
+        ((State<BaseActorState<?>>) currentState).setParentStates((List<Pair<String, State<BaseActorState<?>>>>) (List<?>) parentStates);
+        ((State<BaseActorState<?>>) currentState).setChildStates((List<Pair<String, State<BaseActorState<?>>>>) (List<?>) childStates);
+        return newState;
     }
 
     private Object retrieveDefaultValue(Type type) {

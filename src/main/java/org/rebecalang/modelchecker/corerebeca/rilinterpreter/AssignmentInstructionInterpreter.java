@@ -36,15 +36,15 @@ public class AssignmentInstructionInterpreter extends InstructionInterpreter {
 		if (operator != null) {
 			if (valueFirst instanceof BaseActorState) {
 				if (operator.equals("=="))
-					result = (((BaseActorState) valueFirst).getName().
-							equals(((BaseActorState) valueSecond).getName()));
+					result = (((BaseActorState<?>) valueFirst).getName().
+							equals(((BaseActorState<?>) valueSecond).getName()));
 				else if (operator.equals("!="))
-					result = !(((BaseActorState) valueFirst).getName().
-							equals(((BaseActorState) valueSecond).getName()));
+					result = !(((BaseActorState<?>) valueFirst).getName().
+							equals(((BaseActorState<?>) valueSecond).getName()));
 				else if (operator.equals("instanceof")) {
 					try {
 						result = coreRebecaTypeSystem.
-								getType(((BaseActorState) valueFirst).getTypeName()).
+								getType(((BaseActorState<?>) valueFirst).getTypeName()).
 								canTypeDownCastTo(coreRebecaTypeSystem.getType((String)valueSecond));
 					} catch (CodeCompilationException e) {
 						result = false;
