@@ -31,7 +31,7 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 			Integer delay = null;
 			delay = callGetInteger(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
 			((TimedActorState)baseActorState).increaseResumingTime(delay);
-			return null;
+			return delay;
 		}
 		if(methodCallInstructionBean.getMethodName().equals("assertion$boolean")) {
 			Boolean firstValue = null;
