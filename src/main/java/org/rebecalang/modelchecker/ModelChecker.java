@@ -54,12 +54,13 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PopARInstru
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PushARInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.RebecInstantiationInstructionBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.SerializationUtils;
 
 @Component
-//@Log4j2
+@Qualifier("REBECA")
 public abstract class ModelChecker {
     protected AbstractTypeSystem typeSystem;
 

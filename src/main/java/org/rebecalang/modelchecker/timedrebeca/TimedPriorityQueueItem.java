@@ -1,6 +1,9 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
-public class TimedPriorityQueueItem<T> implements Comparable<TimedPriorityQueueItem<T>> {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class TimedPriorityQueueItem<T> implements Comparable<TimedPriorityQueueItem<T>>, Serializable {
     private int time;
     private T item;
 

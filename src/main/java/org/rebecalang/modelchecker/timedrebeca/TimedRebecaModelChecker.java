@@ -10,7 +10,6 @@ import org.rebecalang.modelchecker.ModelChecker;
 import org.rebecalang.modelchecker.corerebeca.*;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
-import org.rebecalang.modelchecker.setting.ModelCheckerSetting;
 import org.rebecalang.modelchecker.setting.TimedRebecaModelCheckerSetting;
 import org.rebecalang.modelchecker.timedrebeca.rilinterpreter.TimedMsgsrvCallInstructionInterpreter;
 import org.rebecalang.modeltransformer.ril.RILModel;
@@ -72,9 +71,7 @@ public class TimedRebecaModelChecker extends ModelChecker {
 
 	@Override
 	protected void doModelChecking(RILModel transformedRILModel) throws ModelCheckingException {
-		TimedRebecaModelChecker modelChecker = TimedRebecaModelCheckerFactory.getModelChecker(getModelCheckerSetting().getTransitionSystem());
-
-		modelChecker.doModelChecking(transformedRILModel);
+		// do nothing
 	}
 
 	@Override
@@ -151,16 +148,19 @@ public class TimedRebecaModelChecker extends ModelChecker {
 	}
 
 	protected String calculateTransitionLabel(TimedActorState actorState, TimedActorState newActorState) {
-		String executingMessageName;
+		String executingMessageName = "";
 
 		if (actorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
 			ProgramCounter pc = actorState.getPC();
 			executingMessageName = pc.getMethodName();
 			executingMessageName += " [" + pc.getLineNumber() + ",";
 		} else {
-			executingMessageName = actorState.getQueue().peek().getItem().getMessageName();
-			executingMessageName += " [START,";
+			TimedMessageSpecification msg;
 
+			if ((msg = actorState.getMessage(true)) != null) {
+				executingMessageName = msg.getMessageName();
+				executingMessageName += " [START,";
+			}
 		}
 
 		if (newActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {

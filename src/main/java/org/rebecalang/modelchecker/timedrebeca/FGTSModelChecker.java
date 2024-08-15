@@ -3,16 +3,23 @@ package org.rebecalang.modelchecker.timedrebeca;
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.utils.Policy;
+import org.rebecalang.modelchecker.setting.ModelCheckerSetting;
 import org.rebecalang.modeltransformer.ril.RILModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.PriorityQueue;
 
+@Component
+@Qualifier("FGTS_TIMED_REBECA")
 public class FGTSModelChecker  extends TimedRebecaModelChecker{
 
+    @Override
+    protected void setModelCheckerSetting(ModelCheckerSetting modelCheckerSetting) throws ModelCheckingException {
+        super.setModelCheckerSetting(modelCheckerSetting);
 
-    public FGTSModelChecker() {
-        super();
         this.modelCheckerSetting.setPolicy(Policy.FINE_GRAINED_POLICY);
     }
 

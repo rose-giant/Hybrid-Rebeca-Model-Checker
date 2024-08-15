@@ -3,7 +3,6 @@ package org.rebecalang.modelchecker.timedrebeca;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
 import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;

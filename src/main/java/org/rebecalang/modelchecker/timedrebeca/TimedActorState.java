@@ -166,9 +166,13 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 
     public ArrayList<TimedMessageSpecification> getEnabledMsgs(int enablingTime) throws ModelCheckingException {
         ArrayList<TimedMessageSpecification> enabledMsgs = new ArrayList<>();
-        while (this.getTimedPriorityQueueItem(true) != null && this.getTimedPriorityQueueItem(true).getTime() <= enablingTime) {
-            TimedMessageSpecification curMsg = getMessage(false);
-            if (curMsg.getMaxStartTime() < getCurrentTime()) throw new ModelCheckingException("Deadlock");
+
+        TimedPriorityQueueItem<TimedMessageSpecification> msg;
+        while ((msg = this.getTimedPriorityQueueItem(false)) != null && msg.getTime() <= enablingTime) {
+            TimedMessageSpecification curMsg = msg.getItem();
+            if (curMsg.getMaxStartTime() < getCurrentTime()) {
+                throw new ModelCheckingException("Deadlock");
+            }
             enabledMsgs.add(curMsg);
         }
         return enabledMsgs;
