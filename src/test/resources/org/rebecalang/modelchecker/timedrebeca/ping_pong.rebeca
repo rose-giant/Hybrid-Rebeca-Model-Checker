@@ -6,20 +6,18 @@ reactiveclass PingActor(3) {
     }
 
     PingActor() {
-        self.ping() after(1);
+        self.ping();
     }
     msgsrv ping() {
-        int var=0;
-        po.pong();
+        po.pong() after(1) deadline(6);
         delay(2);
-        var = var+1;
     }
 }
 
 reactiveclass PongActor(3) {
     knownrebecs {
-           PingActor pi;
-        }
+       PingActor pi;
+    }
     statevars {
     }
 
@@ -27,7 +25,7 @@ reactiveclass PongActor(3) {
     }
 
     msgsrv pong() {
-        pi.ping() after(1) deadline(2);
+        pi.ping() after(1) deadline(5);
         delay(1);
     }
 }

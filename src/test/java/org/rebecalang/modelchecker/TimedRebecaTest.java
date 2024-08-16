@@ -7,17 +7,24 @@ import org.rebecalang.compiler.CompilerConfig;
 import org.rebecalang.compiler.utils.CompilerExtension;
 import org.rebecalang.compiler.utils.CoreVersion;
 import org.rebecalang.compiler.utils.ExceptionContainer;
-import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
+import org.rebecalang.modelchecker.corerebeca.*;
+import org.rebecalang.modelchecker.corerebeca.utils.Policy;
 import org.rebecalang.modelchecker.setting.TimedRebecaModelCheckerSetting;
+import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
 import org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker;
 import org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelCheckerFactory;
+import org.rebecalang.modelchecker.timedrebeca.TimedState;
 import org.rebecalang.modelchecker.timedrebeca.utils.TransitionSystem;
+import org.rebecalang.modelchecker.utils.StateSpaceUtil;
 import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +42,7 @@ public class TimedRebecaTest {
 
     @Test
 //    @Disabled
-    public void testPingPong() throws ModelCheckingException {
+    public void testPingPong() throws ModelCheckingException, FileNotFoundException {
         File model = new File(MODEL_FILES_BASE + "ping_pong.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
         extension.add(CompilerExtension.TIMED_REBECA);
@@ -46,11 +53,16 @@ public class TimedRebecaTest {
 
         printExceptions();
         Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
+
+        StateSpace<State<? extends BaseActorState<?>>> stateSpace = timedRebecaModelChecker.getStateSpace();
+        State<TimedActorState> initialState = (State<TimedActorState>) stateSpace.getInitialState();
+        StateSpaceUtil.printTimedStateSpace(initialState,
+                new PrintStream(new FileOutputStream(new File(Policy.FINE_GRAINED_POLICY + "ping_pong.rebeca"))));
     }
 
     @Test
     @Disabled
-    public void testDynamicPolymorphism() throws ModelCheckingException {
+    public void testDynamicPolymorphism() throws ModelCheckingException, FileNotFoundException {
         File model = new File(MODEL_FILES_BASE + "dynamic_polymorphism_in_time.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
         extension.add(CompilerExtension.TIMED_REBECA);

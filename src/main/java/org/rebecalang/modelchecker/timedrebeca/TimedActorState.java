@@ -65,7 +65,7 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         int result = 1;
         result = prime * result + ((actorScopeStack == null) ? 0 : actorScopeStack.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((queue == null) ? 0 : queue.hashCode());
+        result = prime * result + ((queue.size() == 0) ? 0 : queue.peek().getItem().getMessageName().hashCode());
         result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
         return result;
     }

@@ -112,7 +112,7 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		else
 			newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, modelCheckingPolicy, msg);
 
-		String transitionLabel = calculateTransitionLabel(actorState, newActorState);
+		String transitionLabel = calculateTransitionLabel(actorState, newActorState, resume ? null : msg);
 
 		Long stateKey = Long.valueOf(newState.hashCode());
 
@@ -147,30 +147,27 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		return newState;
 	}
 
-	protected String calculateTransitionLabel(TimedActorState actorState, TimedActorState newActorState) {
-		String executingMessageName = "";
+	protected String calculateTransitionLabel(BaseActorState<?> baseActorState, BaseActorState<?> newBaseActorState, TimedMessageSpecification timedMessageSpecification) {
+		String executingMessageName;
 
-		if (actorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
-			ProgramCounter pc = actorState.getPC();
+		if (baseActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
+			ProgramCounter pc = baseActorState.getPC();
 			executingMessageName = pc.getMethodName();
 			executingMessageName += " [" + pc.getLineNumber() + ",";
 		} else {
-			TimedMessageSpecification msg;
+			executingMessageName = (timedMessageSpecification == null ? baseActorState.getMessage(true) : timedMessageSpecification).getMessageName();
+			executingMessageName += " [START,";
 
-			if ((msg = actorState.getMessage(true)) != null) {
-				executingMessageName = msg.getMessageName();
-				executingMessageName += " [START,";
-			}
 		}
 
-		if (newActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
-			ProgramCounter pc = newActorState.getPC();
+		if (newBaseActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
+			ProgramCounter pc = newBaseActorState.getPC();
 			executingMessageName += pc.getLineNumber() + "]";
 		} else {
 			executingMessageName += "END]";
 
 		}
-		return actorState.getName() + "." + executingMessageName;
+		return baseActorState.getName() + "." + executingMessageName;
 	}
 
 	private void addTimedScopeToScopeStack(BaseActorState<?> baseActorState) {

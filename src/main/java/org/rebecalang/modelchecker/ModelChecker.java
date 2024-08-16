@@ -335,8 +335,8 @@ public abstract class ModelChecker {
 
         }
 
-        if (baseActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
-            ProgramCounter pc = baseActorState.getPC();
+        if (newBaseActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
+            ProgramCounter pc = newBaseActorState.getPC();
             executingMessageName += pc.getLineNumber() + "]";
         } else {
             executingMessageName += "END]";

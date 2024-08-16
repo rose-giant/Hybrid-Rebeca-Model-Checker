@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 public class ActivationRecord implements Serializable {
@@ -44,10 +45,15 @@ public class ActivationRecord implements Serializable {
         for (Entry<String, Object> entry : definedVariables.entrySet()) {
         	Object value = entry.getValue();
         	String key = entry.getKey();
-			if (value instanceof BaseActorState)
-        		h+= key.hashCode() ^ ((BaseActorState)value).getName().hashCode();
-			else
-				h += key.hashCode() ^ value.hashCode();
+			if (value instanceof BaseActorState) {
+                int base = ((BaseActorState<?>) value).getName().hashCode();
+                h+= key.hashCode() ^ base;
+            }
+			else {
+                if (value instanceof Integer && (!key.equals("current_time") && !key.equals("resuming_time"))) {
+                    h += key.hashCode() ^ value.hashCode();
+                }
+            }
         }
         
         result = prime * result + h;
