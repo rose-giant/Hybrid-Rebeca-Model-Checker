@@ -30,7 +30,12 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 		if(methodCallInstructionBean.getMethodName().equals("delay$int")) {
 			Integer delay = null;
 			delay = callGetInteger(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
-			((TimedActorState)baseActorState).increaseResumingTime(delay);
+			TimedActorState timedBaseActorState = ((TimedActorState) baseActorState);
+			if (timedBaseActorState.isFTTS()) {
+				((TimedActorState)baseActorState).increaseCurrentTime(delay);
+			} else {
+				((TimedActorState)baseActorState).increaseResumingTime(delay);
+			}
 			return delay;
 		}
 		if(methodCallInstructionBean.getMethodName().equals("assertion$boolean")) {

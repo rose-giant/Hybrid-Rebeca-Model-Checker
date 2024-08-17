@@ -44,8 +44,10 @@ public class TimedState extends State<TimedActorState> {
 
     public int getEnablingTime() throws ModelCheckingException {
         int minExecutionTime = Integer.MAX_VALUE;
+        int currentTime = Integer.MAX_VALUE;
         for (TimedActorState actorState : getAllActorStates()) {
             actorState.setFTTS(isFTTS);
+            currentTime = actorState.getCurrentTime();
 
             if (isFTTS) {
                 int firstTimeActorCanPeekNewMsg = actorState.firstTimeActorCanPeekNewMessage();
@@ -61,10 +63,9 @@ public class TimedState extends State<TimedActorState> {
         }
         if (minExecutionTime == Integer.MAX_VALUE)
             throw new ModelCheckingException("Deadlock");
-        if (!isFTTS) {
-            int currentTime = getAllActorStates().get(0).getCurrentTime();
-            if (minExecutionTime < currentTime) minExecutionTime = currentTime;
-        }
+
+        if (minExecutionTime < currentTime) minExecutionTime = currentTime;
+
         return minExecutionTime;
     }
 

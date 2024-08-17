@@ -43,6 +43,10 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         this.setVariableValue(CURRENT_TIME, currentTime);
     }
 
+    public void increaseCurrentTime(int delay) {
+        this.setVariableValue(CURRENT_TIME, getCurrentTime() + delay);
+    }
+
     public int getResumingTime() {
         return (int) this.retrieveVariableValue(RESUMING_TIME);
     }
@@ -168,11 +172,12 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         ArrayList<TimedMessageSpecification> enabledMsgs = new ArrayList<>();
 
         TimedPriorityQueueItem<TimedMessageSpecification> msg;
-        while ((msg = this.getTimedPriorityQueueItem(false)) != null && msg.getTime() <= enablingTime) {
+        while ((msg = this.getTimedPriorityQueueItem(true)) != null && msg.getTime() <= enablingTime) {
             TimedMessageSpecification curMsg = msg.getItem();
             if (curMsg.getMaxStartTime() < getCurrentTime()) {
                 throw new ModelCheckingException("Deadlock");
             }
+            this.getTimedPriorityQueueItem(false);
             enabledMsgs.add(curMsg);
         }
         return enabledMsgs;

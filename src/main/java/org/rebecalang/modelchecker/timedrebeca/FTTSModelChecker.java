@@ -46,7 +46,9 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
                 for (TimedMessageSpecification msg : currentActorState.getEnabledMsgs(enablingTime)) {
                     TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel,
                             stateCounter, false, msg);
-                    nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
+                    if (!newState.getParentStates().isEmpty()) {
+                        nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
+                    }
                 }
             }
         }
@@ -67,7 +69,10 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
 
         newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, modelCheckingPolicy, msg);
 
-        String transitionLabel = calculateTransitionLabel(actorState, newActorState);
+        // Set the current time of the actor after executing the message server
+        newActorState.setCurrentTime(Math.max(msg.getMinStartTime(), newActorState.getCurrentTime()));
+
+        String transitionLabel = calculateTransitionLabel(actorState, newActorState, msg);
 
         Long stateKey = Long.valueOf(newState.hashCode());
 
@@ -82,9 +87,6 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
             currentState.addChildState(transitionLabel, repeatedState);
             repeatedState.addParentState(transitionLabel, currentState);
         }
-
-        // Set the current time of the actor after executing the message server
-        newActorState.setCurrentTime(actorState.getCurrentTime() + msg.getMinStartTime());
 
         return newState;
     }

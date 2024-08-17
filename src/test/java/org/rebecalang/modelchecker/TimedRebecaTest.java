@@ -42,7 +42,7 @@ public class TimedRebecaTest {
 
     @Test
 //    @Disabled
-    public void testPingPong() throws ModelCheckingException, FileNotFoundException {
+    public void testPingPongForFGTS() throws ModelCheckingException, FileNotFoundException {
         File model = new File(MODEL_FILES_BASE + "ping_pong.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
         extension.add(CompilerExtension.TIMED_REBECA);
@@ -58,6 +58,25 @@ public class TimedRebecaTest {
         State<TimedActorState> initialState = (State<TimedActorState>) stateSpace.getInitialState();
         StateSpaceUtil.printTimedStateSpace(initialState,
                 new PrintStream(new FileOutputStream(new File(Policy.FINE_GRAINED_POLICY + "ping_pong.rebeca"))));
+    }
+    @Test
+//    @Disabled
+    public void testPingPongForFTTS() throws ModelCheckingException, FileNotFoundException {
+        File model = new File(MODEL_FILES_BASE + "ping_pong.rebeca");
+        Set<CompilerExtension> extension = new HashSet<>();
+        extension.add(CompilerExtension.TIMED_REBECA);
+        TimedRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new TimedRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, TransitionSystem.TRANSITION_SYSTEM_FTTS, true);
+
+        TimedRebecaModelChecker timedRebecaModelChecker = timedRebecaModelCheckerFactory.getModelChecker(timedRebecaModelCheckerSetting.getTransitionSystem());
+        timedRebecaModelChecker.modelCheck(model, timedRebecaModelCheckerSetting);
+
+        printExceptions();
+        Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
+
+        StateSpace<State<? extends BaseActorState<?>>> stateSpace = timedRebecaModelChecker.getStateSpace();
+        State<TimedActorState> initialState = (State<TimedActorState>) stateSpace.getInitialState();
+        StateSpaceUtil.printTimedStateSpace(initialState,
+                new PrintStream(new FileOutputStream(new File(Policy.COARSE_GRAINED_POLICY + "ping_pong.rebeca"))));
     }
 
     @Test
