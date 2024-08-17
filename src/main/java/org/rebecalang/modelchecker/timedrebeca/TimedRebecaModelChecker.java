@@ -29,6 +29,8 @@ public class TimedRebecaModelChecker extends ModelChecker {
     public final static String CURRENT_TIME = "current_time";
     public final static String RESUMING_TIME = "resuming_time";
 
+	public int stateCounter = 1;
+
 	public TimedRebecaModelChecker() {
 		super();
 	}
@@ -100,7 +102,6 @@ public class TimedRebecaModelChecker extends ModelChecker {
 			TimedActorState actorState,
 			StatementInterpreterContainer statementInterpreterContainer,
 			RILModel transformedRILModel,
-			int stateCounter,
 			boolean resume,
 			TimedMessageSpecification msg) {
 

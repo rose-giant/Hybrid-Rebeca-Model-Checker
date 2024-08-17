@@ -25,7 +25,6 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
 
     @Override
     protected void doModelChecking(RILModel transformedRILModel) throws ModelCheckingException {
-        int stateCounter = 1;
         PriorityQueue<TimedPriorityQueueItem<TimedState>> nextStatesQueue = new PriorityQueue<>();
 
         TimedState initialState = (TimedState) stateSpace.getInitialState();
@@ -44,8 +43,7 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
 
             for (TimedActorState currentActorState : enabledActors) {
                 for (TimedMessageSpecification msg : currentActorState.getEnabledMsgs(enablingTime)) {
-                    TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel,
-                            stateCounter, false, msg);
+                    TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, false, msg);
                     if (!newState.getParentStates().isEmpty()) {
                         nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
                     }
@@ -60,7 +58,6 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
             TimedActorState actorState,
             StatementInterpreterContainer statementInterpreterContainer,
             RILModel transformedRILModel,
-            int stateCounter,
             boolean resume,
             TimedMessageSpecification msg) {
 
@@ -70,7 +67,7 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
         newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, modelCheckingPolicy, msg);
 
         // Set the current time of the actor after executing the message server
-        newActorState.setCurrentTime(Math.max(msg.getMinStartTime(), newActorState.getCurrentTime()));
+        newActorState.increaseCurrentTime(msg.getMinStartTime());
 
         String transitionLabel = calculateTransitionLabel(actorState, newActorState, msg);
 
