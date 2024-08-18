@@ -43,7 +43,7 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
 
             for (TimedActorState currentActorState : enabledActors) {
                 for (TimedMessageSpecification msg : currentActorState.getEnabledMsgs(enablingTime)) {
-                    TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, false, msg);
+                    TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, msg);
                     if (!newState.getParentStates().isEmpty()) {
                         nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
                     }
@@ -58,7 +58,6 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
             TimedActorState actorState,
             StatementInterpreterContainer statementInterpreterContainer,
             RILModel transformedRILModel,
-            boolean resume,
             TimedMessageSpecification msg) {
 
         TimedState newState = cloneState(currentState);

@@ -102,18 +102,14 @@ public class TimedRebecaModelChecker extends ModelChecker {
 			TimedActorState actorState,
 			StatementInterpreterContainer statementInterpreterContainer,
 			RILModel transformedRILModel,
-			boolean resume,
 			TimedMessageSpecification msg) {
 
 		TimedState newState = cloneState(currentState);
 		TimedActorState newActorState = (TimedActorState) newState.getActorState(actorState.getName());
 
-		if (resume)
-			newActorState.resumeExecution(newState, statementInterpreterContainer, transformedRILModel, modelCheckingPolicy);
-		else
-			newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, modelCheckingPolicy, msg);
+		newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, modelCheckingPolicy, msg);
 
-		String transitionLabel = calculateTransitionLabel(actorState, newActorState, resume ? null : msg);
+		String transitionLabel = calculateTransitionLabel(actorState, newActorState, msg);
 
 		Long stateKey = Long.valueOf(newState.hashCode());
 
