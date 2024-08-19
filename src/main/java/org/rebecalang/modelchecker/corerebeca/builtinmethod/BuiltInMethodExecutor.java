@@ -36,7 +36,7 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 			} else {
 				((TimedActorState)baseActorState).increaseResumingTime(delay);
 			}
-			return delay;
+			return null;
 		}
 		if(methodCallInstructionBean.getMethodName().equals("assertion$boolean")) {
 			Boolean firstValue = null;
