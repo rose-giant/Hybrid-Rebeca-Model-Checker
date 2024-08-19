@@ -2,6 +2,9 @@ package org.rebecalang.modelchecker.corerebeca.rilinterpreter;
 
 import java.util.Map;
 
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
+import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
 import org.rebecalang.modelchecker.corerebeca.State;
@@ -16,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class MsgsrvCallInstructionInterpreter extends InstructionInterpreter {
 
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState, RebecaModel rebecaModel) {
 		MsgsrvCallInstructionBean mcib = (MsgsrvCallInstructionBean) ib;
 		Map<String, Object> parameters = setMsgSrvParameters(baseActorState, mcib.getParameters());
 

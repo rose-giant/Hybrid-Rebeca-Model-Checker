@@ -2,23 +2,29 @@ package org.rebecalang.modelchecker.setting;
 
 import org.rebecalang.compiler.utils.CompilerExtension;
 import org.rebecalang.compiler.utils.CoreVersion;
-import org.rebecalang.modelchecker.corerebeca.utils.Policy;
+import org.rebecalang.modelchecker.timedrebeca.utils.SchedulingPolicy;
 import org.rebecalang.modelchecker.timedrebeca.utils.TransitionSystem;
 
 import java.util.Set;
 
 public class TimedRebecaModelCheckerSetting extends CoreRebecaModelCheckerSetting {
-    private TransitionSystem transitionSystem;
-    private boolean isBounded;
+    private TransitionSystem    transitionSystem;
+    private SchedulingPolicy schedulingPolicy;
 
     public TimedRebecaModelCheckerSetting() {
     }
 
-    public TimedRebecaModelCheckerSetting(Set<CompilerExtension> extension, CoreVersion coreVersion, TransitionSystem transitionSystem, boolean isBounded) {
+    public TimedRebecaModelCheckerSetting(Set<CompilerExtension> extension, CoreVersion coreVersion, TransitionSystem transitionSystem) {
         super(extension, coreVersion, transitionSystem.getPolicy());
 
         setTransitionSystem(transitionSystem);
-        setIsBounded(isBounded);
+    }
+
+    public TimedRebecaModelCheckerSetting(Set<CompilerExtension> extension, CoreVersion coreVersion, TransitionSystem transitionSystem, SchedulingPolicy schedulingPolicy) {
+        super(extension, coreVersion, transitionSystem.getPolicy());
+
+        setTransitionSystem(transitionSystem);
+        setSchedulingPolicy(schedulingPolicy);
     }
 
     public TransitionSystem getTransitionSystem() {
@@ -29,12 +35,12 @@ public class TimedRebecaModelCheckerSetting extends CoreRebecaModelCheckerSettin
         this.transitionSystem = transitionSystem;
     }
 
-    public boolean getIsBounded() {
-        return isBounded;
+    public void setSchedulingPolicy(SchedulingPolicy schedulingPolicy) {
+        this.schedulingPolicy = schedulingPolicy;
     }
 
-    public void setIsBounded(boolean isBounded) {
-        this.isBounded = isBounded;
+    public SchedulingPolicy getSchedulingPolicy() {
+        return schedulingPolicy;
     }
 
     public boolean isFTTS() {

@@ -8,6 +8,7 @@ reactiveclass PingActor(3) {
     PingActor() {
         self.ping();
     }
+    @period(10)
     msgsrv ping() {
         delay(2);
         po.m2() deadline(5);
@@ -28,15 +29,14 @@ reactiveclass PongActor(3) {
     }
 
     msgsrv m2() {
-
     }
 
     msgsrv m3() {
-
     }
 }
 
 main {
+    @schedulingPolicy(EDF)
     PingActor p1(p2):();
     PongActor p2(p1):();
 }

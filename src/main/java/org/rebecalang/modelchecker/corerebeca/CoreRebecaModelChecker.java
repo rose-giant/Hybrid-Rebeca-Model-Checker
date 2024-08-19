@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.MainRebecDefinition;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
@@ -37,7 +38,9 @@ public class CoreRebecaModelChecker extends ModelChecker {
 
 	@Override
 	protected void doModelChecking(
-			RILModel transformedRILModel) throws ModelCheckingException {
+			RILModel transformedRILModel
+			, RebecaModel rebecaModel
+	) throws ModelCheckingException {
 		int stateCounter = 1;
 		
 		State<ActorState> initialState = (State<ActorState>) stateSpace.getInitialState();
@@ -52,7 +55,7 @@ public class CoreRebecaModelChecker extends ModelChecker {
 			for (ActorState actorState : enabledActors) {
 				do {
 					statementInterpreterContainer.clearNondeterminism();
-					State<ActorState> newState = executeNewState(currentState, actorState, transformedRILModel, stateCounter);
+					State<ActorState> newState = executeNewState(currentState, actorState, transformedRILModel, rebecaModel, stateCounter);
 
 					if (!newState.getParentStates().isEmpty()) {
 						nextStatesQueue.add(newState);
@@ -77,12 +80,13 @@ public class CoreRebecaModelChecker extends ModelChecker {
 			State<ActorState> currentState,
 			ActorState actorState,
 			RILModel transformedRILModel,
+			RebecaModel rebecaModel,
 			int stateCounter) {
 		State<ActorState> newState = (State<ActorState>) super.cloneState(currentState);
 
 		ActorState newActorState = (ActorState) newState.getActorState(actorState.getName());
 		newActorState.execute(newState, statementInterpreterContainer,
-				transformedRILModel, modelCheckingPolicy);
+				transformedRILModel, rebecaModel, modelCheckingPolicy);
 		String transitionLabel = calculateTransitionLabel(actorState, newActorState);
 		Long stateKey = Long.valueOf(newState.hashCode());
 

@@ -1,5 +1,8 @@
 package org.rebecalang.modelchecker.corerebeca.rilinterpreter;
 
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
+import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
@@ -15,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class JumpIfNotInstructionInterpreter extends InstructionInterpreter {
 	
 	@Override
-	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
+	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState, RebecaModel rebecaModel) {
 	JumpIfNotInstructionBean jiib = (JumpIfNotInstructionBean) ib;
 		if (jiib.getCondition() == null) {
 			baseActorState.setPC(jiib.getMethodName(), jiib.getLineNumber());

@@ -1,10 +1,14 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
+import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.*;
 import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
+import org.rebecalang.modelchecker.timedrebeca.utils.SchedulingPolicy;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgsrvCallInstructionBean;
@@ -21,6 +25,8 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
     // Flag to distinguish between FTTS and FGTS
     private boolean isFTTS;
 
+    private SchedulingPolicy schedulingPolicy = SchedulingPolicy.SCHEDULING_ALGORITHM_FIFO;
+
     private PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> queue;
 
     public void setFTTS(boolean isFTTS) {
@@ -29,6 +35,14 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 
     public boolean isFTTS() {
         return isFTTS;
+    }
+
+    public void setSchedulingPolicy(SchedulingPolicy schedulingPolicy) {
+        this.schedulingPolicy = schedulingPolicy;
+    }
+
+    public SchedulingPolicy getSchedulingPolicy() {
+        return schedulingPolicy;
     }
 
     public void initializeQueue() {
@@ -124,7 +138,9 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 
     public void resumeExecution(TimedState systemState,
                                 StatementInterpreterContainer statementInterpreterContainer,
-                                RILModel transformedRILModel, AbstractPolicy policy) {
+                                RILModel transformedRILModel,
+                                RebecaModel rebecaModel,
+                                AbstractPolicy policy) {
         do {
             ProgramCounter pc = getPC();
             int lineNumber = pc.getLineNumber();
@@ -137,17 +153,20 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
             InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
             policy.executedInstruction(instruction);
 
-            interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState);
+            interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState, rebecaModel);
         } while (!policy.isBreakable());
     }
 
     public void execute(TimedState state,
                         StatementInterpreterContainer statementInterpreterContainer,
-                        RILModel transformedRILModel, AbstractPolicy policy, TimedMessageSpecification timedMessageSpecification) {
+                        RILModel transformedRILModel,
+                        RebecaModel rebecaModel,
+                        AbstractPolicy policy,
+                        TimedMessageSpecification timedMessageSpecification) {
 
         super.startExecutionOfNewMessageServer(transformedRILModel, policy, timedMessageSpecification);
 
-        resumeExecution(state, statementInterpreterContainer, transformedRILModel, policy);
+        resumeExecution(state, statementInterpreterContainer, transformedRILModel, rebecaModel, policy);
     }
 
     @Override

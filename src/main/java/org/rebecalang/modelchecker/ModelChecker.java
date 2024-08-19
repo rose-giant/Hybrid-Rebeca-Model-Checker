@@ -95,9 +95,9 @@ public abstract class ModelChecker {
 
     protected abstract State<? extends BaseActorState<?>> createFreshState();
 
-    protected abstract void doModelChecking(RILModel transformedRILModel) throws ModelCheckingException;
+    protected abstract void doModelChecking(RILModel transformedRILModel, RebecaModel rebecaModel) throws ModelCheckingException;
 
-    protected abstract State<? extends BaseActorState<?>> createInitialStates(RebecaModel rebecaModel);
+    protected abstract State<? extends BaseActorState<?>> createInitialStates(RebecaModel rebecaModel) throws ModelCheckingException;
 
     protected BaseActorState<?> createAnActorInitialState(MainRebecDefinition mainDefinition) {
         BaseActorState<?> actorState = createFreshActorState();
@@ -161,7 +161,7 @@ public abstract class ModelChecker {
 
         generateFirstState(transformedRILModel, model);
 
-        doModelChecking(transformedRILModel);
+        doModelChecking(transformedRILModel, model.getFirst());
     }
 
     protected void initializeStatementInterpreterContainer() {
@@ -193,7 +193,7 @@ public abstract class ModelChecker {
                 new BuiltInMethodExecutor());
     }
 
-    protected void generateFirstState(RILModel transformedRILModel, Pair<RebecaModel, SymbolTable> model) {
+    protected void generateFirstState(RILModel transformedRILModel, Pair<RebecaModel, SymbolTable> model) throws ModelCheckingException {
 
         RebecaModel rebecaModel = model.getFirst();
 
@@ -203,7 +203,7 @@ public abstract class ModelChecker {
 
         setInitialKnownRebecsOfActors(initialState, mainRebecDefinitions);
 
-        callConstructorsOfActors(transformedRILModel, initialState, mainRebecDefinitions);
+        callConstructorsOfActors(transformedRILModel, initialState, mainRebecDefinitions, rebecaModel);
 
         stateSpace.addInitialState(initialState);
     }
@@ -211,7 +211,8 @@ public abstract class ModelChecker {
     private void callConstructorsOfActors(
             RILModel transformedRILModel,
             State<? extends BaseActorState<?>> initialState,
-            List<MainRebecDefinition> mainRebecDefinitions) {
+            List<MainRebecDefinition> mainRebecDefinitions,
+            RebecaModel rebecaModel) {
         ArrayList<InstructionBean> mainInstructions =
                 transformedRILModel.getInstructionList("main");
         int cnt = 1;
@@ -235,7 +236,7 @@ public abstract class ModelChecker {
                 while (actorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
                     InstructionBean ib = instructionsList.get(pc.getLineNumber());
                     statementInterpreterContainer.retrieveInterpreter(ib).interpret(
-                            ib, actorState, initialState);
+                            ib, actorState, initialState, rebecaModel);
                 }
             } catch (CodeCompilationException e) {
                 e.printStackTrace();

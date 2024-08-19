@@ -1,5 +1,8 @@
 package org.rebecalang.modelchecker.corerebeca.rilinterpreter;
 
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
+import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
@@ -20,7 +23,7 @@ public class ExternalMethodCallInterpreter extends InstructionInterpreter {
 	
 	@Override
 	public void interpret(InstructionBean ib, BaseActorState<?> baseActorState,
-			State<? extends BaseActorState<?>> globalState) {
+			State<? extends BaseActorState<?>> globalState, RebecaModel rebecaModel) {
 		ExternalMethodCallInstructionBean bimcib = (ExternalMethodCallInstructionBean) ib;
 		externalMethodRepository.execute(bimcib, baseActorState, globalState);
 		

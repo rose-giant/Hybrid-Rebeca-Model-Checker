@@ -11,16 +11,19 @@ import java.util.Map.Entry;
 public class TimedMessageSpecification extends MessageSpecification {
     private int minStartTime;
 	private int maxStartTime;
+	private int period;
 
     public TimedMessageSpecification(
             String messageName,
             Map<String, Object> parameters,
             BaseActorState<?> baseActorState,
             int minStartTime,
-            int maxStartTime) {
+            int maxStartTime,
+			int period) {
         super(messageName, parameters, baseActorState);
         this.maxStartTime = maxStartTime;
         this.minStartTime = minStartTime;
+        this.period = period;
     }
 
 	public int getMinStartTime() {
@@ -37,6 +40,14 @@ public class TimedMessageSpecification extends MessageSpecification {
 
 	public int getMaxStartTime() {
 		return this.maxStartTime;
+	}
+
+	public void setPeriod(int period) {
+		this.period = period;
+	}
+
+	public int getPeriod() {
+		return this.period;
 	}
 
 	public void export(PrintStream output) {

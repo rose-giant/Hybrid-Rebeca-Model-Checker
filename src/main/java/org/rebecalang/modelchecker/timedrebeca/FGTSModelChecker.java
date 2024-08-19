@@ -1,5 +1,8 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
+import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.utils.Policy;
@@ -24,7 +27,7 @@ public class FGTSModelChecker  extends TimedRebecaModelChecker{
     }
 
     @Override
-    protected void doModelChecking(RILModel transformedRILModel) throws ModelCheckingException {
+    protected void doModelChecking(RILModel transformedRILModel, RebecaModel rebecaModel) throws ModelCheckingException {
         PriorityQueue<TimedPriorityQueueItem<TimedState>> nextStatesQueue = new PriorityQueue<>();
 
         TimedState initialState = (TimedState) stateSpace.getInitialState();
@@ -45,14 +48,14 @@ public class FGTSModelChecker  extends TimedRebecaModelChecker{
                     statementInterpreterContainer.clearNondeterminism();
 
                     if (currentActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
-                        TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, null);
+                        TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, rebecaModel, null);
                         if (!newState.getParentStates().isEmpty()) {
                             nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
                         }
                     } else {
                         ArrayList<TimedMessageSpecification> enabledMsgs = currentActorState.getEnabledMsgs(enablingTime);
                         for (TimedMessageSpecification msg : enabledMsgs) {
-                            TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, msg);
+                            TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, rebecaModel, msg);
                             if (!newState.getParentStates().isEmpty()) {
                                 nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
                             }

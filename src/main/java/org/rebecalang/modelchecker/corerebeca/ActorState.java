@@ -1,6 +1,7 @@
 package org.rebecalang.modelchecker.corerebeca;
 
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
 import org.rebecalang.compiler.utils.CodeCompilationException;
 import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
@@ -82,7 +83,7 @@ public class ActorState extends BaseActorState<MessageSpecification> {
 
 	public void execute(State<? extends ActorState> systemState,
 						StatementInterpreterContainer statementInterpreterContainer,
-						RILModel transformedRILModel, AbstractPolicy policy) {
+						RILModel transformedRILModel, RebecaModel rebecaModel, AbstractPolicy policy) {
 
 		super.startExecutionOfNewMessageServer(transformedRILModel, policy, null);
 
@@ -98,7 +99,7 @@ public class ActorState extends BaseActorState<MessageSpecification> {
 			InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
 			policy.executedInstruction(instruction);
 
-			interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState);
+			interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState, rebecaModel);
 		} while (!policy.isBreakable());
 	}
 

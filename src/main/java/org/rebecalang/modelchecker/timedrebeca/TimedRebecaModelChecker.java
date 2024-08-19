@@ -1,10 +1,9 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
 import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.MainRebecDefinition;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.*;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.ModelChecker;
 import org.rebecalang.modelchecker.corerebeca.*;
@@ -12,6 +11,7 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilitie
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modelchecker.setting.TimedRebecaModelCheckerSetting;
 import org.rebecalang.modelchecker.timedrebeca.rilinterpreter.TimedMsgsrvCallInstructionInterpreter;
+import org.rebecalang.modelchecker.timedrebeca.utils.SchedulingPolicy;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgsrvCallInstructionBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,13 @@ import org.springframework.util.SerializationUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Qualifier("TIMED_REBECA")
 public class TimedRebecaModelChecker extends ModelChecker {
 
-    public final static String CURRENT_TIME = "current_time";
+	public final static String CURRENT_TIME = "current_time";
     public final static String RESUMING_TIME = "resuming_time";
 
 	public int stateCounter = 1;
@@ -72,23 +73,54 @@ public class TimedRebecaModelChecker extends ModelChecker {
 	}
 
 	@Override
-	protected void doModelChecking(RILModel transformedRILModel) throws ModelCheckingException {
+	protected void doModelChecking(RILModel transformedRILModel, RebecaModel rebecaModel) throws ModelCheckingException {
 		// do nothing
 	}
 
 	@Override
-	protected TimedState createInitialStates(RebecaModel rebecaModel) {
+	protected TimedState createInitialStates(RebecaModel rebecaModel) throws ModelCheckingException {
 		TimedState initialState = createFreshState();
-		boolean isFTTS = getModelCheckerSetting().isFTTS();
+		TimedRebecaModelCheckerSetting timedRebecaModelCheckerSetting = getModelCheckerSetting();
+		boolean isFTTS = timedRebecaModelCheckerSetting.isFTTS();
+
 		initialState.setFTTS(isFTTS);
 
 		for (MainRebecDefinition definition : ObjectModelUtils.getMainRebecDefinition(rebecaModel)) {
 			TimedActorState actorState = createAnActorInitialState(definition);
 			actorState.setFTTS(isFTTS);
+
+			if (timedRebecaModelCheckerSetting.getSchedulingPolicy() != null) {
+				actorState.setSchedulingPolicy(timedRebecaModelCheckerSetting.getSchedulingPolicy());
+			}
+
+			List<Annotation> annotations;
+			String scheduling;
+			if(!(annotations = definition.getAnnotations()).isEmpty() && !(Objects.requireNonNull(scheduling = getAnnotation(annotations, "schedulingPolicy"))).isEmpty()) {
+				actorState.setSchedulingPolicy(SchedulingPolicy.getSchedulingPolicy(scheduling));
+			}
+
 			initialState.putActorState(definition.getName(), actorState);
 		}
 
 		return initialState;
+	}
+
+	public static String getAnnotation(List<Annotation> annotations, String identifier) {
+		for (Annotation annotation : annotations) {
+			if (annotation.getIdentifier().equals(identifier)) {
+				Expression value = annotation.getValue();
+
+				if (value instanceof Literal) {
+					return ((Literal)annotation.getValue()).getLiteralValue();
+				}
+
+				if (value instanceof TermPrimary) {
+					return ((TermPrimary)annotation.getValue()).getName();
+				}
+			}
+		}
+
+		return null;
 	}
 
 	@Override
@@ -102,12 +134,13 @@ public class TimedRebecaModelChecker extends ModelChecker {
 			TimedActorState actorState,
 			StatementInterpreterContainer statementInterpreterContainer,
 			RILModel transformedRILModel,
+			RebecaModel rebecaModel,
 			TimedMessageSpecification msg) {
 
 		TimedState newState = cloneState(currentState);
 		TimedActorState newActorState = (TimedActorState) newState.getActorState(actorState.getName());
 
-		newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, modelCheckingPolicy, msg);
+		newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, rebecaModel, modelCheckingPolicy, msg);
 
 		String transitionLabel = calculateTransitionLabel(actorState, newActorState, msg);
 

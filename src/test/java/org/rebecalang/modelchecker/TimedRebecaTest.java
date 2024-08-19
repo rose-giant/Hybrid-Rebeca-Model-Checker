@@ -48,7 +48,7 @@ public class TimedRebecaTest {
         File model = new File(MODEL_FILES_BASE + filename);
         Set<CompilerExtension> extension = new HashSet<>();
         extension.add(CompilerExtension.TIMED_REBECA);
-        TimedRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new TimedRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, transitionSystem, true);
+        TimedRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new TimedRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, transitionSystem);
 
         TimedRebecaModelChecker timedRebecaModelChecker = timedRebecaModelCheckerFactory.getModelChecker(timedRebecaModelCheckerSetting.getTransitionSystem());
         timedRebecaModelChecker.modelCheck(model, timedRebecaModelCheckerSetting);
@@ -70,7 +70,7 @@ public class TimedRebecaTest {
         File model = new File(MODEL_FILES_BASE + "dynamic_polymorphism_in_time.rebeca");
         Set<CompilerExtension> extension = new HashSet<>();
         extension.add(CompilerExtension.TIMED_REBECA);
-        TimedRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new TimedRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, TransitionSystem.TRANSITION_SYSTEM_FGTS, true);
+        TimedRebecaModelCheckerSetting timedRebecaModelCheckerSetting = new TimedRebecaModelCheckerSetting(extension, CoreVersion.CORE_2_3, TransitionSystem.TRANSITION_SYSTEM_FGTS);
 
         TimedRebecaModelChecker timedRebecaModelChecker = timedRebecaModelCheckerFactory.getModelChecker(timedRebecaModelCheckerSetting.getTransitionSystem());
         timedRebecaModelChecker.modelCheck(model, timedRebecaModelCheckerSetting);
@@ -81,8 +81,8 @@ public class TimedRebecaTest {
 
     protected static Stream<Arguments> modelToStateSpace() {
         return Stream.of(
-                Arguments.arguments("ping_pong.rebeca", 3, TransitionSystem.TRANSITION_SYSTEM_FTTS)
-//                Arguments.arguments("ping_pong.rebeca", 8, TransitionSystem.TRANSITION_SYSTEM_FGTS)
+//                Arguments.arguments("ping_pong.rebeca", 3, TransitionSystem.TRANSITION_SYSTEM_FTTS)
+                Arguments.arguments("ping_pong.rebeca", 8, TransitionSystem.TRANSITION_SYSTEM_FGTS)
         );
     }
 

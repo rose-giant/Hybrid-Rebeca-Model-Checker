@@ -1,5 +1,8 @@
 package org.rebecalang.modelchecker.corerebeca.rilinterpreter;
 
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
+import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
@@ -21,7 +24,7 @@ public abstract class InstructionInterpreter {
 	@Autowired
 	StatementInterpreterContainer statementInterpreterContainer;
 
-	public abstract void interpret (InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState);
+	public abstract void interpret (InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState, RebecaModel rebecaModel);
 
 	public Map<String, Object> setMsgSrvParameters(BaseActorState<?> baseActorState, Map<String, Object> parameters2) {
 		Map<String, Object> parameters = new TreeMap<String, Object>();

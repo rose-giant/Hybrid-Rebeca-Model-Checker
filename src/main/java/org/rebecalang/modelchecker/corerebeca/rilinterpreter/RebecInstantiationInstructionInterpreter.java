@@ -2,6 +2,9 @@ package org.rebecalang.modelchecker.corerebeca.rilinterpreter;
 
 import java.util.Map.Entry;
 
+import org.rebecalang.compiler.modelcompiler.SymbolTable;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
+import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
@@ -18,7 +21,7 @@ public class RebecInstantiationInstructionInterpreter extends InstructionInterpr
 
 	
     @Override
-    public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState) {
+    public void interpret(InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState, RebecaModel rebecaModel) {
         baseActorState.increasePC();
         MethodCallInstructionBean mcib = (MethodCallInstructionBean) ib;
         baseActorState.pushInScopeStackForMethodCallInitialization(mcib.getMethodName().split("\\.")[0]);
