@@ -57,8 +57,13 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
 		int currentTime = ((TimedActorState)baseActorState).getCurrentTime();
 		after += currentTime;
 
+		int absoluteDeadline = deadline;
+		if (deadline != Integer.MAX_VALUE) {
+			absoluteDeadline = deadline+currentTime;
+		}
+
 		TimedMessageSpecification msgSpec = new TimedMessageSpecification(
-				tmcib.getMethodName(), parameters, baseActorState, after, deadline+currentTime, deadline, period);
+				tmcib.getMethodName(), parameters, baseActorState, after, absoluteDeadline, deadline, period);
 
 		receiverActorState.addToQueue(msgSpec);
 		baseActorState.increasePC();
