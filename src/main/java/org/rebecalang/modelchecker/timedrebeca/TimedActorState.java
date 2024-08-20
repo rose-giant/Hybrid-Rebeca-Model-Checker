@@ -239,6 +239,38 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 	}
 
     private TimedPriorityQueueItem<TimedMessageSpecification> getTimedPriorityQueueItem(boolean isPeek) {
+        if (queue.size() <= 1) {
+            return queue.peek() != null ? (isPeek ? queue.peek() : queue.poll()) : null;
+        }
+
+        TimedPriorityQueueItem<TimedMessageSpecification> selectedMessage = null;
+        PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> tempQueue = new PriorityQueue<>(queue);
+
+        int currentTime = getCurrentTime();
+
+        while (!tempQueue.isEmpty()) {
+            TimedPriorityQueueItem<TimedMessageSpecification> msgItem = tempQueue.poll();
+
+            // Filter messages that have arrived at or before the current time
+            if (msgItem.getItem().getMinStartTime() <= currentTime) {
+                if (selectedMessage == null || SchedulingPolicy.execute(schedulingPolicy, msgItem.getItem(), selectedMessage.getItem())) {
+                    selectedMessage = msgItem;
+                }
+            } else {
+                // Since the queue is ordered by minStartTime, we can break early
+                break;
+            }
+        }
+
+        // If we found a valid message, return it (either peek or remove from the queue)
+        if (selectedMessage != null) {
+            if (!isPeek) {
+                queue.remove(selectedMessage);
+            }
+            return selectedMessage;
+        }
+
+        // No valid message found
         return queue.peek() != null ? (isPeek ? queue.peek() : queue.poll()) : null;
     }
 }

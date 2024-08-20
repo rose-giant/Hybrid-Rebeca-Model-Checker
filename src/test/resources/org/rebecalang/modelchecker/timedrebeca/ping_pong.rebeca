@@ -10,11 +10,16 @@ reactiveclass PingActor(3) {
     }
     @period(10)
     msgsrv ping() {
+        self.test() deadline(5);
         delay(2);
         po.m2() deadline(5);
+        po.m3() deadline(3);
         delay(2);
-        po.m3() deadline(5);
         self.ping() after(10) deadline(20);
+    }
+
+    msgsrv test() {
+
     }
 }
 
@@ -28,9 +33,11 @@ reactiveclass PongActor(3) {
     PongActor() {
     }
 
+    @period(12)
     msgsrv m2() {
     }
 
+    @period(1)
     msgsrv m3() {
     }
 }
@@ -38,5 +45,6 @@ reactiveclass PongActor(3) {
 main {
     @schedulingPolicy(EDF)
     PingActor p1(p2):();
+    @schedulingPolicy(RMS)
     PongActor p2(p1):();
 }
