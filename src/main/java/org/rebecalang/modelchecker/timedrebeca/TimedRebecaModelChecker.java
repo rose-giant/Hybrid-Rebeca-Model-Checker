@@ -13,15 +13,16 @@ import org.rebecalang.modelchecker.setting.TimedRebecaModelCheckerSetting;
 import org.rebecalang.modelchecker.timedrebeca.rilinterpreter.TimedMsgsrvCallInstructionInterpreter;
 import org.rebecalang.modelchecker.timedrebeca.utils.SchedulingPolicy;
 import org.rebecalang.modeltransformer.ril.RILModel;
+import org.rebecalang.modeltransformer.ril.RILUtilities;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgsrvCallInstructionBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.SerializationUtils;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 @Qualifier("TIMED_REBECA")
@@ -103,6 +104,32 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		}
 
 		return initialState;
+	}
+
+	@Override
+	protected RILModel getTransformModel(Pair<RebecaModel, SymbolTable> model) {
+		RILModel transFormModel = rebeca2RILModelTransformer.transformModel(model, modelCheckerSetting.getCompilerExtension(), modelCheckerSetting.getCoreVersion());
+
+		for (ReactiveClassDeclaration reactiveClassDeclaration : model.getFirst().getRebecaCode().getReactiveClassDeclaration()) {
+			for (MsgsrvDeclaration msgsrv : reactiveClassDeclaration.getMsgsrvs()) {
+				String computedMethodName = RILUtilities.computeMethodName(reactiveClassDeclaration, msgsrv);
+				List<Annotation> annotations;
+				String periodStr;
+				if (!(annotations = msgsrv.getAnnotations()).isEmpty() && !(Objects.requireNonNull( periodStr = TimedRebecaModelChecker.getAnnotation(annotations, "period"))).isEmpty()) {
+					int period = Integer.parseInt(periodStr);
+					Variable self = new Variable("self");
+					ArrayList<InstructionBean> instructionList = transFormModel.getInstructionList(computedMethodName);
+					TimedMsgsrvCallInstructionBean timedMsgsrvCallInstructionBean = new TimedMsgsrvCallInstructionBean(self, computedMethodName, new TreeMap<>(), period, Integer.MAX_VALUE);
+
+					// Insert the new record at indexBeforeLast
+					instructionList.add(instructionList.size() - 1, timedMsgsrvCallInstructionBean);
+
+					transFormModel.addMethod(computedMethodName, instructionList);
+				}
+			}
+		}
+
+		return transFormModel;
 	}
 
 	public static String getAnnotation(List<Annotation> annotations, String identifier) {

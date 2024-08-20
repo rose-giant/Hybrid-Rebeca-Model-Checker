@@ -8,15 +8,7 @@ import org.rebecalang.compiler.modelcompiler.RebecaModelCompiler;
 import org.rebecalang.compiler.modelcompiler.SymbolTable;
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.CoreRebecaTypeSystem;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ConstructorDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Expression;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.FieldDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.MainRebecDefinition;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.TermPrimary;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.VariableDeclarator;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.*;
 import org.rebecalang.compiler.utils.*;
 import org.rebecalang.modelchecker.corerebeca.*;
 import org.rebecalang.modelchecker.corerebeca.builtinmethod.BuiltInMethodExecutor;
@@ -37,6 +29,7 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PushARInstructionInterpreter;
 import org.rebecalang.modelchecker.setting.ModelCheckerSetting;
 import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
+import org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker;
 import org.rebecalang.modelchecker.timedrebeca.TimedState;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.RILUtilities;
@@ -155,13 +148,17 @@ public abstract class ModelChecker {
         if(!exceptionContainer.exceptionsIsEmpty())
             return;
 
-        RILModel transformedRILModel = rebeca2RILModelTransformer.transformModel(model, modelCheckerSetting.getCompilerExtension(), modelCheckerSetting.getCoreVersion());
+        RILModel transformedRILModel = getTransformModel(model);
 
         initializeStatementInterpreterContainer();
 
         generateFirstState(transformedRILModel, model);
 
         doModelChecking(transformedRILModel, model.getFirst());
+    }
+
+    protected RILModel getTransformModel(Pair<RebecaModel, SymbolTable> model) {
+        return rebeca2RILModelTransformer.transformModel(model, modelCheckerSetting.getCompilerExtension(), modelCheckerSetting.getCoreVersion());
     }
 
     protected void initializeStatementInterpreterContainer() {
