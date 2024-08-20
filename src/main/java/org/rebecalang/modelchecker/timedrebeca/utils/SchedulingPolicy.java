@@ -1,6 +1,7 @@
 package org.rebecalang.modelchecker.timedrebeca.utils;
 
 import org.rebecalang.modelchecker.corerebeca.ModelCheckingException;
+import org.rebecalang.modelchecker.timedrebeca.TimedMessageSpecification;
 
 import java.io.Serializable;
 
@@ -21,6 +22,15 @@ public enum SchedulingPolicy implements Serializable {
             case "DMS"  -> SCHEDULING_ALGORITHM_DMS;
 
             default     -> throw new ModelCheckingException("Unknown scheduling policy " + input);
+        };
+    }
+
+    public static boolean execute(SchedulingPolicy schedulingPolicy, TimedMessageSpecification first, TimedMessageSpecification second) {
+        return switch (schedulingPolicy) {
+            case SCHEDULING_ALGORITHM_FIFO -> first.getMinStartTime() < second.getMinStartTime();
+            case SCHEDULING_ALGORITHM_EDF  -> first.getRelativeDeadline() < second.getRelativeDeadline();
+            case SCHEDULING_ALGORITHM_RMS  -> first.getPeriod() < second.getPeriod();
+            case SCHEDULING_ALGORITHM_DMS  -> first.getMaxStartTime() < second.getMaxStartTime();
         };
     }
 }

@@ -12,6 +12,7 @@ public class TimedMessageSpecification extends MessageSpecification {
     private int minStartTime;
 	private int maxStartTime;
 	private int period;
+	private int relativeDeadline;
 
     public TimedMessageSpecification(
             String messageName,
@@ -19,11 +20,13 @@ public class TimedMessageSpecification extends MessageSpecification {
             BaseActorState<?> baseActorState,
             int minStartTime,
             int maxStartTime,
+            int relativeDeadline,
 			int period) {
         super(messageName, parameters, baseActorState);
-        this.maxStartTime = maxStartTime;
-        this.minStartTime = minStartTime;
-        this.period = period;
+        this.maxStartTime     = maxStartTime;
+        this.minStartTime     = minStartTime;
+        this.period           = period;
+		this.relativeDeadline = relativeDeadline;
     }
 
 	public int getMinStartTime() {
@@ -48,6 +51,10 @@ public class TimedMessageSpecification extends MessageSpecification {
 
 	public int getPeriod() {
 		return this.period;
+	}
+
+	public int getRelativeDeadline() {
+		return this.relativeDeadline;
 	}
 
 	public void export(PrintStream output) {
