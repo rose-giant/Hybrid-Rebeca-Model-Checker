@@ -136,39 +136,6 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         return queue.isEmpty();
     }
 
-    public void resumeExecution(TimedState systemState,
-                                StatementInterpreterContainer statementInterpreterContainer,
-                                RILModel transformedRILModel,
-                                RebecaModel rebecaModel,
-                                AbstractPolicy policy) {
-        do {
-            ProgramCounter pc = getPC();
-            int lineNumber = pc.getLineNumber();
-            String methodName = getPC().getMethodName();
-
-            ArrayList<InstructionBean> instructionsList =
-                    transformedRILModel.getInstructionList(methodName);
-
-            InstructionBean instruction = instructionsList.get(lineNumber);
-            InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
-            policy.executedInstruction(instruction);
-
-            interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState, rebecaModel);
-        } while (!policy.isBreakable());
-    }
-
-    public void execute(TimedState state,
-                        StatementInterpreterContainer statementInterpreterContainer,
-                        RILModel transformedRILModel,
-                        RebecaModel rebecaModel,
-                        AbstractPolicy policy,
-                        TimedMessageSpecification timedMessageSpecification) {
-
-        super.startExecutionOfNewMessageServer(transformedRILModel, policy, timedMessageSpecification);
-
-        resumeExecution(state, statementInterpreterContainer, transformedRILModel, rebecaModel, policy);
-    }
-
     @Override
     public TimedMessageSpecification getMessage(boolean isPeek) {
         return getTimedPriorityQueueItem(isPeek) != null ? getTimedPriorityQueueItem(isPeek).getItem() : null;

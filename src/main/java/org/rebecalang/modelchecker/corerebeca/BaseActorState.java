@@ -3,12 +3,15 @@ package org.rebecalang.modelchecker.corerebeca;
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.CoreRebecaTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.ReactiveClassDeclaration;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.Type;
 import org.rebecalang.compiler.utils.CodeCompilationException;
 import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
+import org.rebecalang.modelchecker.timedrebeca.TimedMessageSpecification;
+import org.rebecalang.modelchecker.timedrebeca.TimedState;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
 
@@ -257,6 +260,36 @@ public abstract class BaseActorState<T extends MessageSpecification> implements 
         initializePC(msgName, 0);
 
         addParamersValuesToScope((T) executableMessage);
+    }
+
+    protected void resumeExecution(State<? extends BaseActorState> systemState,
+                                   StatementInterpreterContainer statementInterpreterContainer,
+                                   RILModel transformedRILModel, RebecaModel rebecaModel, AbstractPolicy policy) {
+        do {
+            ProgramCounter pc = getPC();
+            int lineNumber = pc.getLineNumber();
+            String methodName = getPC().getMethodName();
+
+            ArrayList<InstructionBean> instructionsList =
+                    transformedRILModel.getInstructionList(methodName);
+
+            InstructionBean instruction = instructionsList.get(lineNumber);
+            InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
+            policy.executedInstruction(instruction);
+
+            interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState, rebecaModel);
+        } while (!policy.isBreakable());
+    }
+
+    public void execute(State<? extends BaseActorState> systemState,
+                        StatementInterpreterContainer statementInterpreterContainer,
+                        RILModel transformedRILModel,
+                        RebecaModel rebecaModel,
+                        AbstractPolicy policy,
+                        T executableMessage) {
+
+        startExecutionOfNewMessageServer(transformedRILModel, policy, executableMessage);
+        resumeExecution(systemState, statementInterpreterContainer, transformedRILModel, rebecaModel, policy);
     }
 
     protected String callActorTypeName(BaseActorState<T> baseActorState) {

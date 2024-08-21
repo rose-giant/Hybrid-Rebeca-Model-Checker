@@ -45,9 +45,9 @@ public class FGTSModelChecker  extends TimedRebecaModelChecker{
 
             for (TimedActorState currentActorState : enabledActors) {
                 do {
-                    statementInterpreterContainer.clearNondeterminism();
-
                     if (currentActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
+                        statementInterpreterContainer.clearNondeterminism();
+
                         TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, rebecaModel, null);
                         if (!newState.getParentStates().isEmpty()) {
                             nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
@@ -55,6 +55,8 @@ public class FGTSModelChecker  extends TimedRebecaModelChecker{
                     } else {
                         ArrayList<TimedMessageSpecification> enabledMsgs = currentActorState.getEnabledMsgs(enablingTime);
                         for (TimedMessageSpecification msg : enabledMsgs) {
+                            statementInterpreterContainer.clearNondeterminism();
+
                             TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, rebecaModel, msg);
                             if (!newState.getParentStates().isEmpty()) {
                                 nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));

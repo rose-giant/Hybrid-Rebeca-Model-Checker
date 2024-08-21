@@ -81,28 +81,6 @@ public class ActorState extends BaseActorState<MessageSpecification> {
 		return queue.isEmpty();
 	}
 
-	public void execute(State<? extends ActorState> systemState,
-						StatementInterpreterContainer statementInterpreterContainer,
-						RILModel transformedRILModel, RebecaModel rebecaModel, AbstractPolicy policy) {
-
-		super.startExecutionOfNewMessageServer(transformedRILModel, policy, null);
-
-		do {
-			ProgramCounter pc = getPC();
-			int lineNumber = pc.getLineNumber();
-			String methodName = getPC().getMethodName();
-
-			ArrayList<InstructionBean> instructionsList =
-					transformedRILModel.getInstructionList(methodName);
-
-			InstructionBean instruction = instructionsList.get(lineNumber);
-			InstructionInterpreter interpreter = statementInterpreterContainer.retrieveInterpreter(instruction);
-			policy.executedInstruction(instruction);
-
-			interpreter.interpret(getInheritanceInstruction(transformedRILModel, instruction), this, systemState, rebecaModel);
-		} while (!policy.isBreakable());
-	}
-
 	@Override
 	public String toString() {
 		String retValue = super.toString();

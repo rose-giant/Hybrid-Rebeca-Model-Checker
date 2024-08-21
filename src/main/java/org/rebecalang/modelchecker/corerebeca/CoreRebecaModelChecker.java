@@ -86,7 +86,7 @@ public class CoreRebecaModelChecker extends ModelChecker {
 
 		ActorState newActorState = (ActorState) newState.getActorState(actorState.getName());
 		newActorState.execute(newState, statementInterpreterContainer,
-				transformedRILModel, rebecaModel, modelCheckingPolicy);
+				transformedRILModel, rebecaModel, modelCheckingPolicy, null);
 		String transitionLabel = calculateTransitionLabel(actorState, newActorState);
 		Long stateKey = Long.valueOf(newState.hashCode());
 
