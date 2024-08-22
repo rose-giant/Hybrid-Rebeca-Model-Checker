@@ -13,12 +13,14 @@ import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
+import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
 import org.rebecalang.modelchecker.timedrebeca.TimedMessageSpecification;
 import org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker;
 import org.rebecalang.modelchecker.timedrebeca.TimedState;
 import org.rebecalang.modeltransformer.ril.RILUtilities;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.NonDetValue;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgsrvCallInstructionBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -34,8 +36,20 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
 		TimedMsgsrvCallInstructionBean tmcib = (TimedMsgsrvCallInstructionBean) ib;
 		Map<String, Object> parameters = setMsgSrvParameters(baseActorState, tmcib.getParameters());
 
-		int after = (int) tmcib.getAfter();
-		int deadline = (int) tmcib.getDeadline();
+		int after;
+		if (tmcib.getAfter() instanceof NonDetValue) {
+			after = (int) InstructionUtilities.getValue(statementInterpreterContainer, tmcib.getAfter(), baseActorState);
+		} else {
+			after = (int) tmcib.getAfter();
+		}
+
+		int deadline;
+		if (tmcib.getDeadline() instanceof NonDetValue) {
+			deadline = (int) InstructionUtilities.getValue(statementInterpreterContainer, tmcib.getDeadline(), baseActorState);
+		} else {
+			deadline = (int) tmcib.getDeadline();
+		}
+
 		int period = Integer.MAX_VALUE;
 
 		TimedActorState receiverActorState = (TimedActorState) baseActorState.retrieveVariableValue(tmcib.getBase());

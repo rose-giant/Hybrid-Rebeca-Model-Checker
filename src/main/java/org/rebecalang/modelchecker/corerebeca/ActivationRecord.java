@@ -51,7 +51,7 @@ public class ActivationRecord implements Serializable {
             if (value instanceof BaseActorState)
                 h+= key.hashCode() ^ ((BaseActorState)value).getName().hashCode();
             else
-                h += key.hashCode() ^ value.hashCode();
+                h += key.hashCode() ^ (value == null ? 0 : value.hashCode());
         }
         
         result = prime * result + h;
@@ -80,8 +80,8 @@ public class ActivationRecord implements Serializable {
                     if (!(other.definedVariables.get(key) == null && other.definedVariables.containsKey(key)))
                         return false;
                 } else {
-                	if (value instanceof ActorState) {
-                		if (!((ActorState)value).getName().equals(((ActorState)other.definedVariables.get(key)).getName()))
+                	if (value instanceof BaseActorState<?>) {
+                		if (!((BaseActorState)value).getName().equals(((BaseActorState)other.definedVariables.get(key)).getName()))
                 			return false;
                 	} else {
                 		if (!value.equals(other.definedVariables.get(key)))

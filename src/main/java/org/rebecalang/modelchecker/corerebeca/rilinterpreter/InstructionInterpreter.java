@@ -22,7 +22,7 @@ import java.util.TreeMap;
 public abstract class InstructionInterpreter {
 	
 	@Autowired
-	StatementInterpreterContainer statementInterpreterContainer;
+	protected StatementInterpreterContainer statementInterpreterContainer;
 
 	public abstract void interpret (InstructionBean ib, BaseActorState<?> baseActorState, State<? extends BaseActorState<?>> globalState, RebecaModel rebecaModel);
 
