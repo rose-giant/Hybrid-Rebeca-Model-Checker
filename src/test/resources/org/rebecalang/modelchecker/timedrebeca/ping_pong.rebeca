@@ -27,7 +27,7 @@ reactiveclass PongActor(3) {
     }
 
     msgsrv pong() {
-        pi.ping() after(1) deadline(2);
+        pi.ping() after(1);
         delay(1);
     }
 }

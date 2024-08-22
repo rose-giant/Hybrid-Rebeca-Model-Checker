@@ -164,7 +164,7 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         while ((msg = this.getTimedPriorityQueueItem(true)) != null && msg.getTime() <= enablingTime && !enabledMsgs.contains(msg.getItem())) {
             TimedMessageSpecification curMsg = msg.getItem();
             if (curMsg.getMaxStartTime() < getCurrentTime()) {
-                throw new ModelCheckingException("Deadlock");
+                throw new ModelCheckingException("Deadline missed!");
             }
             enabledMsgs.add(curMsg);
         }
