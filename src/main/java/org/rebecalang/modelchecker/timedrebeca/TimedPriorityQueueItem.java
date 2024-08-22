@@ -7,6 +7,14 @@ public class TimedPriorityQueueItem<T> implements Comparable<TimedPriorityQueueI
     private int time;
     private T item;
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + item.hashCode();
+        return result;
+    }
+
     public TimedPriorityQueueItem(int time, T item) {
         super();
         this.time = time;

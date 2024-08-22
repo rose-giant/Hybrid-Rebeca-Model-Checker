@@ -81,7 +81,7 @@ public class TimedRebecaTest {
 
     protected static Stream<Arguments> modelToStateSpace() {
         return Stream.of(
-//                Arguments.arguments("ping_pong.rebeca", 3, TransitionSystem.TRANSITION_SYSTEM_FTTS)
+//                Arguments.arguments("ping_pong.rebeca", 2, TransitionSystem.TRANSITION_SYSTEM_FTTS)
                 Arguments.arguments("ping_pong.rebeca", 8, TransitionSystem.TRANSITION_SYSTEM_FGTS)
         );
     }

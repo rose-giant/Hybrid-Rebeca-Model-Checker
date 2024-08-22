@@ -6,45 +6,33 @@ reactiveclass PingActor(3) {
     }
 
     PingActor() {
-        self.ping();
+        self.ping() after(1);
     }
-    @period(10)
     msgsrv ping() {
-        self.test() deadline(5);
+        int var=0;
+        po.pong();
         delay(2);
-        po.m2() deadline(5);
-        po.m3() deadline(3);
-        delay(2);
-        self.ping() after(10) deadline(20);
-    }
-
-    msgsrv test() {
-
+        var = var+1;
     }
 }
 
 reactiveclass PongActor(3) {
     knownrebecs {
-       PingActor pi;
-    }
+           PingActor pi;
+        }
     statevars {
     }
 
     PongActor() {
     }
 
-    @period(12)
-    msgsrv m2() {
-    }
-
-    @period(1)
-    msgsrv m3() {
+    msgsrv pong() {
+        pi.ping() after(1) deadline(2);
+        delay(1);
     }
 }
 
 main {
-    @schedulingPolicy(EDF)
     PingActor p1(p2):();
-    @schedulingPolicy(RMS)
     PongActor p2(p1):();
 }

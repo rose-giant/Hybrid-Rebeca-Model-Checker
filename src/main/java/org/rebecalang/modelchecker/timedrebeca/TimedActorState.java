@@ -80,11 +80,14 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
-        result = prime * result + ((actorScopeStack == null) ? 0 : actorScopeStack.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((queue.size() == 0) ? 0 : queue.peek().getItem().getMessageName().hashCode());
-        result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
+        int result = super.hashCode();
+        if (queue.size() >= 1) {
+            for (TimedPriorityQueueItem<TimedMessageSpecification> timedPriorityQueueItem : queue) {
+                result = prime * result + timedPriorityQueueItem.hashCode();
+            }
+        } else {
+            result = prime * result;
+        }
         return result;
     }
 
@@ -158,12 +161,11 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         ArrayList<TimedMessageSpecification> enabledMsgs = new ArrayList<>();
 
         TimedPriorityQueueItem<TimedMessageSpecification> msg;
-        while ((msg = this.getTimedPriorityQueueItem(true)) != null && msg.getTime() <= enablingTime) {
+        while ((msg = this.getTimedPriorityQueueItem(true)) != null && msg.getTime() <= enablingTime && !enabledMsgs.contains(msg.getItem())) {
             TimedMessageSpecification curMsg = msg.getItem();
             if (curMsg.getMaxStartTime() < getCurrentTime()) {
                 throw new ModelCheckingException("Deadlock");
             }
-            this.getTimedPriorityQueueItem(false);
             enabledMsgs.add(curMsg);
         }
         return enabledMsgs;
@@ -183,7 +185,7 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 
                 if (isFTTS()) {
                     after += currentTime;
-                    deadline += currentTime;
+                    if (deadline != Integer.MAX_VALUE) deadline += currentTime;
                 }
                 instruction = new TimedMsgsrvCallInstructionBean(
                         tmcib.getBase(), newMethodName, tmcib.getParameters(), after, deadline);
@@ -205,7 +207,7 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 		output.println("</queue>");
 	}
 
-    private TimedPriorityQueueItem<TimedMessageSpecification> getTimedPriorityQueueItem(boolean isPeek) {
+    public TimedPriorityQueueItem<TimedMessageSpecification> getTimedPriorityQueueItem(boolean isPeek) {
         if (queue.size() <= 1) {
             return queue.peek() != null ? (isPeek ? queue.peek() : queue.poll()) : null;
         }

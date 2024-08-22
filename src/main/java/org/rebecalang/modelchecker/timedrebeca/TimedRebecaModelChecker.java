@@ -167,6 +167,11 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		TimedState newState = cloneState(currentState);
 		TimedActorState newActorState = (TimedActorState) newState.getActorState(actorState.getName());
 
+		TimedMessageSpecification firstInQueue = newActorState.getMessage(true);
+		if (newActorState.getQueue().size() >= 1 && firstInQueue != null && firstInQueue.equals(msg)) {
+			newActorState.getTimedPriorityQueueItem(false);
+		}
+
 		newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, rebecaModel, modelCheckingPolicy, msg);
 
 		String transitionLabel = calculateTransitionLabel(actorState, newActorState, msg);
