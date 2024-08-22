@@ -165,16 +165,9 @@ public class TimedRebecaModelChecker extends ModelChecker {
 			TimedMessageSpecification msg) {
 
 		TimedState newState = cloneState(currentState);
-		TimedActorState newActorState = (TimedActorState) newState.getActorState(actorState.getName());
+		TimedActorState newActorState = executeNewTimedActorState(newState, actorState.getName(), transformedRILModel, rebecaModel, msg);
 
-		TimedMessageSpecification firstInQueue = newActorState.getMessage(true);
-		if (newActorState.getQueue().size() >= 1 && firstInQueue != null && firstInQueue.equals(msg)) {
-			newActorState.getTimedPriorityQueueItem(false);
-		}
-
-		newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, rebecaModel, modelCheckingPolicy, msg);
-
-		String transitionLabel = calculateTransitionLabel(actorState, newActorState, msg);
+		String transitionLabel = calculateTransitionLabel(actorState, newActorState);
 
 		Long stateKey = Long.valueOf(newState.hashCode());
 
@@ -209,27 +202,29 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		return newState;
 	}
 
-	protected String calculateTransitionLabel(BaseActorState<?> baseActorState, BaseActorState<?> newBaseActorState, TimedMessageSpecification timedMessageSpecification) {
-		String executingMessageName;
+	protected TimedActorState createTimedActorState(TimedState newState, String actorName, TimedMessageSpecification timedMessageSpecification) {
+		TimedActorState newActorState = (TimedActorState) newState.getActorState(actorName);
 
-		if (baseActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
-			ProgramCounter pc = baseActorState.getPC();
-			executingMessageName = pc.getMethodName();
-			executingMessageName += " [" + pc.getLineNumber() + ",";
-		} else {
-			executingMessageName = (timedMessageSpecification == null ? baseActorState.getMessage(true) : timedMessageSpecification).getMessageName();
-			executingMessageName += " [START,";
-
+		TimedMessageSpecification firstInQueue = newActorState.getMessage(true);
+		if (newActorState.getQueue().size() >= 1 && firstInQueue != null && firstInQueue.equals(timedMessageSpecification)) {
+			newActorState.getTimedPriorityQueueItem(false);
 		}
 
-		if (newBaseActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
-			ProgramCounter pc = newBaseActorState.getPC();
-			executingMessageName += pc.getLineNumber() + "]";
-		} else {
-			executingMessageName += "END]";
+		return newActorState;
+	}
 
-		}
-		return baseActorState.getName() + "." + executingMessageName;
+	protected TimedActorState executeNewTimedActorState(
+			TimedState newState,
+			String actorName,
+			RILModel transformedRILModel,
+			RebecaModel rebecaModel,
+			TimedMessageSpecification timedMessageSpecification
+	) {
+		TimedActorState newActorState = createTimedActorState(newState, actorName, timedMessageSpecification);
+
+		newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, rebecaModel, modelCheckingPolicy, timedMessageSpecification);
+
+		return newActorState;
 	}
 
 	private void addTimedScopeToScopeStack(BaseActorState<?> baseActorState) {

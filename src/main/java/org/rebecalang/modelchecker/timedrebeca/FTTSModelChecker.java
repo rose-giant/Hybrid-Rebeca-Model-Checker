@@ -56,38 +56,17 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
     }
 
     @Override
-    protected TimedState executeNewState(
-            TimedState currentState,
-            TimedActorState actorState,
-            StatementInterpreterContainer statementInterpreterContainer,
+    protected TimedActorState executeNewTimedActorState(
+            TimedState newState,
+            String actorName,
             RILModel transformedRILModel,
             RebecaModel rebecaModel,
-            TimedMessageSpecification msg) {
-
-        TimedState newState = cloneState(currentState);
-        TimedActorState newActorState = (TimedActorState) newState.getActorState(actorState.getName());
-
-        newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, rebecaModel, modelCheckingPolicy, msg);
-
+            TimedMessageSpecification timedMessageSpecification
+    ) {
+        TimedActorState newActorState = super.executeNewTimedActorState(newState, actorName, transformedRILModel, rebecaModel, timedMessageSpecification);
         // Set the current time of the actor after executing the message server
-        newActorState.increaseCurrentTime(msg.getMinStartTime());
+        newActorState.increaseCurrentTime(timedMessageSpecification.getMinStartTime());
 
-        String transitionLabel = calculateTransitionLabel(actorState, newActorState, msg);
-
-        Long stateKey = Long.valueOf(newState.hashCode());
-
-        if (!stateSpace.hasStateWithKey(stateKey)) {
-            newState.setId(stateCounter++);
-            stateSpace.addState(stateKey, newState);
-            newState.clearLinks();
-            currentState.addChildState(transitionLabel, newState);
-            newState.addParentState(transitionLabel, currentState);
-        } else {
-            TimedState repeatedState = (TimedState) stateSpace.getState(stateKey);
-            currentState.addChildState(transitionLabel, repeatedState);
-            repeatedState.addParentState(transitionLabel, currentState);
-        }
-
-        return newState;
+        return newActorState;
     }
 }
