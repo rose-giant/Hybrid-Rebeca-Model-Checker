@@ -54,6 +54,7 @@ import org.springframework.util.SerializationUtils;
 public abstract class ModelChecker {
     protected AbstractTypeSystem typeSystem;
     public int numberOfTransitions;
+    public long time;
 
     @Autowired
     protected RebecaModelCompiler rebecaModelCompiler;
@@ -136,8 +137,14 @@ public abstract class ModelChecker {
     }
 
     public void modelCheck(File model, ModelCheckerSetting modelCheckerSetting) throws ModelCheckingException {
+        long startTime = System.nanoTime();
+
         setModelCheckerSetting(modelCheckerSetting);
         modelCheck(compileModel(model));
+
+        long endTime = System.nanoTime();
+
+        time = endTime - startTime;
     }
 
     public void modelCheck(Pair<RebecaModel, SymbolTable> model) throws ModelCheckingException {
