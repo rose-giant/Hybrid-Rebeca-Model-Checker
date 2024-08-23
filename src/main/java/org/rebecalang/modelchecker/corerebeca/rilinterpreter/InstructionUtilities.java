@@ -13,18 +13,23 @@ public class InstructionUtilities {
 		if (operand instanceof Variable)
 			return baseActorState.retrieveVariableValue(((Variable)operand).getVarName());
 		if (operand instanceof NonDetValue) {
-			NonDetValue nonDetValue = (NonDetValue) operand;
-			Object value = nonDetValue.getValue();
-			if (!statementInterpreterContainer.hasNondeterminism()) {
-				if(nonDetValue.hasNext()) {
-					nonDetValue.next();
-					statementInterpreterContainer.reportNondeterminism();
-				} else
-					nonDetValue.reset();
-			}
-			return getValue(statementInterpreterContainer, value, baseActorState);
+			return getValue(statementInterpreterContainer, getNonDetValue(statementInterpreterContainer, operand), baseActorState);
 		}
 		return operand;
 	}
-	
+
+	public static Object getNonDetValue(StatementInterpreterContainer statementInterpreterContainer, Object operand) {
+		NonDetValue nonDetValue = (NonDetValue) operand;
+		Object value = nonDetValue.getValue();
+
+		if (!statementInterpreterContainer.hasNondeterminism()) {
+			if(nonDetValue.hasNext()) {
+				nonDetValue.next();
+				statementInterpreterContainer.reportNondeterminism();
+			} else
+				nonDetValue.reset();
+		}
+
+		return value;
+	}
 }

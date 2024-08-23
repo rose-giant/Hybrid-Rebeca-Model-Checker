@@ -81,7 +81,7 @@ public class TimedMessageSpecification extends MessageSpecification {
 		return this.relativeDeadline;
 	}
 
-	public int getPString() {
+	public int getPriority() {
 		return priority;
 	}
 
