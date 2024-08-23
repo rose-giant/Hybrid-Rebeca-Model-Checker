@@ -1,13 +1,7 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
-import org.rebecalang.compiler.modelcompiler.SymbolTable;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
-import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.*;
-import org.rebecalang.modelchecker.corerebeca.policy.AbstractPolicy;
-import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
-import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modelchecker.timedrebeca.utils.SchedulingPolicy;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
@@ -29,12 +23,22 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 
     private PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> queue;
 
+    protected int priority = Integer.MAX_VALUE;
+
     public void setFTTS(boolean isFTTS) {
         this.isFTTS = isFTTS;
     }
 
     public boolean isFTTS() {
         return isFTTS;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public void setSchedulingPolicy(SchedulingPolicy schedulingPolicy) {

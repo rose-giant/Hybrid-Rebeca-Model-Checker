@@ -7,8 +7,6 @@ import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.*;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.ModelChecker;
 import org.rebecalang.modelchecker.corerebeca.*;
-import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
-import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modelchecker.setting.TimedRebecaModelCheckerSetting;
 import org.rebecalang.modelchecker.timedrebeca.rilinterpreter.TimedMsgsrvCallInstructionInterpreter;
 import org.rebecalang.modelchecker.timedrebeca.utils.SchedulingPolicy;
@@ -54,8 +52,10 @@ public class TimedRebecaModelChecker extends ModelChecker {
 	}
 
 	@Override
-	protected TimedActorState createAnActorInitialState(MainRebecDefinition mainDefinition) {
-		TimedActorState timedActorState = (TimedActorState) super.createAnActorInitialState(mainDefinition);
+	protected TimedActorState createAnActorInitialState(RebecaModel rebecaModel, MainRebecDefinition mainDefinition) {
+		TimedActorState timedActorState = (TimedActorState) super.createAnActorInitialState(rebecaModel, mainDefinition);
+
+		timedActorState = setPriority(rebecaModel, timedActorState);
 
 		timedActorState.setCurrentTime(0);
 		timedActorState.setResumingTime(0);
@@ -87,7 +87,7 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		initialState.setFTTS(isFTTS);
 
 		for (MainRebecDefinition definition : ObjectModelUtils.getMainRebecDefinition(rebecaModel)) {
-			TimedActorState actorState = createAnActorInitialState(definition);
+			TimedActorState actorState = createAnActorInitialState(rebecaModel, definition);
 			actorState.setFTTS(isFTTS);
 
 			if (timedRebecaModelCheckerSetting.getSchedulingPolicy() != null) {
@@ -113,9 +113,9 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		for (ReactiveClassDeclaration reactiveClassDeclaration : model.getFirst().getRebecaCode().getReactiveClassDeclaration()) {
 			for (MsgsrvDeclaration msgsrv : reactiveClassDeclaration.getMsgsrvs()) {
 				String computedMethodName = RILUtilities.computeMethodName(reactiveClassDeclaration, msgsrv);
-				List<Annotation> annotations;
+				List<Annotation> annotations = msgsrv.getAnnotations();
 				String periodStr;
-				if (!(annotations = msgsrv.getAnnotations()).isEmpty() && !(Objects.requireNonNull( periodStr = TimedRebecaModelChecker.getAnnotation(annotations, "period"))).isEmpty()) {
+				if (!annotations.isEmpty() && (periodStr = TimedRebecaModelChecker.getAnnotation(annotations, "period")) != null) {
 					int period = Integer.parseInt(periodStr);
 					Variable self = new Variable("self");
 					ArrayList<InstructionBean> instructionList = transFormModel.getInstructionList(computedMethodName);
@@ -130,6 +130,19 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		}
 
 		return transFormModel;
+	}
+
+	protected TimedActorState setPriority(RebecaModel rebecaModel, TimedActorState timedActorState) {
+		for (ReactiveClassDeclaration reactiveClassDeclaration : rebecaModel.getRebecaCode().getReactiveClassDeclaration()) {
+			if (!reactiveClassDeclaration.getName().equals(timedActorState.getTypeName())) continue;
+			List<Annotation> annotations = reactiveClassDeclaration.getAnnotations();
+			String priorityStr;
+			if(!annotations.isEmpty() && !(Objects.requireNonNull(priorityStr = getAnnotation(annotations, "priority"))).isEmpty()) {
+				timedActorState.setPriority(Integer.parseInt(priorityStr));
+			}
+		}
+
+		return timedActorState;
 	}
 
 	public static String getAnnotation(List<Annotation> annotations, String identifier) {

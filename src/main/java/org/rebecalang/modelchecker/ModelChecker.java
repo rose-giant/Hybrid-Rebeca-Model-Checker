@@ -91,7 +91,7 @@ public abstract class ModelChecker {
 
     protected abstract State<? extends BaseActorState<?>> createInitialStates(RebecaModel rebecaModel) throws ModelCheckingException;
 
-    protected BaseActorState<?> createAnActorInitialState(MainRebecDefinition mainDefinition) {
+    protected BaseActorState<?> createAnActorInitialState(RebecaModel rebecaModel, MainRebecDefinition mainDefinition) {
         BaseActorState<?> actorState = createFreshActorState();
 
         LinkedList<ReactiveClassDeclaration> actorDeclarationHierarchy = extractActorDeclarationHierarchy(mainDefinition);
@@ -196,7 +196,6 @@ public abstract class ModelChecker {
     }
 
     protected void generateFirstState(RILModel transformedRILModel, Pair<RebecaModel, SymbolTable> model) throws ModelCheckingException {
-
         RebecaModel rebecaModel = model.getFirst();
 
         State<? extends BaseActorState<?>> initialState = createInitialStates(rebecaModel);

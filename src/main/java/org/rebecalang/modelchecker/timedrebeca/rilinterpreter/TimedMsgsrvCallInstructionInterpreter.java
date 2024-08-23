@@ -51,6 +51,7 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
 		}
 
 		int period = Integer.MAX_VALUE;
+		int priority = Integer.MAX_VALUE;
 
 		TimedActorState receiverActorState = (TimedActorState) baseActorState.retrieveVariableValue(tmcib.getBase());
 
@@ -58,10 +59,16 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
 			if (reactiveClassDeclaration.getName().equals(receiverActorState.getTypeName())) {
 				for (MsgsrvDeclaration msgsrv : reactiveClassDeclaration.getMsgsrvs()) {
 					if (tmcib.getMethodName().equals(RILUtilities.computeMethodName(reactiveClassDeclaration, msgsrv))) {
-						List<Annotation> annotations;
-						String periodStr;
-						if (!(annotations = msgsrv.getAnnotations()).isEmpty() && !(Objects.requireNonNull( periodStr = TimedRebecaModelChecker.getAnnotation(annotations, "period"))).isEmpty()) {
-							period = Integer.parseInt(periodStr);
+						List<Annotation> annotations = msgsrv.getAnnotations();
+						String periodStr, priorityStr;
+
+						if (!annotations.isEmpty()) {
+							if ((periodStr = TimedRebecaModelChecker.getAnnotation(annotations, "period")) != null) {
+								period = Integer.parseInt(periodStr);
+							}
+							if ((priorityStr = TimedRebecaModelChecker.getAnnotation(annotations, "priority")) != null) {
+								priority = Integer.parseInt(priorityStr);
+							}
 						}
 					}
 				}
@@ -77,7 +84,7 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
 		}
 
 		TimedMessageSpecification msgSpec = new TimedMessageSpecification(
-				tmcib.getMethodName(), parameters, baseActorState, after, absoluteDeadline, deadline, period);
+				tmcib.getMethodName(), priority, parameters, baseActorState, after, absoluteDeadline, deadline, period);
 
 		receiverActorState.addToQueue(msgSpec);
 		baseActorState.increasePC();

@@ -4,6 +4,8 @@ import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.MessageSpecification;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,12 +15,14 @@ public class TimedMessageSpecification extends MessageSpecification {
 	private int maxStartTime;
 	private int period;
 	private int relativeDeadline;
+	protected int priority = Integer.MAX_VALUE;
 
-    public TimedMessageSpecification(
+	public TimedMessageSpecification(
             String messageName,
-            Map<String, Object> parameters,
-            BaseActorState<?> baseActorState,
-            int minStartTime,
+			int priority,
+			Map<String, Object> parameters,
+			BaseActorState<?> baseActorState,
+			int minStartTime,
             int maxStartTime,
             int relativeDeadline,
 			int period) {
@@ -26,8 +30,28 @@ public class TimedMessageSpecification extends MessageSpecification {
         this.maxStartTime     = maxStartTime;
         this.minStartTime     = minStartTime;
         this.period           = period;
+        this.priority           = priority;
 		this.relativeDeadline = relativeDeadline;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + priority;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+
+		TimedMessageSpecification other = (TimedMessageSpecification) obj;
+
+		if (priority != other.priority) return false;
+
+		return true;
+	}
 
 	public int getMinStartTime() {
 		return this.minStartTime;
@@ -55,6 +79,14 @@ public class TimedMessageSpecification extends MessageSpecification {
 
 	public int getRelativeDeadline() {
 		return this.relativeDeadline;
+	}
+
+	public int getPString() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 
 	public void export(PrintStream output) {
