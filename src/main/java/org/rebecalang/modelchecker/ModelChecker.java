@@ -28,9 +28,6 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PopARInstructionInt
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PushARInstructionInterpreter;
 import org.rebecalang.modelchecker.setting.ModelCheckerSetting;
-import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
-import org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker;
-import org.rebecalang.modelchecker.timedrebeca.TimedState;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.RILUtilities;
 import org.rebecalang.modeltransformer.ril.Rebeca2RILModelTransformer;
@@ -56,6 +53,7 @@ import org.springframework.util.SerializationUtils;
 @Qualifier("REBECA")
 public abstract class ModelChecker {
     protected AbstractTypeSystem typeSystem;
+    public int numberOfTransitions;
 
     @Autowired
     protected RebecaModelCompiler rebecaModelCompiler;
@@ -340,6 +338,9 @@ public abstract class ModelChecker {
             executingMessageName += "END]";
 
         }
+
+        numberOfTransitions++;
+
         return baseActorState.getName() + "." + executingMessageName;
     }
 
