@@ -28,6 +28,7 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PopARInstructionInt
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.ProgramCounter;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.PushARInstructionInterpreter;
 import org.rebecalang.modelchecker.setting.ModelCheckerSetting;
+import org.rebecalang.modelchecker.timedrebeca.TimedMessageSpecification;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.RILUtilities;
 import org.rebecalang.modeltransformer.ril.Rebeca2RILModelTransformer;
@@ -324,7 +325,7 @@ public abstract class ModelChecker {
         }
     }
 
-    protected String calculateTransitionLabel(BaseActorState<?> baseActorState, BaseActorState<?> newBaseActorState) {
+    protected String calculateTransitionLabel(BaseActorState<?> baseActorState, BaseActorState<?> newBaseActorState, TimedMessageSpecification timedMessageSpecification) {
         String executingMessageName;
 
         if (baseActorState.variableIsDefined(InstructionUtilities.PC_STRING)) {
@@ -332,7 +333,7 @@ public abstract class ModelChecker {
             executingMessageName = pc.getMethodName();
             executingMessageName += " [" + pc.getLineNumber() + ",";
         } else {
-            executingMessageName = baseActorState.getMessage(true).getMessageName();
+            executingMessageName = (timedMessageSpecification != null ? timedMessageSpecification : baseActorState.getMessage(true)).getMessageName();
             executingMessageName += " [START,";
 
         }

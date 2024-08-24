@@ -6,16 +6,19 @@ import java.lang.reflect.Method;
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
+import org.rebecalang.modelchecker.corerebeca.StatementInterpreterContainer;
+import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilities;
 import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.ExternalMethodCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.NonDetValue;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 
 public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 
 	public static final String KEY = "BuiltIn";
 
-	public Object execute(ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState<?> baseActorState,
-			State<? extends BaseActorState<?>> globalState) {
+	public Object execute(StatementInterpreterContainer statementInterpreterContainer, ExternalMethodCallInstructionBean methodCallInstructionBean, BaseActorState<?> baseActorState,
+						  State<? extends BaseActorState<?>> globalState) {
 		if(methodCallInstructionBean.getMethodName().equals("pow$double$double")) {
 			Double firstValue = null, secondValue = null;
 			firstValue = callGetDouble(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
@@ -29,7 +32,12 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 		}
 		if(methodCallInstructionBean.getMethodName().equals("delay$int")) {
 			Integer delay = null;
-			delay = callGetInteger(methodCallInstructionBean.getParameters().get("arg0"), baseActorState);
+			Object delayVal = methodCallInstructionBean.getParameters().get("arg0");
+			if (delayVal instanceof NonDetValue) {
+				delay = (Integer) InstructionUtilities.getValue(statementInterpreterContainer, delayVal, baseActorState);
+			} else {
+				delay = callGetInteger(delayVal, baseActorState);
+			}
 			TimedActorState timedBaseActorState = ((TimedActorState) baseActorState);
 			if (timedBaseActorState.isFTTS()) {
 				((TimedActorState)baseActorState).increaseCurrentTime(delay);

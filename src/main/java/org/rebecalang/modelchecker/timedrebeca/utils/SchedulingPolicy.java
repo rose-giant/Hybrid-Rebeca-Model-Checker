@@ -27,13 +27,29 @@ public enum SchedulingPolicy implements Serializable {
         };
     }
 
-    public static boolean execute(SchedulingPolicy schedulingPolicy, TimedMessageSpecification first, TimedMessageSpecification second) {
-        return switch (schedulingPolicy) {
-            case SCHEDULING_ALGORITHM_FIFO     -> first.getMinStartTime() < second.getMinStartTime();
-            case SCHEDULING_ALGORITHM_EDF      -> first.getRelativeDeadline() < second.getRelativeDeadline();
-            case SCHEDULING_ALGORITHM_RMS      -> first.getPeriod() < second.getPeriod();
-            case SCHEDULING_ALGORITHM_DMS      -> first.getMaxStartTime() < second.getMaxStartTime();
-            case SCHEDULING_ALGORITHM_PRIORITY -> first.getPriority() < second.getPriority();
+    public static boolean compare(SchedulingPolicy schedulingPolicy, TimedMessageSpecification first, TimedMessageSpecification second, String operator) {
+        int comparisonResult = switch (schedulingPolicy) {
+            case SCHEDULING_ALGORITHM_FIFO     -> Integer.compare(first.getMinStartTime(), second.getMinStartTime());
+            case SCHEDULING_ALGORITHM_EDF      -> Integer.compare(first.getRelativeDeadline(), second.getRelativeDeadline());
+            case SCHEDULING_ALGORITHM_RMS      -> Integer.compare(first.getPeriod(), second.getPeriod());
+            case SCHEDULING_ALGORITHM_DMS      -> Integer.compare(first.getMaxStartTime(), second.getMaxStartTime());
+            case SCHEDULING_ALGORITHM_PRIORITY -> Integer.compare(first.getPriority(), second.getPriority());
+            default -> throw new IllegalArgumentException("Unknown scheduling policy: " + schedulingPolicy);
+        };
+
+        return evaluateComparison(comparisonResult, operator);
+    }
+
+    private static boolean evaluateComparison(int comparisonResult, String operator) {
+        return switch (operator) {
+            case "<"  -> comparisonResult < 0;
+            case "<=" -> comparisonResult <= 0;
+            case ">"  -> comparisonResult > 0;
+            case ">=" -> comparisonResult >= 0;
+            case "==" -> comparisonResult == 0;
+            case "!=" -> comparisonResult != 0;
+            default   -> throw new IllegalArgumentException("Unknown operator: " + operator);
         };
     }
+
 }

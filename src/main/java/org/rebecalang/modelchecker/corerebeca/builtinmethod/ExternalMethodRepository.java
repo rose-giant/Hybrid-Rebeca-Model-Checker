@@ -5,11 +5,16 @@ import java.util.Hashtable;
 import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
+import org.rebecalang.modelchecker.corerebeca.StatementInterpreterContainer;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.ExternalMethodCallInstructionBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ExternalMethodRepository {
+
+	@Autowired
+	protected StatementInterpreterContainer statementInterpreterContainer;
 
 	private Hashtable<String, ExternalMethodExecutor> executors;
 
@@ -23,7 +28,7 @@ public class ExternalMethodRepository {
 		if (methodCallInstructionBean.getBase() != null)
 			throw new RuntimeException("This version does not support none-independent built-in method calls");
 		externalMethodExecutor = executors.get(BuiltInMethodExecutor.KEY);
-		Object returnValue = externalMethodExecutor.execute(methodCallInstructionBean, baseActorState, globalState);
+		Object returnValue = externalMethodExecutor.execute(statementInterpreterContainer, methodCallInstructionBean, baseActorState, globalState);
 		if(methodCallInstructionBean.getFunctionCallResult() != null)
 			baseActorState.setVariableValue(methodCallInstructionBean.getFunctionCallResult().toString(), returnValue);
 		return null;

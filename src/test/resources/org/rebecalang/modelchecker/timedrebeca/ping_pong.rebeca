@@ -6,12 +6,13 @@ reactiveclass PingActor(3) {
     }
 
     PingActor() {
-        self.ping() after(1);
+        self.ping();
     }
     msgsrv ping() {
         int var=0;
-        po.pong();
-        delay(2);
+        po.m2();
+        po.m3();
+        delay(?(10, 20));
         var = var+1;
     }
 }
@@ -26,13 +27,17 @@ reactiveclass PongActor(3) {
     PongActor() {
     }
 
-    msgsrv pong() {
-        pi.ping() after(1);
-        delay(1);
+    msgsrv m2() {
+
+    }
+
+    msgsrv m3() {
+        delay(3);
     }
 }
 
 main {
+    @schedulingPolicy(priority)
     PingActor p1(p2):();
     PongActor p2(p1):();
 }

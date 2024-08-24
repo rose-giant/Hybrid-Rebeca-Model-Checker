@@ -45,12 +45,17 @@ public class FTTSModelChecker extends TimedRebecaModelChecker {
                 throw new ModelCheckingException("Deadlock");
 
             for (TimedActorState currentActorState : enabledActors) {
-                for (TimedMessageSpecification msg : currentActorState.getEnabledMsgs(enablingTime)) {
-                    TimedState newState = executeNewState(currentState, currentActorState, statementInterpreterContainer, transformedRILModel, rebecaModel, msg);
-                    if (!newState.getParentStates().isEmpty()) {
-                        nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
+                do {
+                    for (TimedMessageSpecification msg : currentActorState.getEnabledMsgs(enablingTime)) {
+                        statementInterpreterContainer.clearNondeterminism();
+
+                        TimedState newState = executeNewState(currentState, currentActorState, transformedRILModel, rebecaModel, msg);
+                        if (!newState.getParentStates().isEmpty()) {
+                            nextStatesQueue.add(new TimedPriorityQueueItem<>(newState.getEnablingTime(), newState));
+                        }
                     }
-                }
+
+                } while (statementInterpreterContainer.hasNondeterminism());
             }
         }
     }

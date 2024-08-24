@@ -172,7 +172,6 @@ public class TimedRebecaModelChecker extends ModelChecker {
 	protected TimedState executeNewState(
 			TimedState currentState,
 			TimedActorState actorState,
-			StatementInterpreterContainer statementInterpreterContainer,
 			RILModel transformedRILModel,
 			RebecaModel rebecaModel,
 			TimedMessageSpecification msg) {
@@ -180,7 +179,7 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		TimedState newState = cloneState(currentState);
 		TimedActorState newActorState = executeNewTimedActorState(newState, actorState.getName(), transformedRILModel, rebecaModel, msg);
 
-		String transitionLabel = calculateTransitionLabel(actorState, newActorState);
+		String transitionLabel = calculateTransitionLabel(actorState, newActorState, msg);
 
 		Long stateKey = Long.valueOf(newState.hashCode());
 
@@ -218,9 +217,8 @@ public class TimedRebecaModelChecker extends ModelChecker {
 	protected TimedActorState createTimedActorState(TimedState newState, String actorName, TimedMessageSpecification timedMessageSpecification) {
 		TimedActorState newActorState = (TimedActorState) newState.getActorState(actorName);
 
-		TimedMessageSpecification firstInQueue = newActorState.getMessage(true);
-		if (newActorState.getQueue().size() >= 1 && firstInQueue != null && firstInQueue.equals(timedMessageSpecification)) {
-			newActorState.getTimedPriorityQueueItem(false);
+		if (newActorState.getQueue().size() >= 1) {
+			newActorState.removeCustomMsgFromQueue(timedMessageSpecification);
 		}
 
 		return newActorState;

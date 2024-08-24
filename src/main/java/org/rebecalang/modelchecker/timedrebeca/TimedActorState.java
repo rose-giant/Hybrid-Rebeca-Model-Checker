@@ -9,6 +9,8 @@ import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgsr
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.CURRENT_TIME;
@@ -22,6 +24,10 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
     private SchedulingPolicy schedulingPolicy = SchedulingPolicy.SCHEDULING_ALGORITHM_FIFO;
 
     private PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> queue;
+
+    public void removeCustomMsgFromQueue(TimedMessageSpecification timedMessageSpecification) {
+        queue.removeIf(timedPriorityQueueItem -> timedPriorityQueueItem.getItem().equals(timedMessageSpecification));
+    }
 
     protected int priority = Integer.MAX_VALUE;
 
@@ -161,17 +167,21 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         return Integer.MAX_VALUE;
     }
 
-    public ArrayList<TimedMessageSpecification> getEnabledMsgs(int enablingTime) throws ModelCheckingException {
-        ArrayList<TimedMessageSpecification> enabledMsgs = new ArrayList<>();
+    public LinkedList<TimedMessageSpecification> getEnabledMsgs(int enablingTime) throws ModelCheckingException {
+        LinkedList<TimedMessageSpecification> enabledMsgs = new LinkedList<>();
 
-        TimedPriorityQueueItem<TimedMessageSpecification> msg;
-        while ((msg = this.getTimedPriorityQueueItem(true)) != null && msg.getTime() <= enablingTime && !enabledMsgs.contains(msg.getItem())) {
-            TimedMessageSpecification curMsg = msg.getItem();
-            if (curMsg.getMaxStartTime() < getCurrentTime()) {
-                throw new ModelCheckingException("Deadline missed!");
+        for (TimedPriorityQueueItem<TimedMessageSpecification> timedPriorityQueueItem : this.getQueueItem(true)) {
+            if (timedPriorityQueueItem.getTime() <= enablingTime && !enabledMsgs.contains(timedPriorityQueueItem.getItem())) {
+                TimedMessageSpecification curMsg = timedPriorityQueueItem.getItem();
+
+                if (curMsg.getMaxStartTime() < getCurrentTime()) {
+                    throw new ModelCheckingException("Deadline missed!");
+                }
+
+                enabledMsgs.add(curMsg);
             }
-            enabledMsgs.add(curMsg);
         }
+
         return enabledMsgs;
     }
 
@@ -211,6 +221,41 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 		output.println("</queue>");
 	}
 
+    public List<TimedPriorityQueueItem<TimedMessageSpecification>> getQueueItem(boolean isPeek) {
+        if (queue.size() <= 1) {
+            return queue.peek() != null ? (isPeek ? List.of(queue.peek()) : List.of(queue.poll())) : List.of();
+        }
+
+        List<TimedPriorityQueueItem<TimedMessageSpecification>> selectedMessages = new ArrayList<>();
+        PriorityQueue<TimedPriorityQueueItem<TimedMessageSpecification>> tempQueue = new PriorityQueue<>(queue);
+
+        int currentTime = getCurrentTime();
+
+        while (!tempQueue.isEmpty()) {
+            TimedPriorityQueueItem<TimedMessageSpecification> msgItem = tempQueue.poll();
+
+            // Filter messages that have arrived at or before the current time
+            if (msgItem.getItem().getMinStartTime() <= currentTime) {
+                // If there are no selected messages yet, or if the current message is preferred based on the scheduling policy
+                if (selectedMessages.isEmpty() || SchedulingPolicy.compare(schedulingPolicy, msgItem.getItem(), selectedMessages.get(0).getItem(), "<")) {
+                    selectedMessages.clear(); // Clear previous selections
+                    selectedMessages.add(msgItem); // Add the new preferred message
+                } else if (SchedulingPolicy.compare(schedulingPolicy, selectedMessages.get(0).getItem(), msgItem.getItem(), "==")) {
+                    selectedMessages.add(msgItem); // Add this message if it is also preferred
+                }
+            } else {
+                // Since the queue is ordered by minStartTime, we can break early
+                break;
+            }
+        }
+
+        if (!selectedMessages.isEmpty()) {
+            return selectedMessages;
+        }
+
+        return queue.peek() != null ? (isPeek ? List.of(queue.peek()) : List.of(queue.poll())) : List.of();
+    }
+
     public TimedPriorityQueueItem<TimedMessageSpecification> getTimedPriorityQueueItem(boolean isPeek) {
         if (queue.size() <= 1) {
             return queue.peek() != null ? (isPeek ? queue.peek() : queue.poll()) : null;
@@ -226,7 +271,7 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 
             // Filter messages that have arrived at or before the current time
             if (msgItem.getItem().getMinStartTime() <= currentTime) {
-                if (selectedMessage == null || SchedulingPolicy.execute(schedulingPolicy, msgItem.getItem(), selectedMessage.getItem())) {
+                if (selectedMessage == null || SchedulingPolicy.compare(schedulingPolicy, msgItem.getItem(), selectedMessage.getItem(), "<")) {
                     selectedMessage = msgItem;
                 }
             } else {
