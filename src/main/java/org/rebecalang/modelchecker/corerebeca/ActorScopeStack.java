@@ -25,7 +25,7 @@ public class ActorScopeStack implements Serializable {
 		ActivationRecord cursor = activationRecords.getLast();
 		while (cursor != null) {
 			Object variableValue = cursor.getVariableValue(varName);
-			if (variableValue != null)
+			if (variableValue != null || cursor.contains(varName))
 				return variableValue;
 			cursor = cursor.getPreviousScope();
 		}

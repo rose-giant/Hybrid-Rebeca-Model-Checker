@@ -26,6 +26,10 @@ public class ActivationRecord implements Serializable {
         return definedVariables.get(name);
     }
 
+    public boolean contains(String name) {
+        return definedVariables.containsKey(name);
+    }
+
     public void addVariable(String name, Object valueObject) {
         definedVariables.put(name, valueObject);
     }

@@ -39,7 +39,9 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
 		int after;
 		if (tmcib.getAfter() instanceof NonDetValue) {
 			after = (int) InstructionUtilities.getValue(statementInterpreterContainer, tmcib.getAfter(), baseActorState);
-		} else {
+		}else if (tmcib.getAfter() instanceof Variable) {
+			after = (int) ((TimedActorState) baseActorState).retrieveVariableValue((Variable) tmcib.getAfter());
+		}else {
 			after = (int) tmcib.getAfter();
 		}
 

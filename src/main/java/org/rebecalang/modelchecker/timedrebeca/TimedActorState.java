@@ -5,6 +5,7 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilitie
 import org.rebecalang.modelchecker.timedrebeca.utils.SchedulingPolicy;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.modeltransformer.ril.timedrebeca.rilinstruction.TimedMsgsrvCallInstructionBean;
 
 import java.io.PrintStream;
@@ -15,6 +16,7 @@ import java.util.PriorityQueue;
 
 import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.CURRENT_TIME;
 import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.RESUMING_TIME;
+import static org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker.LAST_MESSAGE_WAITING_TIME;
 
 @SuppressWarnings("serial")
 public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
@@ -65,6 +67,14 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
 
     public void setCurrentTime(int currentTime) {
         this.setVariableValue(CURRENT_TIME, currentTime);
+    }
+
+    public int getLastMessageWaitingTime() {
+        return (int) this.retrieveVariableValue(LAST_MESSAGE_WAITING_TIME);
+    }
+
+    public void setLastMessageWaitingTime(int lastMessageArrivalTime) {
+        this.setVariableValue(LAST_MESSAGE_WAITING_TIME, this.getCurrentTime() - lastMessageArrivalTime);
     }
 
     public void increaseCurrentTime(int delay) {
@@ -183,6 +193,16 @@ public class TimedActorState extends BaseActorState<TimedMessageSpecification> {
         }
 
         return enabledMsgs;
+    }
+
+    @Override
+    public Object retrieveVariableValue(String varName) {
+        return varName.equals("currentMessageWaitingTime") ? this.getLastMessageWaitingTime() : actorScopeStack.retrieveVariableValue(varName);
+    }
+
+    @Override
+    public Object retrieveVariableValue(Variable variable) {
+        return variable.getVarName().equals("currentMessageWaitingTime") ? this.getLastMessageWaitingTime() : retrieveVariableValue(variable.getVarName());
     }
 
     @Override

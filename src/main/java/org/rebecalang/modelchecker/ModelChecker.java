@@ -100,6 +100,7 @@ public abstract class ModelChecker {
         actorState.initializeScopeStack();
 
         addRequiredScopeToScopeStack(actorState, actorDeclarationHierarchy);
+        addEnvironmentToScopeStack(actorState, rebecaModel);
 
         actorState.setTypeName(mainDefinition.getType().getTypeName());
         actorState.setName(mainDefinition.getName());
@@ -313,6 +314,15 @@ public abstract class ModelChecker {
             // to have "self" in the scope of parent method calls
             baseActorState.addVariableToRecentScope("self", baseActorState);
             addStateVarsToRelatedScope(baseActorState, reactiveClassDeclaration);
+        }
+    }
+
+    protected void addEnvironmentToScopeStack(BaseActorState<?> baseActorState, RebecaModel rebecaModel) {
+        for (FieldDeclaration fieldDeclaration : rebecaModel.getRebecaCode().getEnvironmentVariables()) {
+            for (VariableDeclarator variableDeclarator : fieldDeclaration.getVariableDeclarators()) {
+                Literal literal = (Literal) ((OrdinaryVariableInitializer) variableDeclarator.getVariableInitializer()).getValue();
+                baseActorState.addVariableToRecentScope(variableDeclarator.getVariableName(), literal.getLiteralValue());
+            }
         }
     }
 

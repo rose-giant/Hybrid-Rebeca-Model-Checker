@@ -27,6 +27,7 @@ import java.util.*;
 public class TimedRebecaModelChecker extends ModelChecker {
 
 	public final static String CURRENT_TIME = "current_time";
+	public final static String LAST_MESSAGE_WAITING_TIME = "last_message_waiting_time";
     public final static String RESUMING_TIME = "resuming_time";
 
 	public int stateCounter = 1;
@@ -59,6 +60,7 @@ public class TimedRebecaModelChecker extends ModelChecker {
 
 		timedActorState.setCurrentTime(0);
 		timedActorState.setResumingTime(0);
+		timedActorState.setLastMessageWaitingTime(0);
 
 		return timedActorState;
 	}
@@ -233,6 +235,9 @@ public class TimedRebecaModelChecker extends ModelChecker {
 	) {
 		TimedActorState newActorState = createTimedActorState(newState, actorName, timedMessageSpecification);
 
+		if (timedMessageSpecification != null && timedMessageSpecification.getSenderActorState().getName().equals(newActorState.getName())) {
+			newActorState.setLastMessageWaitingTime(timedMessageSpecification.getMinStartTime());
+		}
 		newActorState.execute(newState, statementInterpreterContainer, transformedRILModel, rebecaModel, modelCheckingPolicy, timedMessageSpecification);
 
 		return newActorState;
@@ -242,5 +247,6 @@ public class TimedRebecaModelChecker extends ModelChecker {
 		baseActorState.pushInScopeStackForMethodCallInitialization("TimedRebec");
 		baseActorState.addVariableToRecentScope(CURRENT_TIME, 0);
 		baseActorState.addVariableToRecentScope(RESUMING_TIME, 0);
+		baseActorState.addVariableToRecentScope(LAST_MESSAGE_WAITING_TIME, 0);
 	}
 }
