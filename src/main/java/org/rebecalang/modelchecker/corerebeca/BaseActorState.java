@@ -223,7 +223,9 @@ public abstract class BaseActorState<T extends MessageSpecification> implements 
     protected String resolveDynamicBindingOfMethodCall(
             RILModel transformedRILModel,
             AbstractCallingInstructionBean instruction) {
-        String typeName = callActorTypeName((BaseActorState<T>) actorScopeStack.retrieveVariableValue(instruction.getBase().getVarName()));
+        BaseActorState<T> baseActorState = (BaseActorState<T>) actorScopeStack.retrieveVariableValue(instruction.getBase().getVarName());
+        if (baseActorState == null) return null;
+        String typeName = callActorTypeName(baseActorState);
 
         String methodName =
                 rewriteMethodNameType(typeName,

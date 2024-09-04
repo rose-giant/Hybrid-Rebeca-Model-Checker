@@ -35,6 +35,14 @@ public class BuiltInMethodExecutor implements ExternalMethodExecutor {
 			Object delayVal = methodCallInstructionBean.getParameters().get("arg0");
 			if (delayVal instanceof NonDetValue) {
 				delay = (Integer) InstructionUtilities.getValue(statementInterpreterContainer, delayVal, baseActorState);
+			} else if (delayVal instanceof Variable) {
+				Object delayValue = baseActorState.retrieveVariableValue((Variable) delayVal);
+
+				if (delayValue instanceof Integer) {
+					delay = (int) delayValue;
+				} else if (delayValue instanceof String) {
+					delay = Integer.parseInt((String) delayValue);
+				}
 			} else {
 				delay = callGetInteger(delayVal, baseActorState);
 			}

@@ -2,14 +2,7 @@ package org.rebecalang.modelchecker.timedrebeca.rilinterpreter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.TreeMap;
-
-import org.rebecalang.compiler.modelcompiler.SymbolTable;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.*;
-import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.modelchecker.corerebeca.ActorState;
 import org.rebecalang.modelchecker.corerebeca.BaseActorState;
 import org.rebecalang.modelchecker.corerebeca.State;
 import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionInterpreter;
@@ -17,7 +10,6 @@ import org.rebecalang.modelchecker.corerebeca.rilinterpreter.InstructionUtilitie
 import org.rebecalang.modelchecker.timedrebeca.TimedActorState;
 import org.rebecalang.modelchecker.timedrebeca.TimedMessageSpecification;
 import org.rebecalang.modelchecker.timedrebeca.TimedRebecaModelChecker;
-import org.rebecalang.modelchecker.timedrebeca.TimedState;
 import org.rebecalang.modeltransformer.ril.RILUtilities;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.NonDetValue;
@@ -36,18 +28,32 @@ public class TimedMsgsrvCallInstructionInterpreter extends InstructionInterprete
 		TimedMsgsrvCallInstructionBean tmcib = (TimedMsgsrvCallInstructionBean) ib;
 		Map<String, Object> parameters = setMsgSrvParameters(baseActorState, tmcib.getParameters());
 
-		int after;
+		int after = 0;
 		if (tmcib.getAfter() instanceof NonDetValue) {
 			after = (int) InstructionUtilities.getValue(statementInterpreterContainer, tmcib.getAfter(), baseActorState);
-		}else if (tmcib.getAfter() instanceof Variable) {
-			after = (int) ((TimedActorState) baseActorState).retrieveVariableValue((Variable) tmcib.getAfter());
+		} else if (tmcib.getAfter() instanceof Variable) {
+			Object afterValue = baseActorState.retrieveVariableValue((Variable) tmcib.getAfter());
+
+			if (afterValue instanceof Integer) {
+				after = (int) afterValue;
+			} else if (afterValue instanceof String) {
+				after = Integer.parseInt((String) afterValue);
+			}
 		}else {
 			after = (int) tmcib.getAfter();
 		}
 
-		int deadline;
+		int deadline = Integer.MAX_VALUE;
 		if (tmcib.getDeadline() instanceof NonDetValue) {
 			deadline = (int) InstructionUtilities.getValue(statementInterpreterContainer, tmcib.getDeadline(), baseActorState);
+		} else if (tmcib.getDeadline() instanceof Variable) {
+			Object deadlineValue = baseActorState.retrieveVariableValue((Variable) tmcib.getDeadline());
+
+			if (deadlineValue instanceof Integer) {
+				deadline = (int) deadlineValue;
+			} else if (deadlineValue instanceof String) {
+				deadline = Integer.parseInt((String) deadlineValue);
+			}
 		} else {
 			deadline = (int) tmcib.getDeadline();
 		}

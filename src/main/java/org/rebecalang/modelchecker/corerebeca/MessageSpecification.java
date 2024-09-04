@@ -43,9 +43,18 @@ public class MessageSpecification implements Serializable {
 		} else {
 			List<String> list = new ArrayList<String>(parameters.keySet());
 			java.util.Collections.sort(list);
-			for(String key : list)
-				if (!parameters.get(key).equals(other.parameters.get(key)))
+			for (String key : list) {
+				Object value1 = parameters.get(key);
+				Object value2 = other.parameters.get(key);
+
+				if (value1 == null) {
+					if (value2 != null) {
+						return false;
+					}
+				} else if (!value1.equals(value2)) {
 					return false;
+				}
+			}
 		}
 
 		if (senderActorState == null) {
