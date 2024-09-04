@@ -26,7 +26,7 @@ public class JumpIfNotInstructionInterpreter extends InstructionInterpreter {
 		}	
 		Object tempCond = jiib.getCondition();
 		if ((jiib.getCondition() instanceof Variable)) {
-			tempCond = (Boolean) baseActorState.retrieveVariableValue((Variable) jiib.getCondition());
+			tempCond = baseActorState.retrieveVariableValue((Variable) jiib.getCondition());
 		}
 		if (tempCond.equals(Boolean.FALSE)) {
 			baseActorState.setPC(jiib.getMethodName(), jiib.getLineNumber());
