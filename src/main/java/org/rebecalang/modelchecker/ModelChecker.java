@@ -140,6 +140,7 @@ public abstract class ModelChecker {
 
     public void modelCheck(File model, ModelCheckerSetting modelCheckerSetting) throws ModelCheckingException {
         long startTime = System.nanoTime();
+        numberOfTransitions = 0;
 
         setModelCheckerSetting(modelCheckerSetting);
         modelCheck(compileModel(model));
