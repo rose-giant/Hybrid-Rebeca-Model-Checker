@@ -62,7 +62,7 @@ public class TimedRebecaTest {
         StateSpaceUtil.printTimedStateSpace(initialState,
                 new PrintStream(new FileOutputStream(new File(transitionSystem + filename))));
 
-//        Assertions.assertEquals(stateSpaceSize, stateSpace.size());
+        Assertions.assertEquals(stateSpaceSize, stateSpace.size());
         printTime(timedRebecaModelChecker.time);
         printTransitionsCount(stateSpace.size());
         printTransitionsCount(timedRebecaModelChecker.numberOfTransitions);
@@ -85,8 +85,8 @@ public class TimedRebecaTest {
 
     protected static Stream<Arguments> modelToStateSpace() {
         return Stream.of(
-                Arguments.arguments("ticketservice.rebeca", 5, TransitionSystem.TRANSITION_SYSTEM_FTTS)
-//                Arguments.arguments("ticketservice.rebeca", 64, TransitionSystem.TRANSITION_SYSTEM_FGTS)
+                Arguments.arguments("ping_pong.rebeca", 3, TransitionSystem.TRANSITION_SYSTEM_FTTS),
+                Arguments.arguments("ping_pong.rebeca", 15, TransitionSystem.TRANSITION_SYSTEM_FGTS)
         );
     }
 
