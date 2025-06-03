@@ -12,11 +12,11 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 
 @SuppressWarnings("serial")
 public class CoreRebecaActorState extends CoreRebecaAbstractState implements Serializable {
-	
+
 	public final static String PC = "$PC$";
-	
+
 	transient RILModel rilModel;
-	
+
 	private String id;
 	private Environment environment;
 	private ArrayList<HashMap<String, Object>> scope;
@@ -28,18 +28,18 @@ public class CoreRebecaActorState extends CoreRebecaAbstractState implements Ser
 		scope.add(new HashMap<String, Object>());
 		queue = new ArrayList<CoreRebecaMessage>();
 	}
-	
+
 	public String getId() {
 		return id;
 	}
-	
+
 	public RILModel getRILModel() {
 		return rilModel;
 	}
 	public void setRILModel(RILModel rilModel) {
 		this.rilModel = rilModel;
 	}
-	
+
 	public void addVariableToScope(String varName) {
 		addVariableToScope(varName, null);
 	}

@@ -1,0 +1,6 @@
+package org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionlevelsosrules;
+
+import org.rebecalang.transparentactormodelchecker.corerebeca.compositionlevelsosrule.CoreRebecaCompositionLevelTakeMessageSOSRule;
+
+public class HybridRebecaCompositionLevelTakeMessageSOSRule extends CoreRebecaCompositionLevelTakeMessageSOSRule {
+}

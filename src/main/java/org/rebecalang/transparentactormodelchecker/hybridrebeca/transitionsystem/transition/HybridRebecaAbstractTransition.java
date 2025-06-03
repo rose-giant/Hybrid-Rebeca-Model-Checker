@@ -1,0 +1,6 @@
+package org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition;
+
+import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.transition.CoreRebecaAbstractTransition;
+
+public abstract class HybridRebecaAbstractTransition<H> extends CoreRebecaAbstractTransition {
+}

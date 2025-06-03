@@ -21,13 +21,13 @@ public class CoreRebecaSOSRule extends AbstractSOSRule<CoreRebecaSystemState>{
 
 	@Autowired
 	CoreRebecaCompositionLevelExecuteStatementSOSRule executeStatementSOSRule;
-	
+
 	@Autowired
 	CoreRebecaCompositionLevelNetworkDeliverySOSRule networkDeliverySOSRule;
-	
+
 	@Autowired
 	CoreRebecaCompositionLevelTakeMessageSOSRule takeMessageSOSRule;
-	
+
 	@Override
 	public CoreRebecaAbstractTransition<CoreRebecaSystemState> applyRule(CoreRebecaSystemState source) {
 		CoreRebecaNondeterministicTransition<CoreRebecaSystemState> transitions = new 

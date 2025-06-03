@@ -1,0 +1,6 @@
+package org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules;
+
+import org.rebecalang.transparentactormodelchecker.corerebeca.actorlevelsosrule.CoreRebecaActorLevelExecuteStatementSOSRule;
+
+public class HybridRebecaInternalProgressSOSRule extends CoreRebecaActorLevelExecuteStatementSOSRule {
+}

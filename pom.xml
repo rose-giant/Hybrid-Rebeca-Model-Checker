@@ -16,12 +16,12 @@
 		<compilerversion>17</compilerversion>
 	</properties>
 
-<!--	<repositories>-->
-<!--		<repository>-->
-<!--			<id>jitpack.io</id>-->
-<!--			<url>https://jitpack.io</url>-->
-<!--		</repository>-->
-<!--	</repositories>-->
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 
@@ -31,17 +31,23 @@
 			<version>LATEST</version>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>org.rebecalang</groupId>-->
+<!--			<artifactId>modeltransformer</artifactId>-->
+<!--			<version>LATEST</version>-->
+<!--		</dependency>-->
+
+<!--		<dependency>-->
+<!--			<groupId>github.com/rose-giant/Hybrid-Rebeca-Model-Transformer/releases/tag/rebecamodeltransformer</groupId>-->
+<!--			<artifactId>modeltransformer</artifactId>-->
+<!--			<version>LATEST</version>-->
+<!--		</dependency>-->
+
 		<dependency>
 			<groupId>org.rebecalang</groupId>
 			<artifactId>modeltransformer</artifactId>
-			<version>LATEST</version>
+			<version>1.9</version>
 		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>com.github.rose-giant</groupId>-->
-<!--			<artifactId>Hybrid-Rebeca-Model-Transformer</artifactId>-->
-<!--			<version>main</version>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -203,7 +209,7 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.4</version>
+						<version>3.6.0</version>
 						<configuration>
 							<appendAssemblyId>false</appendAssemblyId>
 							<archive>

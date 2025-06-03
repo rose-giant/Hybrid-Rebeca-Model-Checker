@@ -26,7 +26,7 @@ public class CoreRebecaCompositionLevelExecuteStatementSOSRule extends AbstractS
 	
 	@Autowired
 	CoreRebecaNetworkLevelReceiveMessageSOSRule coreRebecaNetworkLevelReceiveMessageSOSRule;
-	
+
 	@Override
 	public CoreRebecaNondeterministicTransition<CoreRebecaSystemState> applyRule(CoreRebecaSystemState source) {
 		CoreRebecaNondeterministicTransition<CoreRebecaSystemState> transitions = 
