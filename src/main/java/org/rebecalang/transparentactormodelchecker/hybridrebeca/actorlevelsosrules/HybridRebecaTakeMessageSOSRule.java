@@ -1,4 +1,6 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules;
 
-public class HybridRebecaTakeMessageSOSRule {
+import org.rebecalang.transparentactormodelchecker.corerebeca.actorlevelsosrule.CoreRebecaActorLevelTakeMessageSOSRule;
+
+public class HybridRebecaTakeMessageSOSRule extends CoreRebecaActorLevelTakeMessageSOSRule {
 }
