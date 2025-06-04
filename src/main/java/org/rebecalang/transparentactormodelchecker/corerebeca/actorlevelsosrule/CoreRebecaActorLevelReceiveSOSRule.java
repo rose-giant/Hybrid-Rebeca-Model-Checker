@@ -28,7 +28,7 @@ public class CoreRebecaActorLevelReceiveSOSRule extends AbstractSOSRule<CoreRebe
 //		return source;
 		throw new RebecaRuntimeInterpreterException("Actor Level recieve message rule requires input action.");
 	}
-	
+
 	@Override
 	public CoreRebecaDeterministicTransition<CoreRebecaActorState> applyRule(Action action, CoreRebecaActorState source) {
 		source.receiveMessage(((MessageAction)action).getMessage());

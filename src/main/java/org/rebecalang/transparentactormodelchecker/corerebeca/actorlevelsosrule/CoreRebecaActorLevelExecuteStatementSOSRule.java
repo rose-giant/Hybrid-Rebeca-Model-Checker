@@ -31,27 +31,27 @@ public class CoreRebecaActorLevelExecuteStatementSOSRule extends AbstractSOSRule
 
 	@Autowired
 	CoreRebecaAssignmentSOSRule assignmentSOSRule;
-	
+
 	@Autowired
 	CoreRebecaSendMessageSOSRule sendMessageSOSRule;
-	
+
 	@Autowired
 	CoreRebecaVariableDeclarationSOSRule variableDeclarationSOSRule;
-	
+
 	@Autowired
 	CoreRebecaPopSOSRule popSOSRule;
-	
+
 	@Autowired
 	CoreRebecaPushSOSRule pushSOSRule;
-	
+
 	@Autowired
 	CoreRebecaEndMSGSrvSOSRule endMSGSrvSOSRule;
-	
+
 	List<Pair<? extends Action, CoreRebecaActorState>> decorateStatementExecutionResult(
 			Pair<? extends Action, Pair<CoreRebecaActorState, InstructionBean>> statementExecutionResult) {
 		return Arrays.asList(new Pair<Action, CoreRebecaActorState>(Action.TAU, statementExecutionResult.getSecond().getFirst())); 
 	}
-	
+
 	CoreRebecaDeterministicTransition<CoreRebecaActorState> convertStatementResultToActorResult(
 			CoreRebecaDeterministicTransition<Pair<CoreRebecaActorState, InstructionBean>> result) {
 		return new CoreRebecaDeterministicTransition<CoreRebecaActorState>(
@@ -91,7 +91,7 @@ public class CoreRebecaActorLevelExecuteStatementSOSRule extends AbstractSOSRule
 		}
 		return destinations;
 	}
-	
+
 	@Override
 	public boolean isEnable(CoreRebecaActorState source) {
 		return !source.hasVariableInScope(CoreRebecaActorState.PC) && 

@@ -38,7 +38,7 @@ public class CoreRebecaActorLevelTakeMessageSOSRule extends AbstractSOSRule<Core
 		result.setDestination(source);
 		return result;
 	}
-	
+
 	@Override
 	public boolean isEnable(CoreRebecaActorState source) {
 		return !source.hasVariableInScope(CoreRebecaActorState.PC) && 
