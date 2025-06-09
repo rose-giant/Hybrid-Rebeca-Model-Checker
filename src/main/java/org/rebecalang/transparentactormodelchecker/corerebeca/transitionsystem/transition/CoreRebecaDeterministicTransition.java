@@ -9,12 +9,12 @@ public class CoreRebecaDeterministicTransition<T> extends CoreRebecaAbstractTran
 	public CoreRebecaDeterministicTransition() {
 		action = Action.TAU;
 	}
-	
+
 	public CoreRebecaDeterministicTransition(T destination) {
 		super();
 		this.destination = destination;
 	}
-	
+
 	public CoreRebecaDeterministicTransition(Action action, T destination) {
 		this.action = action;
 		this.destination = destination;

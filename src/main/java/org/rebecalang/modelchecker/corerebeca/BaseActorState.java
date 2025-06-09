@@ -210,8 +210,8 @@ public abstract class BaseActorState<T extends MessageSpecification> implements 
             MethodCallInstructionBean mcib = (MethodCallInstructionBean) instruction;
             String newMethodName = resolveDynamicBindingOfMethodCall(transformedRILModel, mcib);
             if(!mcib.getMethodName().equals(newMethodName)) {
-                instruction = new MethodCallInstructionBean(
-                        mcib.getBase(), newMethodName, mcib.getParameters(), mcib.getFunctionCallResult());
+//                instruction = new MethodCallInstructionBean(
+//                        mcib.getBase(), newMethodName, mcib.getParameters(), mcib.getFunctionCallResult());
                 ((MethodCallInstructionBean)instruction).setParameters(
                         mcib.getParameters());
             }

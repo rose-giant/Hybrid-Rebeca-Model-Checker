@@ -1,12 +1,8 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca;
 
 import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.transparentactormodelchecker.AbstractSOSRule;
-import org.rebecalang.transparentactormodelchecker.corerebeca.compositionlevelsosrule.CoreRebecaCompositionLevelExecuteStatementSOSRule;
-import org.rebecalang.transparentactormodelchecker.corerebeca.compositionlevelsosrule.CoreRebecaCompositionLevelNetworkDeliverySOSRule;
-import org.rebecalang.transparentactormodelchecker.corerebeca.compositionlevelsosrule.CoreRebecaCompositionLevelTakeMessageSOSRule;
-import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.action.Action;
-import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.state.CoreRebecaSystemState;
+import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.corerebeca.utils.RebecaStateSerializationUtils;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionlevelsosrules.HybridRebecaCompositionLevelExecuteStatementSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionlevelsosrules.HybridRebecaCompositionLevelNetworkDeliverySOSRule;
@@ -20,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class HybridRebecaSOSRule extends AbstractSOSRule<HybridRebecaSystemState> {
+public class HybridRebecaSOSRule extends AbstractHybridSOSRule<HybridRebecaSystemState> {
     @Autowired
     HybridRebecaCompositionLevelExecuteStatementSOSRule executeStatementSOSRule;
 
@@ -37,7 +33,7 @@ public class HybridRebecaSOSRule extends AbstractSOSRule<HybridRebecaSystemState
                 HybridRebecaNondeterministicTransition<HybridRebecaSystemState>();
         HybridRebecaSystemState backup = (HybridRebecaSystemState) RebecaStateSerializationUtils.clone(source);
 
-        List<Pair<? extends Action, CoreRebecaSystemState>> destinations = executeStatementSOSRule.applyRule(source).getDestinations();
+        List<Pair<? extends Action, HybridRebecaSystemState>> destinations = executeStatementSOSRule.applyRule(source).getDestinations();
         transitions.addAllDestinations(destinations);
         if(destinations.size() != 0)
             source = (HybridRebecaSystemState) RebecaStateSerializationUtils.clone(backup);
@@ -51,7 +47,13 @@ public class HybridRebecaSOSRule extends AbstractSOSRule<HybridRebecaSystemState
     }
 
     @Override
-    public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(Action synchAction, HybridRebecaSystemState source) {
+    public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.action.Action synchAction, HybridRebecaSystemState source) {
         return null;
     }
+
+    @Override
+    public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action synchAction, HybridRebecaSystemState source){
+        return null;
+    }
+
 }

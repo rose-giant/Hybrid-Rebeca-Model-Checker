@@ -35,8 +35,8 @@ public class MethodCallInstructionInterpreter extends InstructionInterpreter {
 			baseActorState.addVariableToRecentScope(paramName, paramValue);
         }
         baseActorState.addVariableToRecentScope(AbstractExpressionTranslator.RETURN_VALUE, 0);
-        baseActorState.addVariableToRecentScope(CALL_RESULT, 
-        		mcib.getFunctionCallResult() == null ? null : mcib.getFunctionCallResult().getVarName());
+//        baseActorState.addVariableToRecentScope(CALL_RESULT,
+//        		mcib.getFunctionCallResult() == null ? null : mcib.getFunctionCallResult().getVarName());
         baseActorState.initializePC(mcib.getMethodName(), 0);
     }
 }

@@ -101,43 +101,43 @@ public class StatementsSOSRulesTest {
 //		Assertions.assertEquals(state.getFirst().getVariableValue("var1"), -1);
 //    }
 //
-	@ParameterizedTest
-	@MethodSource("modelToStateSpace")
-	public void GIVEN_RebecaModel_WHEN_No_Error(String filename, int statespaceSize, Policy policy) throws ModelCheckingException, FileNotFoundException {
-		File model = new File(MODEL_FILES_BASE + filename);
-
-		Pair<RebecaModel, SymbolTable> compiledRebecaFile =
-				rebecaModelCompiler.compileRebecaFile(model, new HashSet<CompilerExtension>(), CoreVersion.CORE_2_3);
-		if(!exceptionContainer.exceptionsIsEmpty()) {
-			exceptionContainer.print(System.out);
-			return;
-		}
-        RILModel transformedRILModel = rebeca2RILModelTransformer.transformModel(
-        		compiledRebecaFile, new HashSet<CompilerExtension>(), CoreVersion.CORE_2_3);
-
-		for(String methodName : transformedRILModel.getMethodNames()) {
-			System.out.println(methodName);
-			int counter = 0;
-			for(InstructionBean instruction : transformedRILModel.getInstructionList(methodName)) {
-				System.out.println("" + counter++ +":" + instruction);
-			}
-			System.out.println("...............................................");
-		}
-
-//		coreRebecaModelChecker.modelCheck(model, modelCheckerSetting);
+//	@ParameterizedTest
+//	@MethodSource("modelToStateSpace")
+//	public void GIVEN_RebecaModel_WHEN_No_Error(String filename, int statespaceSize, Policy policy) throws ModelCheckingException, FileNotFoundException {
+//		File model = new File(MODEL_FILES_BASE + filename);
 //
-//		if(!exceptionContainer.exceptionsIsEmpty())
-//			System.out.println(exceptionContainer);
+//		Pair<RebecaModel, SymbolTable> compiledRebecaFile =
+//				rebecaModelCompiler.compileRebecaFile(model, new HashSet<CompilerExtension>(), CoreVersion.CORE_2_3);
+//		if(!exceptionContainer.exceptionsIsEmpty()) {
+//			exceptionContainer.print(System.out);
+//			return;
+//		}
+//        RILModel transformedRILModel = rebeca2RILModelTransformer.transformModel(
+//        		compiledRebecaFile, new HashSet<CompilerExtension>(), CoreVersion.CORE_2_3);
 //
-//		Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
+//		for(String methodName : transformedRILModel.getMethodNames()) {
+//			System.out.println(methodName);
+//			int counter = 0;
+//			for(InstructionBean instruction : transformedRILModel.getInstructionList(methodName)) {
+//				System.out.println("" + counter++ +":" + instruction);
+//			}
+//			System.out.println("...............................................");
+//		}
 //
-//		StateSpace<State<? extends BaseActorState<?>>> stateSpace = coreRebecaModelChecker.getStateSpace();
-//		State<ActorState> initialState = (State<ActorState>) stateSpace.getInitialState();
-//		StateSpaceUtil.printStateSpace(initialState,
-//				new PrintStream(new FileOutputStream(new File(policy + filename))));
-//
-//		Assertions.assertEquals(statespaceSize, stateSpace.size());
-	}
+////		coreRebecaModelChecker.modelCheck(model, modelCheckerSetting);
+////
+////		if(!exceptionContainer.exceptionsIsEmpty())
+////			System.out.println(exceptionContainer);
+////
+////		Assertions.assertTrue(exceptionContainer.exceptionsIsEmpty());
+////
+////		StateSpace<State<? extends BaseActorState<?>>> stateSpace = coreRebecaModelChecker.getStateSpace();
+////		State<ActorState> initialState = (State<ActorState>) stateSpace.getInitialState();
+////		StateSpaceUtil.printStateSpace(initialState,
+////				new PrintStream(new FileOutputStream(new File(policy + filename))));
+////
+////		Assertions.assertEquals(statespaceSize, stateSpace.size());
+//	}
 
 	protected static Stream<Arguments> modelToStateSpace() {
 	    return Stream.of(

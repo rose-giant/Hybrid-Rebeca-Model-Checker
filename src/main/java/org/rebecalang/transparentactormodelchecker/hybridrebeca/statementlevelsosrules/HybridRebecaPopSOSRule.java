@@ -1,0 +1,6 @@
+package org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules;
+
+import org.rebecalang.transparentactormodelchecker.corerebeca.statementlevelrule.CoreRebecaPopSOSRule;
+
+public class HybridRebecaPopSOSRule extends CoreRebecaPopSOSRule {
+}
