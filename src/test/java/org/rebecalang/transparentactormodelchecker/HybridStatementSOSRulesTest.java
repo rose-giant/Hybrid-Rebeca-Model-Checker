@@ -14,8 +14,8 @@ import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.Rebeca2RILModelTransformer;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
-import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.state.Environment;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.HybridRebecaSOSRule;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.Environment;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaNetworkState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
