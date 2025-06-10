@@ -1,7 +1,8 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules;
 
 import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules.*;
@@ -39,7 +40,7 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
         return Arrays.asList(new Pair<Action, HybridRebecaActorState>(Action.TAU, statementExecutionResult.getSecond().getFirst()));
     }
 
-    HybridRebecaDeterministicTransition<HybridRebecaActorState> convertStatementResultToActorResult(
+    HybridRebecaAbstractTransition<HybridRebecaActorState> convertStatementResultToActorResult(
             HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result) {
         return new HybridRebecaDeterministicTransition<HybridRebecaActorState>(
                 result.getAction(), result.getDestination().getFirst());
@@ -50,43 +51,48 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
         HybridRebecaAbstractTransition<HybridRebecaActorState> destinations = null;
         InstructionBean instruction = source.getEnabledInstruction();
         if(instruction instanceof AssignmentInstructionBean) {
-            HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean> >
                     executionResult = assignmentSOSRule.applyRule(new Pair<>(source, instruction));
-            destinations = convertStatementResultToActorResult(executionResult);
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
         }
-//        else if(instruction instanceof MsgsrvCallInstructionBean) {
-//            HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>
-//                    executionResult = sendMessageSOSRule.applyRule(new Pair<>(source, instruction));
-//            destinations = convertStatementResultToActorResult(executionResult);
-//        } else if(instruction instanceof DeclarationInstructionBean) {
-//            HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>
-//                    executionResult = variableDeclarationSOSRule.applyRule(new Pair<>(source, instruction));
-//            destinations = convertStatementResultToActorResult(executionResult);
-//        } else if(instruction instanceof PushARInstructionBean) {
-//            HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>
-//                    executionResult = pushSOSRule.applyRule(new Pair<>(source, instruction));
-//            destinations = convertStatementResultToActorResult(executionResult);
-//        } else if(instruction instanceof PopARInstructionBean) {
-//            HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>
-//                    executionResult = popSOSRule.applyRule(new Pair<>(source, instruction));
-//            destinations = convertStatementResultToActorResult(executionResult);
-//        } else if(instruction instanceof EndMsgSrvInstructionBean) {
-//            HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>
-//                    executionResult = endMSGSrvSOSRule.applyRule(new Pair<>(source, instruction));
-//            destinations = convertStatementResultToActorResult(executionResult);
-//        } else {
-//            throw new RebecaRuntimeInterpreterException("Unknown rule for the statement " + instruction);
-//        }
+        else if(instruction instanceof MsgsrvCallInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = sendMessageSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof DeclarationInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = variableDeclarationSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof PushARInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = pushSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof PopARInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = popSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof EndMsgSrvInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = endMSGSrvSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else {
+            throw new RebecaRuntimeInterpreterException("Unknown rule for the statement " + instruction);
+        }
         return destinations;
     }
 
     @Override
-    public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source) {
+    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Action synchAction, Pair<HybridRebecaActorState, InstructionBean> source) {
         return null;
     }
 
     @Override
-    public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action synchAction, HybridRebecaSystemState source) {
+    public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source) {
         return null;
     }
 }

@@ -1,8 +1,8 @@
 package org.rebecalang.transparentactormodelchecker;
 
-import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.action.Action;
-import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.state.CoreRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.transition.CoreRebecaAbstractTransition;
+import org.rebecalang.compiler.utils.Pair;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
@@ -14,7 +14,7 @@ public abstract class AbstractHybridSOSRule<T> {
 
     public abstract HybridRebecaAbstractTransition<T> applyRule(T source);
 
-    public abstract HybridRebecaAbstractTransition<T> applyRule(Action synchAction, T source);
+    public abstract HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Action synchAction, Pair<HybridRebecaActorState, InstructionBean> source);
 
-    public abstract HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action synchAction, HybridRebecaSystemState source);
+    public abstract HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source);
 }
