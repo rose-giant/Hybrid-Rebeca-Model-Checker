@@ -2,7 +2,7 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsyste
 
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaMessage;
 
-public class TakeMessageAction {
+public class TakeMessageAction extends Action {
     private HybridRebecaMessage message;
 
     public TakeMessageAction(HybridRebecaMessage message) {
