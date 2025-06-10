@@ -58,11 +58,6 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
     }
 
     @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.action.Action synchAction, Pair<HybridRebecaActorState, InstructionBean> source) {
-        return null;
-    }
-
-    @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Action synchAction, Pair<HybridRebecaActorState, InstructionBean> source) {
         return null;
     }
@@ -72,8 +67,4 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
         return null;
     }
 
-    @Override
-    public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action synchAction, HybridRebecaSystemState source) {
-        throw new RebecaRuntimeInterpreterException("Execute statement rule does not accept input action");
-    }
 }
