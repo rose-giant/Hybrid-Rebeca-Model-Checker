@@ -4,6 +4,7 @@ import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MsgsrvCallInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
+import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.SendMessageWithAfterInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
@@ -20,7 +21,7 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
 
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
-        MsgsrvCallInstructionBean msgsrvCall = (MsgsrvCallInstructionBean) source.getSecond();
+        SendMessageWithAfterInstructionBean msgsrvCall = (SendMessageWithAfterInstructionBean) source.getSecond();
         HybridRebecaMessage message = new HybridRebecaMessage();
         message.setName(msgsrvCall.getMethodName());
         HybridRebecaActorState senderActor = source.getFirst();
@@ -33,9 +34,14 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
             }
             message.addParameter(entry.getKey(), value);
         }
+
+        float lowerUpdatedArrival = source.getFirst().getNow().getFirst() + msgsrvCall.getArrivalInterval().getFirst();
+        float upperUpdatedArrival = source.getFirst().getNow().getSecond() + msgsrvCall.getArrivalInterval().getSecond();
+        Pair<Float, Float> updatedArrival = new Pair<>(lowerUpdatedArrival, upperUpdatedArrival);
+        message.setMessageArrivalInterval(updatedArrival);
+
         MessageAction action = new MessageAction(message);
         senderActor.movePCtoTheNextInstruction();
-
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
         result.setDestination(source);
