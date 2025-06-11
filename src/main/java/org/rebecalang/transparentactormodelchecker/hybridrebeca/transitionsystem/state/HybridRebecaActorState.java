@@ -113,30 +113,30 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
         pc.setSecond(pc.getSecond() + 1);
     }
 
-    private Pair<Integer, Integer> resumeTimeInterval;
-    private Pair<Integer, Integer> nowInterval;
+    private Pair<Float, Float> resumeTimeInterval;
+    private Pair<Float, Float> nowInterval;
 
-    public Pair<Integer, Integer> getNow() {
+    public Pair<Float, Float> getNow() {
         return nowInterval;
     }
 
-    public int getUpperBound(Pair<Integer, Integer> interval) {
+    public float getUpperBound(Pair<Float, Float> interval) {
         return interval.getSecond();
     }
 
-    public int getLowerBound(Pair<Integer, Integer> interval) {
+    public float getLowerBound(Pair<Float, Float> interval) {
         return interval.getFirst();
     }
 
-    public Pair<Integer, Integer> getResumeTime() {
+    public Pair<Float, Float> getResumeTime() {
         return resumeTimeInterval;
     }
 
-    public void setResumeTime(Pair<Integer, Integer> resumeTimeInterval) {
+    public void setResumeTime(Pair<Float, Float> resumeTimeInterval) {
         this.resumeTimeInterval = resumeTimeInterval;
     }
 
-    public void setNow(Pair<Integer, Integer> nowInterval) {
+    public void setNow(Pair<Float, Float> nowInterval) {
         this.nowInterval = nowInterval;
     }
 }

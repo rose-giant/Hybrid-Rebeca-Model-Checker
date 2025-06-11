@@ -10,14 +10,15 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.springframework.stereotype.Component;
 
-@Component
-public class HybridRebecaIntervalDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
+    @Component
+    public class HybridRebecaIntervalDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
 
-    @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
+        @Override
+        public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         ContnuousNonDetInstructionBean cnib = (ContnuousNonDetInstructionBean) source.getSecond();
-        int updatedResumeTimeLowerBound = source.getFirst().getResumeTime().getFirst() + (int) cnib.getLowerBound();
-        int updatedResumeTimeUpperBound = source.getFirst().getResumeTime().getSecond() + (int) cnib.getUpperBound();
+        float assignee = (float) cnib.getAssignee();
+        float updatedResumeTimeLowerBound = source.getFirst().getResumeTime().getFirst() + assignee;
+        float updatedResumeTimeUpperBound = source.getFirst().getResumeTime().getSecond() + assignee;
         Pair newResumeTime = new Pair(updatedResumeTimeLowerBound, updatedResumeTimeUpperBound);
         source.getFirst().setResumeTime(newResumeTime);
         source.getFirst().movePCtoTheNextInstruction();
