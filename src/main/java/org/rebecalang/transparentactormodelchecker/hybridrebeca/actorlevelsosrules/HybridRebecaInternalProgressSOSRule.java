@@ -7,7 +7,6 @@ import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules.*;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
     HybridRebecaPushSOSRule pushSOSRule;
 
     @Autowired
-    HybridRebecaEndMsgsrvSOSRule endMSGSrvSOSRule;
+    HybridRebecaEndMSGSRVSOSRule endMSGSrvSOSRule;
 
     List<Pair<? extends Action, HybridRebecaActorState>> decorateStatementExecutionResult(
             Pair<? extends Action, Pair<HybridRebecaActorState, InstructionBean>> statementExecutionResult) {
