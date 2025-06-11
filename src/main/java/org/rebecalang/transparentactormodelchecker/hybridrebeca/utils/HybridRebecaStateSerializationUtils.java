@@ -21,7 +21,7 @@ public class HybridRebecaStateSerializationUtils {
         HybridRebecaSystemState clone = SerializationUtils.clone(object);
 
         RILModel rilModel = object.getActorsState().values().iterator().next().getRILModel();
-        for(CoreRebecaActorState state : clone.getActorsStatesValues())
+        for(HybridRebecaActorState state : clone.getActorsStatesValues())
             state.setRILModel(rilModel);
 
         return clone;

@@ -18,7 +18,6 @@ public class HybridRebecaDeterministicTransition<H> extends HybridRebecaAbstract
     }
 
     public HybridRebecaDeterministicTransition() {
-
     }
 
     public Action getAction() {

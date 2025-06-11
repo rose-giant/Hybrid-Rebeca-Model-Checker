@@ -14,7 +14,7 @@ public class HybridRebecaEnvSync2SOSRule {
         if(!source.messageQueueIsEmpty())
             throw new RebecaRuntimeInterpreterException("Execution rule is disabled");
 
-        Pair<Integer, Integer> updatedNowTimeInterval = new Pair<>();
+        Pair<Float, Float> updatedNowTimeInterval = new Pair<>();
         updatedNowTimeInterval.setFirst(source.getLowerBound(source.getNow()) + t);
         updatedNowTimeInterval.setSecond(source.getUpperBound(source.getNow()) + t);
         source.setNow(updatedNowTimeInterval);

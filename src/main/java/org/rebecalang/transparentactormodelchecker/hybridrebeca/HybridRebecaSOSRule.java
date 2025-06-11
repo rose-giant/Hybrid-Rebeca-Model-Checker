@@ -4,7 +4,7 @@ import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
-import org.rebecalang.transparentactormodelchecker.corerebeca.utils.RebecaStateSerializationUtils;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionlevelsosrules.HybridRebecaCompositionLevelExecuteStatementSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionlevelsosrules.HybridRebecaCompositionLevelNetworkDeliverySOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionlevelsosrules.HybridRebecaCompositionLevelTakeMessageSOSRule;
@@ -32,16 +32,16 @@ public class HybridRebecaSOSRule extends AbstractHybridSOSRule<HybridRebecaSyste
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
         HybridRebecaNondeterministicTransition transitions = new
                 HybridRebecaNondeterministicTransition<HybridRebecaSystemState>();
-        HybridRebecaSystemState backup = (HybridRebecaSystemState) RebecaStateSerializationUtils.clone(source);
+        HybridRebecaSystemState backup = (HybridRebecaSystemState) HybridRebecaStateSerializationUtils.clone(source);
 
         List<Pair<? extends Action, HybridRebecaSystemState>> destinations = executeStatementSOSRule.applyRule(source).getDestinations();
         transitions.addAllDestinations(destinations);
         if(destinations.size() != 0)
-            source = (HybridRebecaSystemState) RebecaStateSerializationUtils.clone(backup);
+            source = (HybridRebecaSystemState) HybridRebecaStateSerializationUtils.clone(backup);
         destinations = takeMessageSOSRule.applyRule(source).getDestinations();
         transitions.addAllDestinations(destinations);
         if(destinations.size() != 0)
-            source = (HybridRebecaSystemState) RebecaStateSerializationUtils.clone(backup);
+            source = (HybridRebecaSystemState) HybridRebecaStateSerializationUtils.clone(backup);
         destinations = networkDeliverySOSRule.applyRule(source).getDestinations();
         transitions.addAllDestinations(destinations);
         return transitions;
