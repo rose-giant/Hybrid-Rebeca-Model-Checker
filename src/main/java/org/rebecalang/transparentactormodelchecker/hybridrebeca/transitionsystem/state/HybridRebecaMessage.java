@@ -1,15 +1,20 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state;
 
+import org.rebecalang.compiler.utils.Pair;
+
 import java.util.HashMap;
 
 public class HybridRebecaMessage {
     private HybridRebecaActorState sender;
     private HybridRebecaActorState receiver;
+    private Pair<Float, Float> messageArrivalInterval;
 
     private String name;
     private HashMap<String, Object> parameters;
 
-
+    public void setMessageArrivalInterval(Pair<Float, Float> messageArrivalInterval) {
+        this.messageArrivalInterval = messageArrivalInterval;
+    }
     public HybridRebecaMessage() {
         parameters = new HashMap<String, Object>();
     }
@@ -17,7 +22,6 @@ public class HybridRebecaMessage {
         this.name = name;
         this.parameters = parameters;
     }
-
     public String getName() {
         return name;
     }
