@@ -30,6 +30,7 @@ public class HybridRebecaSendMessageTest {
         Pair<HybridRebecaActorState, InstructionBean> source = new Pair<>();
         Variable variable = new Variable(hybridRebecaActorState2.getId());
         hybridRebecaActorState1.addVariableToScope(variable.getVarName(), hybridRebecaActorState2);
+//        hybridRebecaActorState1.addVariableToScope("$PC$", 1);
         Pair<Float, Float> now = new Pair<>((float)1, (float)2);
         hybridRebecaActorState1.setNow(now);
         TreeMap<String, Object> stringObjectTreeMap = new TreeMap<>();

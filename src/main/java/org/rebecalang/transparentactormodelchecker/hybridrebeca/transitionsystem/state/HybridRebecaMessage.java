@@ -15,6 +15,11 @@ public class HybridRebecaMessage {
     public void setMessageArrivalInterval(Pair<Float, Float> messageArrivalInterval) {
         this.messageArrivalInterval = messageArrivalInterval;
     }
+
+    public Pair<Float, Float> getMessageArrivalInterval() {
+        return messageArrivalInterval;
+    }
+
     public HybridRebecaMessage() {
         parameters = new HashMap<String, Object>();
     }
