@@ -103,9 +103,9 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
         this.environment = environment;
     }
 
-    public String toString() {
-        return id + "\n[scope:(" + scope + "),\n queue:(" + queue + ")]";
-    }
+//    public String toString() {
+//        return id + "\n[scope:(" + scope + "),\n queue:(" + queue + ")]";
+//    }
 
     @SuppressWarnings("unchecked")
     public void movePCtoTheNextInstruction() {
