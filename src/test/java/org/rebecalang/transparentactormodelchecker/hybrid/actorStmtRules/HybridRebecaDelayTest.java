@@ -6,19 +6,15 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Instruction
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.ContnuousNonDetInstructionBean;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules.HybridRebecaDelaySOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.TimeProgressAction;
-import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.Environment;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HybridRebecaDelayTest {
     HybridRebecaDelaySOSRule hybridRebecaDelaySOSRule = new HybridRebecaDelaySOSRule();
     HybridRebecaActorState hybridRebecaActorState1 = new HybridRebecaActorState("actor1");
-    HybridRebecaActorState hybridRebecaActorState2 = new HybridRebecaActorState("actor2");
-    Environment environment = new Environment();
 
     @Test
     public void nonDetDelayMakesResumeTimeProgress() {

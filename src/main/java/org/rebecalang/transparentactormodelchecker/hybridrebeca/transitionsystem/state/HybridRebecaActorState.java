@@ -113,6 +113,12 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
         pc.setSecond(pc.getSecond() + 1);
     }
 
+    //ask Ehsan --> is line number the same as pc??
+    public void jumpToBranchInstruction(int lineNumber) {
+        Pair<String, Integer> pc = (Pair<String, Integer>) getVariableValue(PC);
+        pc.setSecond(lineNumber);
+    }
+
     private Pair<Float, Float> resumeTimeInterval;
     private Pair<Float, Float> nowInterval;
 
