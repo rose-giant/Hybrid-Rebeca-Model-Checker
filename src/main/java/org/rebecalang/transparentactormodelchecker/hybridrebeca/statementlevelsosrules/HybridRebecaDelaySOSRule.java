@@ -22,6 +22,7 @@ public class HybridRebecaDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridR
         newResumeTime.setFirst(hybridRebecaActorState.getResumeTime().getFirst() + (Float) contnuousNonDetInstructionBean.getLowerBound());
         newResumeTime.setSecond(hybridRebecaActorState.getResumeTime().getSecond() + (Float) contnuousNonDetInstructionBean.getUpperBound());
         hybridRebecaActorState.setResumeTime(newResumeTime);
+        source.setFirst(hybridRebecaActorState);
 
         TimeProgressAction action = new TimeProgressAction();
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
