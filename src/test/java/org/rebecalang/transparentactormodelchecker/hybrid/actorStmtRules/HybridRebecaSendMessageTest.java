@@ -1,5 +1,6 @@
 package org.rebecalang.transparentactormodelchecker.hybrid.actorStmtRules;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
@@ -25,12 +26,17 @@ public class HybridRebecaSendMessageTest {
     HybridRebecaActorState hybridRebecaActorState2 = new HybridRebecaActorState("actor2");
     Environment environment = new Environment();
 
+    @BeforeEach
+    public void init() {
+        int pcInitVal = 1;
+        hybridRebecaActorState1.addVariableToScope("$PC$", new Pair<>("$PC$", pcInitVal));
+    }
+
     @Test
     public void hybridActorStateSendsAMessageWithoutAfter() {
         Pair<HybridRebecaActorState, InstructionBean> source = new Pair<>();
         Variable variable = new Variable(hybridRebecaActorState2.getId());
         hybridRebecaActorState1.addVariableToScope(variable.getVarName(), hybridRebecaActorState2);
-//        hybridRebecaActorState1.addVariableToScope("$PC$", 1);
         Pair<Float, Float> now = new Pair<>((float)1, (float)2);
         hybridRebecaActorState1.setNow(now);
         TreeMap<String, Object> stringObjectTreeMap = new TreeMap<>();

@@ -47,7 +47,7 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
 
         MessageAction action = new MessageAction(message);
         //ASK Ehsan
-//        senderActor.movePCtoTheNextInstruction();
+        senderActor.movePCtoTheNextInstruction();
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
         result.setDestination(source);
