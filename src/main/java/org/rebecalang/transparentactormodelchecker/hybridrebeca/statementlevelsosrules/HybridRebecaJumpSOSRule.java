@@ -1,17 +1,15 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules;
 
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.BinaryExpression;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.JumpIfNotInstructionBean;
-import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakableConditionInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
-import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridExpressionEvaluator;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 import org.springframework.stereotype.Component;
 
 import static org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridExpressionEvaluator.hybridExpressionEvaluator;
@@ -22,7 +20,10 @@ public class HybridRebecaJumpSOSRule extends AbstractHybridSOSRule<Pair<HybridRe
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         JumpIfNotInstructionBean jumpIfNotInstructionBean = (JumpIfNotInstructionBean) source.getSecond();
-        Pair<HybridRebecaActorState, InstructionBean> originalSource = source;
+        HybridRebecaActorState originalState = HybridRebecaStateSerializationUtils.clone(source.getFirst());
+        Pair<HybridRebecaActorState, InstructionBean> originalSource = new Pair<>();
+        originalSource.setFirst(originalState);
+        originalSource.setSecond(source.getSecond());
         Boolean conditionEval = (Boolean) hybridExpressionEvaluator(jumpIfNotInstructionBean.getCondition());
 
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> ifResult =
@@ -37,18 +38,19 @@ public class HybridRebecaJumpSOSRule extends AbstractHybridSOSRule<Pair<HybridRe
         elseResult.setDestination(originalSource);
         elseResult.setAction(Action.TAU);
 
-        if (conditionEval) {
-            return ifResult;
-        }
-        else if (!conditionEval) {
-            return elseResult;
-        }
-        else {
+        if (conditionEval == null) {
             HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> nondetResult =
                     new HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
             nondetResult.addDestination(ifResult.getAction(), ifResult.getDestination());
             nondetResult.addDestination(elseResult.getAction(), elseResult.getDestination());
             return nondetResult;
+        }
+
+        if (conditionEval) {
+            return ifResult;
+        }
+        else {
+            return elseResult;
         }
     }
 

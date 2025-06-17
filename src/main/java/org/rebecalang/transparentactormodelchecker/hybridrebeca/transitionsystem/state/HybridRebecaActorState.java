@@ -59,6 +59,7 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
             if(scope.get(cnt).containsKey(varName))
                 return scope.get(cnt).get(varName);
         }
+        System.out.println("after return");
         return environment.getVariableValue(varName);
     }
 
