@@ -40,11 +40,6 @@ public class HybridRebecaTakeMessageSOSRule extends AbstractHybridSOSRule<Hybrid
     }
 
     @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Action synchAction, Pair<HybridRebecaActorState, InstructionBean> source) {
-        return null;
-    }
-
-    @Override
     public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source) {
         throw new RebecaRuntimeInterpreterException("Actor Level take message rule does not accept input action");
     }

@@ -1,14 +1,41 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state;
 
+import org.rebecalang.compiler.utils.Pair;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 public class HybridRebecaSystemState implements Serializable {
     private Environment environment;
     private HashMap<String, HybridRebecaActorState> actorsState;
     private HybridRebecaNetworkState networkState;
+    private Pair<Float, Float> now = new Pair<>();
+    private Pair<Float, Float> resumeTime = new Pair<>();
+
+    private List<Object> eventList = new ArrayList<>();
+
+    public void setEventList(List<Object> eventList) {
+        this.eventList = eventList;
+    }
+
+    public List<Object> getEventList() {
+        return eventList;
+    }
+
+    public Pair<Float, Float> getNow() {
+        return now;
+    }
+
+    public void setNow(Pair<Float, Float> now) {
+        this.now = now;
+    }
+
+    public void setResumeTime(Pair<Float, Float> resumeTime) {
+        this.resumeTime = resumeTime;
+    }
+
+    public Pair<Float, Float> getResumeTime() {
+        return resumeTime;
+    }
 
     public HybridRebecaSystemState() {
         actorsState = new HashMap<String, HybridRebecaActorState>();

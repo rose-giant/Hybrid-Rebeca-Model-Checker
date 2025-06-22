@@ -11,44 +11,37 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 
-public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
-    @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
-        HybridRebecaActorState originalSource = HybridRebecaStateSerializationUtils.clone(source.getFirst());
+public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<HybridRebecaActorState> {
 
-        Pair<Float, Float> sourceNow = source.getFirst().getNow();
-        Pair<Float, Float> sourceResumeTime = source.getFirst().getResumeTime();
+    @Override
+    public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
+        HybridRebecaActorState originalSource = HybridRebecaStateSerializationUtils.clone(source);
+
+        Pair<Float, Float> sourceNow = source.getNow();
+        Pair<Float, Float> sourceResumeTime = source.getResumeTime();
 
         if(sourceNow.getFirst().equals(sourceResumeTime.getFirst()) &&
-        sourceNow.getSecond() < sourceResumeTime.getSecond() ) {
-            HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaNondeterministicTransition<>();
+                sourceNow.getSecond() < sourceResumeTime.getSecond() ) {
+            HybridRebecaNondeterministicTransition<HybridRebecaActorState> result = new HybridRebecaNondeterministicTransition<>();
 
             originalSource.setResumeTime(sourceNow);
-            Pair<HybridRebecaActorState, InstructionBean> newSource1 = new Pair<>(originalSource, null);
-            result.addDestination(Action.TAU, newSource1);
+            result.addDestination(Action.TAU, originalSource);
 
-            HybridRebecaActorState sourceState = source.getFirst();
+            HybridRebecaActorState sourceState = source;
             Pair<Float, Float> postponeResumeTime = new Pair<>(sourceNow.getSecond() ,sourceResumeTime.getSecond());
             sourceState.setResumeTime(postponeResumeTime);
-            Pair<HybridRebecaActorState, InstructionBean> newSource2 = new Pair<>(sourceState, null);
             TimeProgressAction timeProgressAction = new TimeProgressAction();
-            result.addDestination(timeProgressAction, newSource2);
+            result.addDestination(timeProgressAction, sourceState);
             return result;
         }
         else if(sourceNow.getFirst().equals(sourceResumeTime.getFirst())) {
-            HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaDeterministicTransition<>();
-            HybridRebecaActorState sourceState = source.getFirst();
+            HybridRebecaDeterministicTransition<HybridRebecaActorState> result = new HybridRebecaDeterministicTransition<>();
+            HybridRebecaActorState sourceState = source;
             sourceState.setResumeTime(sourceNow);
-            Pair<HybridRebecaActorState, InstructionBean> newSource2 = new Pair<>(sourceState, null);
-            result.setDestination(newSource2);
+            result.setDestination(sourceState);
             result.setAction(Action.TAU);
             return result;
         }
-        return null;
-    }
-
-    @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Action synchAction, Pair<HybridRebecaActorState, InstructionBean> source) {
         return null;
     }
 

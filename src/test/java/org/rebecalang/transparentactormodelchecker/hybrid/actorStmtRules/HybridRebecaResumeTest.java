@@ -22,16 +22,16 @@ public class HybridRebecaResumeTest {
         Pair<Float, Float> resumeTime = new Pair<>((float) 1, (float)4);
         hybridRebecaActorState.setNow(now);
         hybridRebecaActorState.setResumeTime(resumeTime);
-        Pair<HybridRebecaActorState, InstructionBean> source = new Pair<>(hybridRebecaActorState, null);
-        HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
-                (HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) hybridRebecaResumeSOSRule.applyRule(source);
+        HybridRebecaActorState source = hybridRebecaActorState;
+        HybridRebecaNondeterministicTransition<HybridRebecaActorState> result =
+                (HybridRebecaNondeterministicTransition<HybridRebecaActorState>) hybridRebecaResumeSOSRule.applyRule(source);
         assertTrue(result.getDestinations().size() == 2);
 
-        HybridRebecaActorState resumeDestination = result.getDestinations().get(0).getSecond().getFirst();
+        HybridRebecaActorState resumeDestination = result.getDestinations().get(0).getSecond();
         assertEquals(hybridRebecaActorState.getNow().getFirst(), resumeDestination.getResumeTime().getFirst());
         assertEquals(hybridRebecaActorState.getNow().getSecond(), resumeDestination.getResumeTime().getSecond());
 
-        HybridRebecaActorState postponeDestination = result.getDestinations().get(1).getSecond().getFirst();
+        HybridRebecaActorState postponeDestination = result.getDestinations().get(1).getSecond();
         assertEquals(hybridRebecaActorState.getNow().getSecond(), postponeDestination.getResumeTime().getFirst());
         assertEquals(hybridRebecaActorState.getResumeTime().getSecond(), postponeDestination.getResumeTime().getSecond());
     }
@@ -42,11 +42,11 @@ public class HybridRebecaResumeTest {
         Pair<Float, Float> resumeTime = new Pair<>((float) 1, (float)2);
         hybridRebecaActorState.setNow(now);
         hybridRebecaActorState.setResumeTime(resumeTime);
-        Pair<HybridRebecaActorState, InstructionBean> source = new Pair<>(hybridRebecaActorState, null);
-        HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
-                (HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) hybridRebecaResumeSOSRule.applyRule(source);
+        HybridRebecaActorState source = hybridRebecaActorState;
+        HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
+                (HybridRebecaDeterministicTransition<HybridRebecaActorState>) hybridRebecaResumeSOSRule.applyRule(source);
 
-        HybridRebecaActorState resumeDestination = result.getDestination().getFirst();
+        HybridRebecaActorState resumeDestination = result.getDestination();
         assertEquals(hybridRebecaActorState.getNow().getFirst(), resumeDestination.getResumeTime().getFirst());
         assertEquals(hybridRebecaActorState.getNow().getSecond(), resumeDestination.getResumeTime().getSecond());
     }

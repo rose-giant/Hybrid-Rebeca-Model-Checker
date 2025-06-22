@@ -18,11 +18,6 @@ public class HybridRebecaReceiveSOSRule extends AbstractHybridSOSRule<HybridRebe
     }
 
     @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Action synchAction, Pair<HybridRebecaActorState, InstructionBean> source) {
-        return null;
-    }
-
-    @Override
     public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source) {
         source.receiveMessage(((MessageAction)synchAction).getMessage());
 

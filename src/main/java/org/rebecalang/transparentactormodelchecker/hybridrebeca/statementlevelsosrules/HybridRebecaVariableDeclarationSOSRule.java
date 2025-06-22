@@ -29,9 +29,4 @@ public class HybridRebecaVariableDeclarationSOSRule extends AbstractHybridSOSRul
     public HybridRebecaAbstractTransition<org.rebecalang.compiler.utils.Pair<HybridRebecaActorState, InstructionBean>> applyRule(Action synchAction, org.rebecalang.compiler.utils.Pair<HybridRebecaActorState, InstructionBean> source) {
         return null;
     }
-
-    @Override
-    public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source) {
-        return null;
-    }
 }

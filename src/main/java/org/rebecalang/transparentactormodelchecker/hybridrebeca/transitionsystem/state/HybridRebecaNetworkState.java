@@ -7,6 +7,15 @@ import java.util.HashMap;
 
 public class HybridRebecaNetworkState implements Serializable {
     private HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> receivedMessages;
+    private Pair<Float, Float> now;
+
+    public Pair<Float, Float> getNow() {
+        return now;
+    }
+
+    public void setNow(Pair<Float, Float> now) {
+        this.now = now;
+    }
 
     public HybridRebecaNetworkState() {
         receivedMessages = new HashMap<Pair<String,String>, ArrayList<HybridRebecaMessage>>();

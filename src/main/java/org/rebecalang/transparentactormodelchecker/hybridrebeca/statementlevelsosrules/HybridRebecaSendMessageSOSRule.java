@@ -62,8 +62,4 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
         return null;
     }
 
-    @Override
-    public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source) {
-        return null;
-    }
 }

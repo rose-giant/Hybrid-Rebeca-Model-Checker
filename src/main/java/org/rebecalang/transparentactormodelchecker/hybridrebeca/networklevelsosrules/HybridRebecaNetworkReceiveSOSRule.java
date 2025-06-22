@@ -11,23 +11,14 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 
-public class HybridRebecaNetworkReceiveSOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaNetworkState, InstructionBean>> {
+public class HybridRebecaNetworkReceiveSOSRule extends AbstractHybridSOSRule<HybridRebecaNetworkState> {
 
     @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaNetworkState, InstructionBean>> applyRule(Pair<HybridRebecaNetworkState, InstructionBean> source) {
+    public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
         return null;
     }
 
     @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Action synchAction, Pair<HybridRebecaActorState, InstructionBean> source) {
-        return null;
-    }
-
-    @Override
-    public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source) {
-        return null;
-    }
-
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(Action synchAction, HybridRebecaNetworkState source) {
         HybridRebecaMessage message = ((MessageAction) synchAction).getMessage();
         source.addMessage(message);

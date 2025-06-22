@@ -23,7 +23,7 @@ public class CoreRebecaCompositionLevelExecuteStatementSOSRule extends AbstractS
 
 	@Autowired
 	CoreRebecaActorLevelExecuteStatementSOSRule coreRebecaActorLevelExecuteStatementSOSRule;
-	
+
 	@Autowired
 	CoreRebecaNetworkLevelReceiveMessageSOSRule coreRebecaNetworkLevelReceiveMessageSOSRule;
 

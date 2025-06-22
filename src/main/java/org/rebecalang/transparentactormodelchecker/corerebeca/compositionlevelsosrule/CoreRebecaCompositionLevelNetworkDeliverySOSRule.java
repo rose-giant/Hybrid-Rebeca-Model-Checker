@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CoreRebecaCompositionLevelNetworkDeliverySOSRule extends AbstractSOSRule<CoreRebecaSystemState> {
 
-
 	@Autowired
 	CoreRebecaNetworkLevelDeliverMessage coreRebecaNetworkLevelDeliverMessage;
 	@Autowired
