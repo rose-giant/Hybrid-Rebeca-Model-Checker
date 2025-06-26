@@ -28,16 +28,13 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
     @Autowired
     HybridRebecaNetworkReceiveSOSRule hybridRebecaNetworkLevelReceiveMessageSOSRule;
 
-    @Autowired
-    HybridRebecaNetworkTransferSOSRule hybridRebecaNetworkTransferSOSRule;
-
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
         HybridRebecaNondeterministicTransition<HybridRebecaSystemState> transitions =
                 new HybridRebecaNondeterministicTransition<HybridRebecaSystemState>();
 
-        HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
-        while(source.getResumeTime().getSecond() <= source.getNow().getSecond()) {
+        HybridRebecaSystemState backup = source;
+        while(source.getInputInterval().getSecond() <= source.getNow().getSecond()) {
             for(String actorId : backup.getActorsState().keySet()) {
                 HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
                 if(!hybridRebecaActorState.hasVariableInScope(HybridRebecaActorState.PC))
@@ -71,6 +68,15 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                 }
                 source = HybridRebecaStateSerializationUtils.clone(backup);
             }
+        }
+        return transitions;
+    }
+
+    @Override
+    public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(Action synchAction, HybridRebecaSystemState source) {
+        return null;
+    }
+}
 
 //            HybridRebecaNetworkState hybridRebecaNetworkState = source.getNetworkState();
 //            HybridRebecaAbstractTransition<HybridRebecaNetworkState> executionResult =
@@ -98,13 +104,3 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
 //            } else {
 //                throw new RebecaRuntimeInterpreterException("Unknown network transition type");
 //            }
-        }
-
-        return transitions;
-    }
-
-    @Override
-    public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(Action synchAction, HybridRebecaSystemState source) {
-        return null;
-    }
-}

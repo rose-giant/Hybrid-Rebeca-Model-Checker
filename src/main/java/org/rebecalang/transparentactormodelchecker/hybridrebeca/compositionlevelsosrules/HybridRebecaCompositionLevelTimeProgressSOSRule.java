@@ -4,7 +4,6 @@ import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.TimeProgressAction;
-import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaNetworkState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;

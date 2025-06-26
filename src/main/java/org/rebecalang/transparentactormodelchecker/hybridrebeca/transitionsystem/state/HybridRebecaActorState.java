@@ -146,4 +146,14 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     public void setNow(Pair<Float, Float> nowInterval) {
         this.nowInterval = nowInterval;
     }
+
+    private String activeMode;
+
+    public String getActiveMode() {
+        return activeMode;
+    }
+
+    public void setActiveMode(String activeMode) {
+        this.activeMode = activeMode;
+    }
 }

@@ -9,7 +9,7 @@ public class HybridRebecaSystemState implements Serializable {
     private HashMap<String, HybridRebecaActorState> actorsState;
     private HybridRebecaNetworkState networkState;
     private Pair<Float, Float> now = new Pair<>();
-    private Pair<Float, Float> resumeTime = new Pair<>();
+    private Pair<Float, Float> inputInterval = new Pair<>();
 
     private List<Object> eventList = new ArrayList<>();
 
@@ -29,12 +29,12 @@ public class HybridRebecaSystemState implements Serializable {
         this.now = now;
     }
 
-    public void setResumeTime(Pair<Float, Float> resumeTime) {
-        this.resumeTime = resumeTime;
+    public void setInputInterval(Pair<Float, Float> inputInterval) {
+        this.inputInterval = inputInterval;
     }
 
-    public Pair<Float, Float> getResumeTime() {
-        return resumeTime;
+    public Pair<Float, Float> getInputInterval() {
+        return inputInterval;
     }
 
     public HybridRebecaSystemState() {
