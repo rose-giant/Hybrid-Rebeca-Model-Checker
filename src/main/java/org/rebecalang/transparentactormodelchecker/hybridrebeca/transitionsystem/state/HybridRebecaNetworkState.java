@@ -4,6 +4,7 @@ import org.rebecalang.compiler.utils.Pair;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class HybridRebecaNetworkState implements Serializable {
     private HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> receivedMessages;
@@ -34,6 +35,19 @@ public class HybridRebecaNetworkState implements Serializable {
         if(!receivedMessages.containsKey(key))
             receivedMessages. put(key, new ArrayList<HybridRebecaMessage>());
         receivedMessages.get(key).add(message);
+    }
+
+    public float getMinETA() {
+        float minETA = Float.MAX_VALUE;
+        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : this.getReceivedMessages().entrySet()) {
+            ArrayList<HybridRebecaMessage> messages = entry.getValue();
+            for (HybridRebecaMessage message : messages) {
+                float etaLowerBound = message.getMessageArrivalInterval().getFirst();
+                if (etaLowerBound < minETA) minETA = etaLowerBound;
+            }
+        }
+
+        return minETA;
     }
 
 }

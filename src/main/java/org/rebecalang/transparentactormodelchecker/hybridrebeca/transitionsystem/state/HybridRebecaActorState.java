@@ -6,7 +6,9 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Instruction
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 
 public class HybridRebecaActorState extends HybridRebecaAbstractState implements Serializable {
     public final static String PC = "$PC$";
@@ -81,6 +83,13 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
 
     public void receiveMessage(HybridRebecaMessage newMessage) {
         queue.add(newMessage);
+        queue = sortMessages(queue);
+    }
+
+    private ArrayList<HybridRebecaMessage> sortMessages(ArrayList<HybridRebecaMessage> queue) {
+        ArrayList<HybridRebecaMessage> sortedQueue = new ArrayList<>(queue);
+        sortedQueue.sort(Comparator.comparing(msg -> msg.getMessageArrivalInterval().getFirst()));
+        return sortedQueue;
     }
 
     public void pushToScope() {
@@ -155,5 +164,9 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
 
     public void setActiveMode(String activeMode) {
         this.activeMode = activeMode;
+    }
+
+    public float getMinETA() {
+       return this.getFirstMessage().getMessageArrivalInterval().getFirst();
     }
 }
