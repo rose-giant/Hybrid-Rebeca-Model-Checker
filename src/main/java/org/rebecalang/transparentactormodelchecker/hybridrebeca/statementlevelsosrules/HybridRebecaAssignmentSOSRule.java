@@ -5,12 +5,14 @@ import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AssignmentInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.NonDetValue;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,7 +44,11 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
                 else
                     throw new RebecaRuntimeInterpreterException(
                             "this case should have been reported as an error by the compiler.");
-            } else
+            }
+            else if (rightSideResult instanceof NonDetValue) {
+                return handleNonDetAssignment(source);
+            }
+            else
                 rightSideResult = SemanticCheckerUtils.evaluateConstantTerm(operator, null, valueFirst, valueSecond);
         }
 
@@ -53,6 +59,21 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>();
         result.setDestination(source);
         result.setAction(Action.TAU);
+        return result;
+    }
+
+    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+    handleNonDetAssignment(Pair<HybridRebecaActorState, InstructionBean> source) {
+        HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaNondeterministicTransition<>();
+        AssignmentInstructionBean aib = (AssignmentInstructionBean) source.getSecond();
+        Object valueFirst = getValue(aib.getFirstOperand(), source.getFirst());
+        NonDetValue rightSideResult = (NonDetValue) valueFirst;
+        for (Object obj : rightSideResult.getNonDetValues()) {
+            source.getFirst().setVariableValue((Variable) aib.getLeftVarName(), rightSideResult);
+            result.addDestination(Action.TAU, source);
+        }
+
+        source.getFirst().movePCtoTheNextInstruction();
         return result;
     }
 
