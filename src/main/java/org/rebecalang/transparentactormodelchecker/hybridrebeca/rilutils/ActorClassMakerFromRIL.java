@@ -18,6 +18,18 @@ public class ActorClassMakerFromRIL {
     private Map <String, ArrayList<InstructionBean>> envVars = new HashMap<>();
     private Map<String, RILEquivalentActorClass> actorClasses = new HashMap<>();
 
+    public ArrayList<InstructionBean> getMainBlock() {
+        return mainBlock;
+    }
+
+    public Map<String, RILEquivalentActorClass> getActorClasses() {
+        return actorClasses;
+    }
+
+    public Map<String, ArrayList<InstructionBean>> getEnvVars() {
+        return envVars;
+    }
+
     private void makeActorClasses() {
         Set<String> methodNames = this.rilModel.getMethodNames();
 

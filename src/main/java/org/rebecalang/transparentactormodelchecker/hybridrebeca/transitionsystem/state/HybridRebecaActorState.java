@@ -4,11 +4,12 @@ import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.rilutils.RILEquivalentActorClass;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
 
 public class HybridRebecaActorState extends HybridRebecaAbstractState implements Serializable {
     public final static String PC = "$PC$";
@@ -168,5 +169,15 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
 
     public float getMinETA() {
        return this.getFirstMessage().getMessageArrivalInterval().getFirst();
+    }
+
+    RILEquivalentActorClass rilEquivalentActorClass = new RILEquivalentActorClass();
+
+    public RILEquivalentActorClass getRilEquivalentActorClass() {
+        return rilEquivalentActorClass;
+    }
+
+    public void setRilEquivalentActorClass(RILEquivalentActorClass rilEquivalentActorClass) {
+        this.rilEquivalentActorClass = rilEquivalentActorClass;
     }
 }

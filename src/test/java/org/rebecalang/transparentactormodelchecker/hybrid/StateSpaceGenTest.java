@@ -14,6 +14,7 @@ import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.Rebeca2RILModelTransformer;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.rilutils.ActorClassMakerFromRIL;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.rilutils.GenerateInitialState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -54,6 +55,8 @@ public class StateSpaceGenTest {
         // Transform Rebeca model to RILS
         RILModel transformModel = rebeca2RIL.transformModel(compilationResult, extension, CoreVersion.CORE_2_3);
         ActorClassMakerFromRIL actorClassMakerFromRIL = new ActorClassMakerFromRIL(transformModel);
+        GenerateInitialState generateInitialState = new GenerateInitialState(actorClassMakerFromRIL);
+
         for(String methodName : transformModel.getMethodNames()) {
             System.out.println(methodName);
             int counter = 0;

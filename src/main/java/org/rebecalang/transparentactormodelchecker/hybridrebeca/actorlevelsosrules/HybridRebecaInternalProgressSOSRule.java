@@ -3,6 +3,9 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosru
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
+import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.ContnuousNonDetInstructionBean;
+import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.SendMessageWithAfterInstructionBean;
+import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartSetModeInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules.*;
@@ -34,6 +37,18 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
     @Autowired
     HybridRebecaEndMSGSRVSOSRule endMSGSrvSOSRule;
 
+    @Autowired
+    HybridRebecaJumpSOSRule jumpSOSRule;
+
+    @Autowired
+    HybridRebecaMethodCallSOSRule methodCallSOSRule;
+
+    @Autowired
+    HybridRebecaSetModeSOSRule setModeSOSRule;
+
+    @Autowired
+    HybridRebecaDelaySOSRule delaySOSRule;
+
     List<Pair<? extends Action, HybridRebecaActorState>> decorateStatementExecutionResult(
             Pair<? extends Action, Pair<HybridRebecaActorState, InstructionBean>> statementExecutionResult) {
         return Arrays.asList(new Pair<Action, HybridRebecaActorState>(Action.TAU, statementExecutionResult.getSecond().getFirst()));
@@ -49,6 +64,7 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
     public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
         HybridRebecaAbstractTransition<HybridRebecaActorState> destinations = null;
         InstructionBean instruction = source.getEnabledInstruction();
+
         if(instruction instanceof AssignmentInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean> >
                     executionResult = assignmentSOSRule.applyRule(new Pair<>(source, instruction));
@@ -79,6 +95,32 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
                     executionResult = endMSGSrvSOSRule.applyRule(new Pair<>(source, instruction));
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
         }
+        else if(instruction instanceof JumpIfNotInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = jumpSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof MethodCallInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = methodCallSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof StartSetModeInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = setModeSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof ContnuousNonDetInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = delaySOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof SendMessageWithAfterInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = sendMessageSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+
         else {
             throw new RebecaRuntimeInterpreterException("Unknown rule for the statement " + instruction);
         }

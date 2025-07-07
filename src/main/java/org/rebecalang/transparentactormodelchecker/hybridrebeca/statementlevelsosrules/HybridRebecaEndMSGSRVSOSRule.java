@@ -27,5 +27,3 @@ public class HybridRebecaEndMSGSRVSOSRule extends AbstractHybridSOSRule<Pair<Hyb
     }
 }
 
-
-

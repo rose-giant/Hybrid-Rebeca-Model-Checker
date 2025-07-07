@@ -32,7 +32,24 @@ physicalclass Car(1) {
 
 }
 
+reactiveclass Controller(1) {
+    knownrebecs {
+    }
+
+    statevars {
+        int t;
+    }
+
+    Controller() {
+
+    }
+
+    msgsrv stop() {
+
+    }
+}
+
 main {
-   // Idol idol():();
+    Controller controller():();
     Car car():();
 }
