@@ -16,11 +16,6 @@ physicalclass Car(1) {
         if (r < 1) {
             r = 3 * r;
         }
-
-        self.a() after(1, 2);
-    }
-
-    msgsrv a() {
     }
 
     mode Rolling {
@@ -38,5 +33,6 @@ physicalclass Car(1) {
 }
 
 main {
+   // Idol idol():();
     Car car():();
 }
