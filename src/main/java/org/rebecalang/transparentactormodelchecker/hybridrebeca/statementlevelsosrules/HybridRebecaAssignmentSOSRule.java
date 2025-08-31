@@ -52,8 +52,11 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
             else if (rightSideResult instanceof NonDetValue) {
                 return handleNonDetAssignment(source);
             }
-            else if (valueFirst instanceof Float || valueFirst instanceof Integer || valueFirst instanceof Double) {
+            else if ((aib.getSecondOperand() == null) && (valueFirst instanceof Float || valueFirst instanceof Integer || valueFirst instanceof Double)) {
                 rightSideResult = valueFirst;
+            }
+            else if (aib.getSecondOperand() != null) {
+//                TODO: evaluate the value of the binary expression baby bitch!
             }
             else
                 rightSideResult = SemanticCheckerUtils.evaluateConstantTerm(operator, null, valueFirst, valueSecond);

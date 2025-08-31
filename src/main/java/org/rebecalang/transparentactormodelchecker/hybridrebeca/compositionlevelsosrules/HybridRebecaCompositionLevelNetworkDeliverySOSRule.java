@@ -9,6 +9,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaNetworkState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,22 @@ public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends Abstract
             return transitions;
 
         HybridRebecaSystemState backup = null;
-        HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> deliveredMessageTransitions =
-                (HybridRebecaNondeterministicTransition<HybridRebecaNetworkState>) hybridRebecaNetworkTransferSOSRule.applyRule(source.getNetworkState());
+        HybridRebecaNetworkState networkState = source.getNetworkState();
+        networkState.setNow(source.getNow());
+        HybridRebecaAbstractTransition<HybridRebecaNetworkState> deliveredMessageTransitions = hybridRebecaNetworkTransferSOSRule.applyRule(networkState);
 
-        for(Pair<? extends Action, HybridRebecaNetworkState> deliverable : deliveredMessageTransitions.getDestinations()) {
-            backup = HybridRebecaStateSerializationUtils.clone(source);
-            MessageAction action = (MessageAction) deliverable.getFirst();
-            source.setNetworkState(deliverable.getSecond());
-            source.getActorState(action.getMessage().getReceiver().getId()).
-                    receiveMessage(action.getMessage());
-            transitions.addDestination(Action.TAU, source);
-            source = backup;
+        if (deliveredMessageTransitions instanceof HybridRebecaNondeterministicTransition<HybridRebecaNetworkState>) {
+            for(Pair<? extends Action, HybridRebecaNetworkState> deliverable : deliveredMessageTransitions.getDestinations()) {
+                backup = HybridRebecaStateSerializationUtils.clone(source);
+                MessageAction action = (MessageAction) deliverable.getFirst();
+                source.setNetworkState(deliverable.getSecond());
+                source.getActorState(action.getMessage().getReceiver().getId()).
+                        receiveMessage(action.getMessage());
+                transitions.addDestination(Action.TAU, source);
+                source = backup;
+            }
+        } else {
+            //TODO
         }
 
         return transitions;

@@ -1,11 +1,13 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.utils;
 
 import org.rebecalang.compiler.utils.Pair;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakableConditionInstructionBean;
 
 public class HybridExpressionEvaluator {
 
     public static Object hybridExpressionEvaluator(Object expression) {
+
         if (expression instanceof StartUnbreakableConditionInstructionBean) {
             StartUnbreakableConditionInstructionBean bean = (StartUnbreakableConditionInstructionBean) expression;
             Object right = bean.getRightSide();

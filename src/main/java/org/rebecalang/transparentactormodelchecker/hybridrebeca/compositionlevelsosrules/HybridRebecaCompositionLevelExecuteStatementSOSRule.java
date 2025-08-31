@@ -39,6 +39,7 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
         HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
             for(String actorId : backup.getActorsState().keySet()) {
                 HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
+                hybridRebecaActorState.setNow(source.getNow());
                 if (hybridRebecaActorState.getSigma().size() == 0)
                     continue;
 

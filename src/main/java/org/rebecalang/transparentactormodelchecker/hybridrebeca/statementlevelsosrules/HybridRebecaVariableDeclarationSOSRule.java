@@ -16,7 +16,7 @@ public class HybridRebecaVariableDeclarationSOSRule extends AbstractHybridSOSRul
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         DeclarationInstructionBean vdib = (DeclarationInstructionBean) source.getSecond();
         source.getFirst().addVariableToScope(vdib.getVarName());
-        source.getFirst().movePCtoTheNextInstruction();
+        source.getFirst().moveToNextStatement();
 
         HybridRebecaDeterministicTransition<org.rebecalang.compiler.utils.Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<>();

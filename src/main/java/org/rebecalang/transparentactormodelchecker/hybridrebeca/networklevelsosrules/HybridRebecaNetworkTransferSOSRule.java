@@ -20,8 +20,8 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
-        HybridRebecaNetworkState backup = source;
-        HybridRebecaNetworkState backup2 = source;
+        HybridRebecaNetworkState backup = HybridRebecaStateSerializationUtils.clone(source);
+        HybridRebecaNetworkState backup2 = HybridRebecaStateSerializationUtils.clone(source);
         HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> originalMessages = source.getReceivedMessages();
         List<HybridRebecaMessage> highPriorityMessages = getHighPriorityMessages(backup);
         if (highPriorityMessages.size() == 1) {

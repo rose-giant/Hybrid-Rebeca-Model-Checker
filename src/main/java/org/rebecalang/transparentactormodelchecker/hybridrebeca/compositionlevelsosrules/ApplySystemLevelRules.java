@@ -33,6 +33,7 @@ public class ApplySystemLevelRules {
     public void startApplyingRules(HybridRebecaSystemState initialState){
         HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult = new HybridRebecaDeterministicTransition<>();
         HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(initialState);
+        initialState.setNow(new Pair<>((float)0, (float)0));
         executionResult = levelExecuteStatementSOSRule.applyRule(initialState);
 
         if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
