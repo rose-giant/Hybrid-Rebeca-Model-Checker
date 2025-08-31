@@ -2,6 +2,7 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevels
 
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MsgsrvCallInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.SendMessageWithAfterInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
@@ -20,13 +21,17 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
 
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
-        SendMessageWithAfterInstructionBean msgsrvCall = (SendMessageWithAfterInstructionBean) source.getSecond();
+        MsgsrvCallInstructionBean msgsrvCall = (MsgsrvCallInstructionBean) source.getSecond();
         HybridRebecaMessage message = new HybridRebecaMessage();
         HybridRebecaActorState senderActor = source.getFirst();
 
         message.setName(msgsrvCall.getMethodName());
         message.setSender(senderActor);
-        message.setReceiver((HybridRebecaActorState) senderActor.getVariableValue(msgsrvCall.getBase().getVarName()));
+        if (msgsrvCall.getBase().getVarName().startsWith("self")) {
+            message.setReceiver(senderActor);
+        } else {
+            message.setReceiver((HybridRebecaActorState) senderActor.getVariableValue(msgsrvCall.getBase().getVarName()));
+        }
 
         for(Map.Entry<String, Object> entry : msgsrvCall.getParameters().entrySet()) {
             Object value = entry.getValue();
@@ -36,18 +41,24 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
             message.addParameter(entry.getKey(), value);
         }
 
-        if (msgsrvCall.getArrivalInterval() != null) {
-            float lowerUpdatedArrival = source.getFirst().getNow().getFirst() + msgsrvCall.getArrivalInterval().getFirst();
-            float upperUpdatedArrival = source.getFirst().getNow().getSecond() + msgsrvCall.getArrivalInterval().getSecond();
-            Pair<Float, Float> updatedArrival = new Pair<>(lowerUpdatedArrival, upperUpdatedArrival);
-            message.setMessageArrivalInterval(updatedArrival);
-        } else {
-            message.setMessageArrivalInterval(source.getFirst().getNow());
-        }
+//        if (msgsrvCall.getArrivalInterval() != null) {
+//            float lowerUpdatedArrival = source.getFirst().getNow().getFirst() + msgsrvCall.getArrivalInterval().getFirst();
+//            float upperUpdatedArrival = source.getFirst().getNow().getSecond() + msgsrvCall.getArrivalInterval().getSecond();
+//            Pair<Float, Float> updatedArrival = new Pair<>(lowerUpdatedArrival, upperUpdatedArrival);
+//            message.setMessageArrivalInterval(updatedArrival);
+//        } else {
+//            message.setMessageArrivalInterval(source.getFirst().getNow());
+//        }
+
+        float lowerUpdatedArrival = source.getFirst().getNow().getFirst();
+        float upperUpdatedArrival = source.getFirst().getNow().getSecond();
+        Pair<Float, Float> updatedArrival = new Pair<>(lowerUpdatedArrival, upperUpdatedArrival);
+        message.setMessageArrivalInterval(updatedArrival);
 
         MessageAction action = new MessageAction(message);
         //ASK Ehsan
-        senderActor.movePCtoTheNextInstruction();
+//        senderActor.movePCtoTheNextInstruction();
+        senderActor.moveToNextStatement();
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
         result.setDestination(source);

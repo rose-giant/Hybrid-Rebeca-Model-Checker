@@ -3,12 +3,15 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionleve
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
+import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.state.CoreRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.corerebeca.utils.RebecaStateSerializationUtils;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules.HybridRebecaInternalProgressSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.networklevelsosrules.HybridRebecaNetworkReceiveSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.networklevelsosrules.HybridRebecaNetworkTransferSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaMessage;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
@@ -23,21 +26,23 @@ import java.util.Iterator;
 public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends AbstractHybridSOSRule<HybridRebecaSystemState> {
 
     @Autowired
-    HybridRebecaInternalProgressSOSRule hybridRebecaActorLevelExecuteStatementSOSRule;
+    HybridRebecaInternalProgressSOSRule hybridRebecaActorLevelExecuteStatementSOSRule = new HybridRebecaInternalProgressSOSRule();
 
     @Autowired
-    HybridRebecaNetworkReceiveSOSRule hybridRebecaNetworkLevelReceiveMessageSOSRule;
+    HybridRebecaNetworkReceiveSOSRule hybridRebecaNetworkLevelReceiveMessageSOSRule = new HybridRebecaNetworkReceiveSOSRule();
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
         HybridRebecaNondeterministicTransition<HybridRebecaSystemState> transitions =
                 new HybridRebecaNondeterministicTransition<HybridRebecaSystemState>();
 
-        HybridRebecaSystemState backup = source;
-        while(source.getInputInterval().getSecond() <= source.getNow().getSecond()) {
+        HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
             for(String actorId : backup.getActorsState().keySet()) {
                 HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
-                if(!hybridRebecaActorState.hasVariableInScope(HybridRebecaActorState.PC))
+                if (hybridRebecaActorState.getSigma().size() == 0)
+                    continue;
+
+                if(hybridRebecaActorState.noScopeInstructions())
                     continue;
 
                 HybridRebecaAbstractTransition<HybridRebecaActorState> executionResult =
@@ -66,9 +71,10 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                 } else {
                     throw new RebecaRuntimeInterpreterException("Unknown actor transition type");
                 }
+
                 source = HybridRebecaStateSerializationUtils.clone(backup);
+//                System.out.println(source.getNow().getSecond());
             }
-        }
         return transitions;
     }
 

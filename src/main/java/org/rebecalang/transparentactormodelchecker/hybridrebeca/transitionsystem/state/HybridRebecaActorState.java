@@ -5,26 +5,34 @@ import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.rilutils.RILEquivalentActorClass;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 
+@SuppressWarnings("serial")
 public class HybridRebecaActorState extends HybridRebecaAbstractState implements Serializable {
     public final static String PC = "$PC$";
-
+    public int pc;
     transient RILModel rilModel;
-
     private String id;
     private Environment environment;
-    private ArrayList<HashMap<String, Object>> scope;
+    private ArrayList<ActorScope> scopes;
     private ArrayList<HybridRebecaMessage> queue;
+//    private ArrayList<InstructionBean> sigma = new ArrayList<>();
+    private RILEquivalentActorClass rilEquivalentActorClass = new RILEquivalentActorClass();
+    private String activeMode;
+    private Pair<Float, Float> resumeTimeInterval;
+    private Pair<Float, Float> nowInterval;
 
     public HybridRebecaActorState(String id) {
+        this.scopes = new ArrayList<>();
         this.id = id;
-        scope = new ArrayList<HashMap<String,Object>>();
-        scope.add(new HashMap<String, Object>());
+//        ActorScope actorScope = new ActorScope();
+//        actorScope.setBlockName();
+//        this.scopes.add(actorScope);
+//        scope = new ArrayList<HashMap<String,Object>>();
+//        scope.add(new HashMap<String, Object>());
         queue = new ArrayList<HybridRebecaMessage>();
     }
 
@@ -44,32 +52,25 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     }
 
     public void addVariableToScope(String varName, Object value) {
-        scope.get(0).put(varName, value);
+        this.scopes.get(0).addVariableToScope(varName, value);
     }
 
     public void setVariableValue(Variable leftVarName, Object value) {
-        for(int cnt = 0; cnt < scope.size(); cnt++) {
-            if(!scope.get(cnt).containsKey(leftVarName.getVarName()))
-                continue;
-            scope.get(cnt).put(leftVarName.getVarName(), value);
-            return;
-        }
-        throw new RebecaRuntimeInterpreterException("variable \"" + leftVarName + "\" not found");
+        this.scopes.get(scopes.size()-1).setVariableValue(leftVarName, value);
     }
 
     public Object getVariableValue(String varName) {
-        for(int cnt = 0; cnt < scope.size(); cnt++) {
-            if(scope.get(cnt).containsKey(varName))
-                return scope.get(cnt).get(varName);
+        Object object = this.scopes.get(scopes.size() - 1).getVariableValue(varName);
+        if (object != null) {
+            return object;
         }
-        System.out.println("after return");
         return environment.getVariableValue(varName);
     }
 
     public boolean hasVariableInScope(String varName) {
-        for(int cnt = 0; cnt < scope.size(); cnt++) {
-            if(scope.get(cnt).containsKey(varName))
-                return true;
+        Object object = this.scopes.get(scopes.size() - 1).hasVariableInScope(varName);
+        if ((Boolean) object != false) {
+            return true;
         }
         return environment.hasVariableInScope(varName);
     }
@@ -94,11 +95,11 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     }
 
     public void pushToScope() {
-        scope.add(new HashMap<String, Object>());
+        this.scopes.add(new ActorScope());
     }
 
     public void popFromScope() {
-        scope.remove(scope.size() - 1);
+        this.scopes.remove(scopes.size() - 1);
     }
 
     @SuppressWarnings("unchecked")
@@ -130,9 +131,6 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
         pc.setSecond(lineNumber);
     }
 
-    private Pair<Float, Float> resumeTimeInterval;
-    private Pair<Float, Float> nowInterval;
-
     public Pair<Float, Float> getNow() {
         return nowInterval;
     }
@@ -157,8 +155,6 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
         this.nowInterval = nowInterval;
     }
 
-    private String activeMode;
-
     public String getActiveMode() {
         return activeMode;
     }
@@ -171,8 +167,6 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
        return this.getFirstMessage().getMessageArrivalInterval().getFirst();
     }
 
-    RILEquivalentActorClass rilEquivalentActorClass = new RILEquivalentActorClass();
-
     public RILEquivalentActorClass getRilEquivalentActorClass() {
         return rilEquivalentActorClass;
     }
@@ -180,4 +174,40 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     public void setRilEquivalentActorClass(RILEquivalentActorClass rilEquivalentActorClass) {
         this.rilEquivalentActorClass = rilEquivalentActorClass;
     }
+
+    public void addScope(String blockName) {
+        ActorScope actorScope = new ActorScope();
+        actorScope.setBlockName(blockName);
+        scopes.add(actorScope);
+    }
+
+    public ArrayList<InstructionBean> getSigma() {
+        return rilModel.getInstructionList(scopes.get(scopes.size() - 1).getBlockName());
+    }
+
+    public boolean noScopeInstructions() {
+        return scopes.get(scopes.size()-1).getPC() == this.getSigma().size() - 1 ;
+    }
+
+    public InstructionBean getInstruction() {
+        return rilModel.getInstructionList(scopes.get(scopes.size() - 1).getBlockName()).get(scopes.get(scopes.size()-1).getPC());
+    }
+
+    public void setCurrentBlockName(String name) {
+        scopes.get(scopes.size() - 1).setBlockName(name);
+        scopes.get(scopes.size() - 1).setPC(0);
+    }
+
+    public void moveToNextStatement() {
+       scopes.get(scopes.size() - 1).incrementPC();
+    }
+
 }
+//    public void addToSigma(ArrayList<InstructionBean> sigma) {
+//        this.sigma.addAll(sigma);
+//    }
+//
+//    public void setSigma(ArrayList<InstructionBean> sigma) {
+//        this.sigma = sigma;
+//    }
+//

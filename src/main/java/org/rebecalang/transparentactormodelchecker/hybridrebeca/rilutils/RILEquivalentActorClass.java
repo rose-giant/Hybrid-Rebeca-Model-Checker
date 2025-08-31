@@ -2,12 +2,19 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.rilutils;
 
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RILEquivalentActorClass {
-    private HashMap<String, ArrayList<InstructionBean>> modes;
-    private HashMap<String, ArrayList<InstructionBean>> methods;
+@SuppressWarnings("serial")
+public class RILEquivalentActorClass implements Serializable {
+    private HashMap<String, ArrayList<InstructionBean>> modes = new HashMap<>();
+    private HashMap<String, ArrayList<InstructionBean>> methods = new HashMap<>();
+
+    public void RILEquivalentActorClass() {
+        this.modes = new HashMap<>();
+        this.methods = new HashMap<>();
+    }
 
     public HashMap<String, ArrayList<InstructionBean>> getMethods() {
         return methods;

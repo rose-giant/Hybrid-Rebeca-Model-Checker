@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends AbstractHybridSOSRule<HybridRebecaSystemState> {
 
     @Autowired
-    HybridRebecaNetworkTransferSOSRule hybridRebecaNetworkTransferSOSRule;
+    HybridRebecaNetworkTransferSOSRule hybridRebecaNetworkTransferSOSRule = new HybridRebecaNetworkTransferSOSRule();
     @Autowired
-    HybridRebecaReceiveSOSRule hybridRebecaReceiveSOSRule;
+    HybridRebecaReceiveSOSRule hybridRebecaReceiveSOSRule = new HybridRebecaReceiveSOSRule();
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {

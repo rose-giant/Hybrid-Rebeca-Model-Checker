@@ -13,7 +13,10 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 
 @Component
 public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
@@ -31,7 +34,8 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
         AssignmentInstructionBean aib = (AssignmentInstructionBean) source.getSecond();
         Object valueFirst = getValue(aib.getFirstOperand(), source.getFirst());
         Object valueSecond = getValue(aib.getSecondOperand(), source.getFirst());
-        String operator = aib.getOperator();
+//        String operator = aib.getOperator();
+        String operator = "=";
         Object rightSideResult = valueFirst;
         if (operator != null) {
             if (valueFirst instanceof HybridRebecaActorState) {
@@ -48,12 +52,16 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
             else if (rightSideResult instanceof NonDetValue) {
                 return handleNonDetAssignment(source);
             }
+            else if (valueFirst instanceof Float || valueFirst instanceof Integer || valueFirst instanceof Double) {
+                rightSideResult = valueFirst;
+            }
             else
                 rightSideResult = SemanticCheckerUtils.evaluateConstantTerm(operator, null, valueFirst, valueSecond);
         }
 
         source.getFirst().setVariableValue((Variable) aib.getLeftVarName(), rightSideResult);
-        source.getFirst().movePCtoTheNextInstruction();
+//        source.getFirst().movePCtoTheNextInstruction();
+        source.getFirst().moveToNextStatement();
 
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>();

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class HybridRebecaNetworkState implements Serializable {
     private HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> receivedMessages;
     private Pair<Float, Float> now;
@@ -48,6 +49,19 @@ public class HybridRebecaNetworkState implements Serializable {
         }
 
         return minETA;
+    }
+
+    public float getMinETE() {
+        float minETE = Float.MAX_VALUE;
+        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : this.getReceivedMessages().entrySet()) {
+            ArrayList<HybridRebecaMessage> messages = entry.getValue();
+            for (HybridRebecaMessage message : messages) {
+                float etaLowerBound = message.getMessageArrivalInterval().getSecond();
+                if (etaLowerBound < minETE) minETE = etaLowerBound;
+            }
+        }
+
+        return minETE;
     }
 
 }

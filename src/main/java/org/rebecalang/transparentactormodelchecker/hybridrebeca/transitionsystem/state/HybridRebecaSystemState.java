@@ -11,15 +11,15 @@ public class HybridRebecaSystemState implements Serializable {
     private Pair<Float, Float> now = new Pair<>();
     private Pair<Float, Float> inputInterval = new Pair<>();
 
-    private List<Object> eventList = new ArrayList<>();
+//    private List<Object> eventList = new ArrayList<>();
 
-    public void setEventList(List<Object> eventList) {
-        this.eventList = eventList;
-    }
-
-    public List<Object> getEventList() {
-        return eventList;
-    }
+//    public void setEventList(List<Object> eventList) {
+//        this.eventList = eventList;
+//    }
+//
+//    public List<Object> getEventList() {
+//        return eventList;
+//    }
 
     public Pair<Float, Float> getNow() {
         return now;

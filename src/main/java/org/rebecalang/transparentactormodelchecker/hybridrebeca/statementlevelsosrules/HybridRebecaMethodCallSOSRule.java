@@ -8,14 +8,18 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 
+import java.util.ArrayList;
+
 public class HybridRebecaMethodCallSOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         HybridRebecaActorState actorState = source.getFirst();
         MethodCallInstructionBean methodCallInstruction = (MethodCallInstructionBean) source.getSecond();
         String methodName = methodCallInstruction.getMethodName();
-//        actorState.
-        //TODO
+
+        ArrayList<InstructionBean> methodInstructionList = actorState.getRilEquivalentActorClass().getMethods().get(methodName);
+        actorState.setCurrentBlockName(methodName);
+
         return null;
     }
 

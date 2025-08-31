@@ -15,8 +15,8 @@ public class HybridRebecaPushSOSRule extends AbstractHybridSOSRule<Pair<HybridRe
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         source.getFirst().pushToScope();
-        source.getFirst().movePCtoTheNextInstruction();
-
+//        source.getFirst().movePCtoTheNextInstruction();
+        source.getFirst().moveToNextStatement();
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>(source);
         result.setDestination(source);

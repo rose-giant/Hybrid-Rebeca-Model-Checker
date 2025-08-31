@@ -1,25 +1,23 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state;
 
 import org.rebecalang.compiler.utils.Pair;
-
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class HybridRebecaMessage {
+@SuppressWarnings("serial")
+public class HybridRebecaMessage implements Serializable {
     private HybridRebecaActorState sender;
     private HybridRebecaActorState receiver;
     private Pair<Float, Float> messageArrivalInterval;
-
     private String name;
     private HashMap<String, Object> parameters;
 
     public void setMessageArrivalInterval(Pair<Float, Float> messageArrivalInterval) {
         this.messageArrivalInterval = messageArrivalInterval;
     }
-
     public Pair<Float, Float> getMessageArrivalInterval() {
         return messageArrivalInterval;
     }
-
     public HybridRebecaMessage() {
         parameters = new HashMap<String, Object>();
     }
@@ -54,7 +52,6 @@ public class HybridRebecaMessage {
     public void setReceiver(HybridRebecaActorState receiver) {
         this.receiver = receiver;
     }
-
     public String toString() {
         return (sender == null ? "main" : sender.getId()) + "->" + receiver.getId() + "." + name + "()";
     }

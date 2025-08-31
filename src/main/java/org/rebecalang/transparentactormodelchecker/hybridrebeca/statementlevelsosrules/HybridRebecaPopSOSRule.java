@@ -17,7 +17,8 @@ public class HybridRebecaPopSOSRule extends AbstractHybridSOSRule<Pair<HybridReb
         PopARInstructionBean pib = (PopARInstructionBean) source.getSecond();
         for(int cnt = 0; cnt < pib.getNumberOfPops(); cnt++)
             source.getFirst().popFromScope();
-        source.getFirst().movePCtoTheNextInstruction();
+//        source.getFirst().movePCtoTheNextInstruction();
+        source.getFirst().moveToNextStatement();
 
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
