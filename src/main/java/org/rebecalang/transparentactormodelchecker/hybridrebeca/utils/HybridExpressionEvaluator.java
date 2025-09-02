@@ -7,6 +7,10 @@ import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakabl
 public class HybridExpressionEvaluator {
 
     public static Object hybridExpressionEvaluator(Object expression) {
+        //transformation of else case
+        if (expression == null) {
+            return true;
+        }
 
         if (expression instanceof StartUnbreakableConditionInstructionBean) {
             StartUnbreakableConditionInstructionBean bean = (StartUnbreakableConditionInstructionBean) expression;

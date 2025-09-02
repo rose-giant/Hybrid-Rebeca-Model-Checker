@@ -127,8 +127,9 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
 
     //ask Ehsan --> is line number the same as pc??
     public void jumpToBranchInstruction(int lineNumber) {
-        Pair<String, Integer> pc = (Pair<String, Integer>) getVariableValue(PC);
-        pc.setSecond(lineNumber);
+//        Pair<String, Integer> pc = (Pair<String, Integer>) getVariableValue(PC);
+//        pc.setSecond(lineNumber);
+        scopes.get(scopes.size() - 1).setPC(lineNumber);
     }
 
     public Pair<Float, Float> getNow() {

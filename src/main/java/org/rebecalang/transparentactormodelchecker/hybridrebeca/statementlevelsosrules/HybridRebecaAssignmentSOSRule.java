@@ -1,6 +1,7 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules;
 
 import org.rebecalang.compiler.modelcompiler.SemanticCheckerUtils;
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.BinaryExpression;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AssignmentInstructionBean;
@@ -13,6 +14,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -34,10 +36,10 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
         AssignmentInstructionBean aib = (AssignmentInstructionBean) source.getSecond();
         Object valueFirst = getValue(aib.getFirstOperand(), source.getFirst());
         Object valueSecond = getValue(aib.getSecondOperand(), source.getFirst());
-//        String operator = aib.getOperator();
+        String expressionOperator = aib.getOperator();
         String operator = "=";
-        Object rightSideResult = valueFirst;
-        if (operator != null) {
+        Object rightSideResult = new Object();
+        if (expressionOperator != null) {
             if (valueFirst instanceof HybridRebecaActorState) {
                 if (operator.equals("=="))
                     rightSideResult = (((HybridRebecaActorState) valueFirst).getId()
@@ -52,24 +54,37 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
             else if (rightSideResult instanceof NonDetValue) {
                 return handleNonDetAssignment(source);
             }
-            else if ((aib.getSecondOperand() == null) && (valueFirst instanceof Float || valueFirst instanceof Integer || valueFirst instanceof Double)) {
-                rightSideResult = valueFirst;
+            else if (expressionOperator.equals("<")) {
+                rightSideResult = (float)valueFirst < (float)valueSecond;
             }
-            else if (aib.getSecondOperand() != null) {
-//                TODO: evaluate the value of the binary expression baby bitch!
+            else if (expressionOperator.equals(">")) {
+                rightSideResult = (float)valueFirst > (float)valueSecond;
+            }
+            else if (expressionOperator.equals("==")) {
+                rightSideResult = (float)valueFirst == (float)valueSecond;
+            }
+            else if (expressionOperator.equals("!=")) {
+                rightSideResult = (float)valueFirst != (float)valueSecond;
             }
             else
                 rightSideResult = SemanticCheckerUtils.evaluateConstantTerm(operator, null, valueFirst, valueSecond);
+        } else {
+            rightSideResult = valueFirst;
         }
 
         source.getFirst().setVariableValue((Variable) aib.getLeftVarName(), rightSideResult);
-//        source.getFirst().movePCtoTheNextInstruction();
         source.getFirst().moveToNextStatement();
 
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>();
         result.setDestination(source);
         result.setAction(Action.TAU);
+        return result;
+    }
+
+    private Object handleBinaryExpressionAssignment(Pair<HybridRebecaActorState, InstructionBean> source) {
+        Object result = new Object();
+
         return result;
     }
 

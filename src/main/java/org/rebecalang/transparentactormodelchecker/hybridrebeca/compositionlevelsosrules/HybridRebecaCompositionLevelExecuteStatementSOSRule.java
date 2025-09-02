@@ -55,7 +55,10 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                     if(transition.getAction() instanceof MessageAction) {
                         hybridRebecaNetworkLevelReceiveMessageSOSRule.applyRule(
                                 transition.getAction(), source.getNetworkState());
+                    } else {
+                        transition.setAction(Action.TAU);
                     }
+                    source.setActorState(actorId, ((HybridRebecaDeterministicTransition<HybridRebecaActorState>) executionResult).getDestination());
                     transitions.addDestination(transition.getAction(), source);
                 } else if(executionResult instanceof HybridRebecaNondeterministicTransition<HybridRebecaActorState>) {
                     Iterator<Pair<? extends Action, HybridRebecaActorState>> transitionsIterator =

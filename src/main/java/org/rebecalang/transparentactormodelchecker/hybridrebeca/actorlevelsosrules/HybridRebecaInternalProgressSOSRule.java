@@ -105,6 +105,8 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
         else if(instruction instanceof JumpIfNotInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
                     executionResult = jumpSOSRule.applyRule(new Pair<>(source, instruction));
+//            source.moveToNextStatement();
+//            executionResult.getDestinations().getFirst().getSecond().getFirst().moveToNextStatement();
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
         }
         else if(instruction instanceof MethodCallInstructionBean) {
