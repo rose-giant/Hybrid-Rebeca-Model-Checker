@@ -1,12 +1,16 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.utils;
 
 import org.rebecalang.compiler.utils.Pair;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.JumpIfNotInstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakableConditionInstructionBean;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 
 public class HybridExpressionEvaluator {
 
-    public static Object hybridExpressionEvaluator(Object expression) {
+    public static Object hybridExpressionEvaluator(Pair<HybridRebecaActorState, InstructionBean> source) {
+        Object expression = ((JumpIfNotInstructionBean) source.getSecond()).getCondition();
         //transformation of else case
         if (expression == null) {
             return true;
@@ -66,6 +70,24 @@ public class HybridExpressionEvaluator {
                 };
             }
 
+            else if (left instanceof Variable && right instanceof Number) {
+                float leftVal = (float) source.getFirst().getVariableValue(((Variable) left).getVarName());
+                float rightVal = (float) right;
+                return switch (op) {
+                    case ">" -> leftVal > rightVal;
+                    case ">=" -> leftVal >= rightVal;
+                    case "<" -> leftVal < rightVal;
+                    case "<=" -> leftVal <= rightVal;
+                    case "==" -> leftVal == rightVal;
+                    case "!=" -> leftVal != rightVal;
+                    case "+" -> leftVal + rightVal;
+                    case "-" -> leftVal - rightVal;
+                    case "*" -> leftVal * rightVal;
+                    case "/" -> rightVal != 0 ? leftVal / rightVal : Double.NaN;
+                    default -> throw new UnsupportedOperationException("Unknown operator: " + op);
+                };
+
+            }
             if (left instanceof String || right instanceof String) {
                 String leftStr = left.toString();
                 String rightStr = right.toString();

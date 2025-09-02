@@ -38,7 +38,7 @@ public class HybridRebecaJumpSOSRule extends AbstractHybridSOSRule<Pair<HybridRe
             Variable var = (Variable) jumpIfNotInstructionBean.getCondition();
             conditionEval = (Boolean) originalState.getVariableValue(var.getVarName());
         } else {
-            conditionEval = (boolean) hybridExpressionEvaluator(jumpIfNotInstructionBean.getCondition());
+            conditionEval = (boolean) hybridExpressionEvaluator(source);
         }
 
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> ifResult =

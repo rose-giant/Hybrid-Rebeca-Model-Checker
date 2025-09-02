@@ -8,6 +8,7 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AssignmentI
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.NonDetValue;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
+import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakableConditionInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
@@ -31,8 +32,32 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
         return reference;
     }
 
+    private HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> handleContinuousAssignment(Pair<HybridRebecaActorState, InstructionBean> source) {
+        StartUnbreakableConditionInstructionBean sucib = (StartUnbreakableConditionInstructionBean) source.getSecond();
+        Variable leftSide = (Variable) sucib.getLeftSide();
+        String operator = sucib.getOperator();
+        if (operator.equals("=")) {
+            if (sucib.getRightSide() instanceof Float) {
+                source.getFirst().setVariableValue(leftSide, sucib.getRightSide());
+            }
+            else if (sucib.getRightSide() instanceof Variable) {
+                source.getFirst().setVariableValue(((Variable) sucib.getLeftSide()) ,source.getFirst().getVariableValue(((Variable) sucib.getRightSide()).getVarName()));
+            }
+        }
+
+        source.getFirst().moveToNextStatement();
+        HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
+                new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>();
+        result.setDestination(source);
+        result.setAction(Action.TAU);
+        return result;
+    }
+
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
+        if (source.getSecond() instanceof StartUnbreakableConditionInstructionBean) {
+            return handleContinuousAssignment(source);
+        }
         AssignmentInstructionBean aib = (AssignmentInstructionBean) source.getSecond();
         Object valueFirst = getValue(aib.getFirstOperand(), source.getFirst());
         Object valueSecond = getValue(aib.getSecondOperand(), source.getFirst());
@@ -65,6 +90,15 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
             }
             else if (expressionOperator.equals("!=")) {
                 rightSideResult = (float)valueFirst != (float)valueSecond;
+            }
+            else if (expressionOperator.equals("+")) {
+                rightSideResult = (float)valueFirst + (float)valueSecond;
+            }
+            else if (expressionOperator.equals("-")) {
+                rightSideResult = (float)valueFirst - (float)valueSecond;
+            }
+            else if (expressionOperator.equals("*")) {
+                rightSideResult = (float)valueFirst * (float)valueSecond;
             }
             else
                 rightSideResult = SemanticCheckerUtils.evaluateConstantTerm(operator, null, valueFirst, valueSecond);

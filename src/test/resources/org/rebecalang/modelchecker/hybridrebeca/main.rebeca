@@ -4,11 +4,11 @@ reactiveclass Controller(1) {
     }
 
     statevars {
-        int t;
+        float t;
     }
 
     Controller() {
-        t = 10;
+        t = 10 + 12;
         if (t < 1) {
             t = 555;
         }

@@ -6,6 +6,7 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.ContnuousNonDetInstructionBean;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.SendMessageWithAfterInstructionBean;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartSetModeInstructionBean;
+import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakableConditionInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules.*;
@@ -76,6 +77,7 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
         }
         InstructionBean instruction = source.getInstruction();
 
+        //t = temp_exp is not being handled
         if(instruction instanceof AssignmentInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean> >
                     executionResult = assignmentSOSRule.applyRule(new Pair<>(source, instruction));
@@ -105,8 +107,6 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
         else if(instruction instanceof JumpIfNotInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
                     executionResult = jumpSOSRule.applyRule(new Pair<>(source, instruction));
-//            source.moveToNextStatement();
-//            executionResult.getDestinations().getFirst().getSecond().getFirst().moveToNextStatement();
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
         }
         else if(instruction instanceof MethodCallInstructionBean) {
@@ -130,6 +130,11 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
         else if(instruction instanceof SendMessageWithAfterInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
                     executionResult = sendMessageSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction instanceof StartUnbreakableConditionInstructionBean) {
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = assignmentSOSRule.applyRule(new Pair<>(source, instruction));
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
         }
         else {
