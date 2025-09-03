@@ -4,7 +4,7 @@ import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.ContnuousNonDetInstructionBean;
-import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.SendMessageWithAfterInstructionBean;
+import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.MsgsrvCallWithAfterInstructionBean;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartSetModeInstructionBean;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakableConditionInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
@@ -127,7 +127,7 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
                     executionResult = delaySOSRule.applyRule(new Pair<>(source, instruction));
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
         }
-        else if(instruction instanceof SendMessageWithAfterInstructionBean) {
+        else if(instruction instanceof MsgsrvCallWithAfterInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
                     executionResult = sendMessageSOSRule.applyRule(new Pair<>(source, instruction));
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);

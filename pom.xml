@@ -25,11 +25,11 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>org.rebecalang</groupId>
-			<artifactId>compiler</artifactId>
-			<version>LATEST</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.rebecalang</groupId>-->
+<!--			<artifactId>compiler</artifactId>-->
+<!--			<version>LATEST</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>com.esotericsoftware</groupId>
@@ -54,6 +54,11 @@
 			<groupId>org.rebecalang</groupId>
 			<artifactId>modeltransformer</artifactId>
 			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.rebecalang</groupId>
+			<artifactId>compiler</artifactId>
+			<version>2.21</version>
 		</dependency>
 
 		<dependency>

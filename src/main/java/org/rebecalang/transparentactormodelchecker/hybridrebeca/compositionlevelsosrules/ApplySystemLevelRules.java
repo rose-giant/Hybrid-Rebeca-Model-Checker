@@ -25,7 +25,6 @@ public class ApplySystemLevelRules {
         startApplyingRules(initialState);
     }
 
-//    @Autowired
     HybridRebecaCompositionLevelExecuteStatementSOSRule levelExecuteStatementSOSRule;
     HybridRebecaCompositionLevelNetworkDeliverySOSRule networkDeliverySOSRule =
             new HybridRebecaCompositionLevelNetworkDeliverySOSRule();
@@ -70,6 +69,8 @@ public class ApplySystemLevelRules {
                     executionResult = deliveryResult;
                 }
             }
+        } else {
+//            TODO: apply timing rules (EnvSync, etc)
         }
 
         AbstractTransparentActorState transparentActorState = new AbstractTransparentActorState();

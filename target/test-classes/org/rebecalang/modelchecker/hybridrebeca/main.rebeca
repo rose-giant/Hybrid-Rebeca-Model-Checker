@@ -4,23 +4,23 @@ reactiveclass Controller(1) {
     }
 
     statevars {
-        int t;
+        float t;
     }
 
     Controller() {
-        t = 10;
-        if (t < 1) {
-            t = 555;
-        }
-        else {
-            t = 777;
-        }
-        //self.test();
+        //t = 10 + 12;
+        //if (t < 1) {
+//            t = 555;
+  //      }
+//        else {
+  //          t = 777;
+    //    }
+        self.test() after(0.1, 0.2);
     }
 
-    //msgsrv test(){
-    //    t = 12;
-    //}
+    msgsrv test(){
+        t = 12;
+    }
 }
 
 main {

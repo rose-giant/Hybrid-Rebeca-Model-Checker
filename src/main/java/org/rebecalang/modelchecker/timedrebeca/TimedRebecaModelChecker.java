@@ -1,6 +1,6 @@
 package org.rebecalang.modelchecker.timedrebeca;
 
-import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
+//import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
 import org.rebecalang.compiler.modelcompiler.SymbolTable;
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.*;
@@ -88,22 +88,22 @@ public class TimedRebecaModelChecker extends ModelChecker {
 
 		initialState.setFTTS(isFTTS);
 
-		for (MainRebecDefinition definition : ObjectModelUtils.getMainRebecDefinition(rebecaModel)) {
-			TimedActorState actorState = createAnActorInitialState(rebecaModel, definition);
-			actorState.setFTTS(isFTTS);
+//		for (MainRebecDefinition definition : ObjectModelUtils.getMainRebecDefinition(rebecaModel)) {
+//			TimedActorState actorState = createAnActorInitialState(rebecaModel, definition);
+//			actorState.setFTTS(isFTTS);
+//
+//			if (timedRebecaModelCheckerSetting.getSchedulingPolicy() != null) {
+//				actorState.setSchedulingPolicy(timedRebecaModelCheckerSetting.getSchedulingPolicy());
+//			}
 
-			if (timedRebecaModelCheckerSetting.getSchedulingPolicy() != null) {
-				actorState.setSchedulingPolicy(timedRebecaModelCheckerSetting.getSchedulingPolicy());
-			}
-
-			List<Annotation> annotations;
-			String scheduling;
-			if(!(annotations = definition.getAnnotations()).isEmpty() && !(Objects.requireNonNull(scheduling = getAnnotation(annotations, "schedulingPolicy"))).isEmpty()) {
-				actorState.setSchedulingPolicy(SchedulingPolicy.getSchedulingPolicy(scheduling));
-			}
-
-			initialState.putActorState(definition.getName(), actorState);
-		}
+//			List<Annotation> annotations;
+//			String scheduling;
+//			if(!(annotations = definition.getAnnotations()).isEmpty() && !(Objects.requireNonNull(scheduling = getAnnotation(annotations, "schedulingPolicy"))).isEmpty()) {
+//				actorState.setSchedulingPolicy(SchedulingPolicy.getSchedulingPolicy(scheduling));
+//			}
+//
+//			initialState.putActorState(definition.getName(), actorState);
+//		}
 
 		return initialState;
 	}

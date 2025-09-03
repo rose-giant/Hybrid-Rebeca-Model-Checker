@@ -3,7 +3,7 @@ package org.rebecalang.modelchecker.corerebeca;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
+//import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.MainRebecDefinition;
 import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.RebecaModel;
@@ -66,10 +66,10 @@ public class CoreRebecaModelChecker extends ModelChecker {
 	protected State<ActorState> createInitialStates(RebecaModel rebecaModel) {
 
 		State<ActorState> initialState = createFreshState();
-		for (MainRebecDefinition definition : ObjectModelUtils.getMainRebecDefinition(rebecaModel)) {
-			ActorState actorState = (ActorState) createAnActorInitialState(rebecaModel, definition);
-			initialState.putActorState(definition.getName(), actorState);
-		}
+//		for (MainRebecDefinition definition : ObjectModelUtils.getMainRebecDefinition(rebecaModel)) {
+//			ActorState actorState = (ActorState) createAnActorInitialState(rebecaModel, definition);
+//			initialState.putActorState(definition.getName(), actorState);
+//		}
 		return initialState;
 	}
 

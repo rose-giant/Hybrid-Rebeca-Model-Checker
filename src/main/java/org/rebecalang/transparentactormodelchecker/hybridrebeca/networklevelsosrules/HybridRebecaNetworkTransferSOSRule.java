@@ -21,77 +21,59 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
         HybridRebecaNetworkState backup = HybridRebecaStateSerializationUtils.clone(source);
-        HybridRebecaNetworkState backup2 = HybridRebecaStateSerializationUtils.clone(source);
         HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> originalMessages = source.getReceivedMessages();
-        List<HybridRebecaMessage> highPriorityMessages = getHighPriorityMessages(backup);
-        if (highPriorityMessages.size() == 1) {
-            HybridRebecaMessage selectedMessage = highPriorityMessages.get(0);
-            HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaNondeterministicTransition<>();
-            if (source.getNow().getFirst().equals(selectedMessage.getMessageArrivalInterval().getFirst()) &&
-                source.getNow().getSecond() < selectedMessage.getMessageArrivalInterval().getSecond()) {
-                Pair<String, String> senderReceiver = new Pair<>(selectedMessage.getSender().getId(), selectedMessage.getReceiver().getId());
+        List<HybridRebecaMessage> sortedList = sortMessages(backup);
+        Float secondEarliest = getSecondEarliestEtaLowerBound(backup);
+        //TODO: check + remove the old message in the second case
+        //Transfer2 condition check
+        if (secondEarliest != null) {
+            HybridRebecaMessage selectedMessage = sortedList.get(0);
+            if (selectedMessage.getMessageArrivalInterval().getFirst().floatValue() == backup.getNow().getFirst().floatValue()
+                    && backup.getNow().getFirst().floatValue() < secondEarliest.floatValue()
+                    && secondEarliest.floatValue() < backup.getNow().getSecond().floatValue()) {
 
-                HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> msgs = backup.getReceivedMessages();
-                msgs.remove(senderReceiver);
-                backup.setReceivedMessages(msgs);
+                for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : backup.getReceivedMessages().entrySet()) {
+                    ArrayList<HybridRebecaMessage> messageList = entry.getValue();
+                    for (HybridRebecaMessage message : messageList) {
+                        message.setMessageArrivalInterval(new Pair<>(secondEarliest, message.getMessageArrivalInterval().getSecond()));
+                    }
+                }
+
+                HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaDeterministicTransition<>();
                 MessageAction messageAction = new MessageAction(selectedMessage);
-                result.addDestination(messageAction, backup);
-
-                Pair<Float, Float> newArrivalTime = new Pair<>(source.getNow().getSecond(), selectedMessage.getMessageArrivalInterval().getSecond());
-                selectedMessage.setMessageArrivalInterval(newArrivalTime);
-                HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> msg = originalMessages;
-                ArrayList<HybridRebecaMessage> msgs22 = new ArrayList<>();
-                msgs22.add(selectedMessage);
-                msg.put(senderReceiver, msgs22);
-                backup2.setReceivedMessages(msg);
-                result.addDestination(messageAction, backup2);
+                result.setDestination(backup);
+                result.setAction(messageAction);
                 return result;
-
-            } else if(source.getNow().getFirst().equals(selectedMessage.getMessageArrivalInterval().getFirst())) {
-                HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result2 = new HybridRebecaDeterministicTransition<>();
-                Pair<String, String> senderReceiver = new Pair<>(selectedMessage.getSender().getId(), selectedMessage.getReceiver().getId());
-
-                HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> msgs = backup.getReceivedMessages();
-                msgs.remove(senderReceiver);
-                backup.setReceivedMessages(msgs);
-                MessageAction messageAction = new MessageAction(selectedMessage);
-                result2.setDestination(backup);
-                result2.setAction(messageAction);
-                return result2;
             }
-        } else {
+        }
+        //Nondeterministic case of both transfer and postpone
+        else if (sortedList.get(0).getMessageArrivalInterval().getFirst().floatValue() == backup.getNow().getFirst().floatValue()) {
             HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaNondeterministicTransition<>();
-            for (HybridRebecaMessage selectedMessage: highPriorityMessages) {
-                if (source.getNow().getFirst().equals(selectedMessage.getMessageArrivalInterval().getFirst()) &&
-                        source.getNow().getSecond() < selectedMessage.getMessageArrivalInterval().getSecond()) {
-                    Pair<String, String> senderReceiver = new Pair<>(selectedMessage.getSender().getId(), selectedMessage.getReceiver().getId());
 
-                    HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> msgs = backup.getReceivedMessages();
-                    msgs.remove(senderReceiver);
-                    backup.setReceivedMessages(msgs);
-                    MessageAction messageAction = new MessageAction(selectedMessage);
-                    result.addDestination(messageAction, backup);
+            for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : backup.getReceivedMessages().entrySet()) {
+                ArrayList<HybridRebecaMessage> messageList = entry.getValue();
+                for (HybridRebecaMessage message : messageList) {
+                    if (message.getMessageArrivalInterval().getFirst().floatValue() == backup.getNow().getFirst().floatValue()
+                            && backup.getNow().getSecond().floatValue() < message.getMessageArrivalInterval().getSecond().floatValue()) {
 
-                    Pair<Float, Float> newArrivalTime = new Pair<>(source.getNow().getSecond(), selectedMessage.getMessageArrivalInterval().getSecond());
-                    selectedMessage.setMessageArrivalInterval(newArrivalTime);
-                    HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> msg = originalMessages;
-                    ArrayList<HybridRebecaMessage> msgs22 = new ArrayList<>();
-                    msgs22.add(selectedMessage);
-                    msg.put(senderReceiver, msgs22);
-                    backup2.setReceivedMessages(msg);
-                    result.addDestination(messageAction, backup2);
+                        message.setMessageArrivalInterval(new Pair<>(backup.getNow().getSecond(), message.getMessageArrivalInterval().getSecond()));
+                        result.addDestination(Action.TAU, backup);
 
-                } else if(source.getNow().getFirst().equals(selectedMessage.getMessageArrivalInterval().getFirst())) {
-                    Pair<String, String> senderReceiver = new Pair<>(selectedMessage.getSender().getId(), selectedMessage.getReceiver().getId());
-                    HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> msgs = backup.getReceivedMessages();
-                    msgs.remove(senderReceiver);
-                    backup.setReceivedMessages(msgs);
-                    MessageAction messageAction = new MessageAction(selectedMessage);
-                    result.addDestination(messageAction, backup);
+                        message.setMessageArrivalInterval(backup.getNow());
+                        MessageAction messageAction = new MessageAction(message);
+                        result.addDestination(messageAction, backup);
+                    }
+                    else if(message.getMessageArrivalInterval().getFirst().floatValue() == backup.getNow().getFirst().floatValue()) {
+                        message.setMessageArrivalInterval(backup.getNow());
+                        MessageAction messageAction = new MessageAction(message);
+                        result.addDestination(messageAction, backup);
+                    }
                 }
             }
+
             return result;
         }
+
         return null;
     }
 
@@ -113,6 +95,33 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
             }
         }
         return earliestMessages;
+    }
+
+    public static Float getSecondEarliestEtaLowerBound(HybridRebecaNetworkState source) {
+        Float min = Float.MAX_VALUE;
+        Float secondMin = Float.MAX_VALUE;
+        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : source.getReceivedMessages().entrySet()) {
+            for (HybridRebecaMessage message : entry.getValue()) {
+                float etaLowerBound = message.getMessageArrivalInterval().getFirst();
+                if (etaLowerBound < min) {
+                    secondMin = min;
+                    min = etaLowerBound;
+                } else if (etaLowerBound > min && etaLowerBound < secondMin) {
+                    secondMin = etaLowerBound;
+                }
+            }
+        }
+        return (secondMin == Float.MAX_VALUE) ? null : secondMin;
+    }
+
+
+    public static List<HybridRebecaMessage> sortMessages(HybridRebecaNetworkState source) {
+        List<HybridRebecaMessage> sortedMessages = new ArrayList<>();
+        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : source.getReceivedMessages().entrySet()) {
+            sortedMessages.addAll(entry.getValue());
+        }
+        sortedMessages.sort(Comparator.comparingDouble(msg -> msg.getMessageArrivalInterval().getFirst()));
+        return sortedMessages;
     }
 
     @Override

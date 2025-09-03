@@ -3,7 +3,7 @@ package org.rebecalang.modelchecker;
 import java.io.File;
 import java.util.*;
 
-import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
+//import org.rebecalang.compiler.modelcompiler.ObjectModelUtils;
 import org.rebecalang.compiler.modelcompiler.RebecaModelCompiler;
 import org.rebecalang.compiler.modelcompiler.SymbolTable;
 import org.rebecalang.compiler.modelcompiler.abstractrebeca.AbstractTypeSystem;
@@ -203,11 +203,11 @@ public abstract class ModelChecker {
 
         State<? extends BaseActorState<?>> initialState = createInitialStates(rebecaModel);
 
-        List<MainRebecDefinition> mainRebecDefinitions = ObjectModelUtils.getMainRebecDefinition(rebecaModel);
+//        List<MainRebecDefinition> mainRebecDefinitions = ObjectModelUtils.getMainRebecDefinition(rebecaModel);
 
-        setInitialKnownRebecsOfActors(initialState, mainRebecDefinitions);
-
-        callConstructorsOfActors(transformedRILModel, initialState, mainRebecDefinitions, rebecaModel);
+//        setInitialKnownRebecsOfActors(initialState, mainRebecDefinitions);
+//
+//        callConstructorsOfActors(transformedRILModel, initialState, mainRebecDefinitions, rebecaModel);
 
         stateSpace.addInitialState(initialState);
     }
