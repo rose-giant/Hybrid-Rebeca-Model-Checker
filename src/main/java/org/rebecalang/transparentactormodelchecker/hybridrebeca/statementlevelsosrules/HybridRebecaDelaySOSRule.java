@@ -14,16 +14,17 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebe
 
 public class HybridRebecaDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
 
-    @Override
-    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
-        HybridRebecaActorState hybridRebecaActorState = getHybridRebecaActorState(source);
-        source.setFirst(hybridRebecaActorState);
-        HybridRebecaAbstractTransition<Pair<HybridRebecaActorState,InstructionBean>> result = resume(source);
-        return result;
-    }
+//    @Override
+//    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
+//        HybridRebecaActorState hybridRebecaActorState = getHybridRebecaActorState(source);
+//        source.setFirst(hybridRebecaActorState);
+//        HybridRebecaAbstractTransition<Pair<HybridRebecaActorState,InstructionBean>> result = resume(source);
+//        return result;
+//        return null;
+//    }
 
-    private static HybridRebecaAbstractTransition<Pair<HybridRebecaActorState,InstructionBean>> resume(Pair<HybridRebecaActorState, InstructionBean> source) {
-        HybridRebecaActorState originalSource = HybridRebecaStateSerializationUtils.clone(source.getFirst());
+    @Override
+    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState,InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         Float delayLowerBound = (float)0;
         Float delayUpperBound = (float) 0;
         if (source.getSecond() instanceof ContnuousNonDetInstructionBean) {
@@ -35,6 +36,7 @@ public class HybridRebecaDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridR
         source.getFirst().setResumeTime(new Pair<>(source.getFirst().getResumeTime().getFirst() + delayLowerBound, source.getFirst().getResumeTime().getSecond() + delayUpperBound));
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
+//        source.getFirst().moveToNextStatement();
         result.setDestination(source);
         result.setAction(Action.TAU);
         HybridRebecaResumeSOSRule rebecaResumeSOSRule = new HybridRebecaResumeSOSRule();

@@ -24,7 +24,7 @@ public class HybridRebecaDelayTest {
         Object assignee = new Object();
         Float delayLowerBound = (float)1;
         Float delayUpperBound = (float)2;
-        Pair<Float, Float> resumeTime = new Pair<>((float)0, (float)0.5);
+        Pair<Float, Float> resumeTime = new Pair<>((float)0, (float)1.5);
         Pair<Float, Float> now = new Pair<>((float)1, (float)3.5);
         hybridRebecaActorState1.setResumeTime(resumeTime);
         hybridRebecaActorState1.setNow(now);
@@ -43,8 +43,8 @@ public class HybridRebecaDelayTest {
         Object assignee = new Object();
         Float delayLowerBound = (float)1;
         Float delayUpperBound = (float)2;
-        Pair<Float, Float> resumeTime = new Pair<>((float)0, (float)0.5);
-        Pair<Float, Float> now = new Pair<>((float)1, (float)1.5);
+        Pair<Float, Float> resumeTime = new Pair<>((float)1, (float)1.5);
+        Pair<Float, Float> now = new Pair<>((float)2, (float)2.5);
         hybridRebecaActorState1.setResumeTime(resumeTime);
         hybridRebecaActorState1.setNow(now);
         ContnuousNonDetInstructionBean contnuousNonDetInstructionBean = new ContnuousNonDetInstructionBean(assignee, delayLowerBound, delayUpperBound);
