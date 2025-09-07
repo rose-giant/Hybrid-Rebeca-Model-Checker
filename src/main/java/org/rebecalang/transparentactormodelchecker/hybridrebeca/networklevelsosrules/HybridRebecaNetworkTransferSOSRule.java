@@ -98,9 +98,7 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
             }
         }
 
-//        if (result.getDestinations().size() == 1) {
-//            return (HybridRebecaDeterministicTransition) transitions.get(0);
-//        } else if (transitions.size() == 0) {
+//        if (transitions.size() == 0) {
 //            //TODO: Ottokke!
 //        }
 
