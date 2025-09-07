@@ -12,6 +12,13 @@ public class HybridRebecaMessage implements Serializable {
     private String name;
     private HashMap<String, Object> parameters;
 
+    public HybridRebecaMessage(HybridRebecaMessage m) {
+        this.messageArrivalInterval = new Pair<>(
+                m.getMessageArrivalInterval().getFirst(),
+                m.getMessageArrivalInterval().getSecond()
+        );
+    }
+
     public void setMessageArrivalInterval(Pair<Float, Float> messageArrivalInterval) {
         this.messageArrivalInterval = messageArrivalInterval;
     }

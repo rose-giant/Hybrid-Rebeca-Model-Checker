@@ -23,23 +23,27 @@ public class HybridRebecaNetworkTransferTest {
     HybridRebecaActorState hybridRebecaActorState2 = new HybridRebecaActorState("actor2");
     HybridRebecaMessage hybridRebecaMessage = new HybridRebecaMessage();
     HybridRebecaMessage hybridRebecaMessage2 = new HybridRebecaMessage();
+    HybridRebecaMessage hybridRebecaMessage3 = new HybridRebecaMessage();
     ArrayList<HybridRebecaMessage> messagesArrayList = new ArrayList<>();
     ArrayList<HybridRebecaMessage> messagesArrayList2 = new ArrayList<>();
 
     @Test
     public void GivenOneMessageInNetworkBufferAndBothTransferAndPostponeAreApplicable() {
-        Pair<Float, Float> now = new Pair<>((float)1, (float)3);
+        Pair<Float, Float> now = new Pair<>((float)1, (float)4);
         hybridRebecaNetworkState.setNow(now);
 
         hybridRebecaMessage.setSender(hybridRebecaActorState1);
         hybridRebecaMessage.setReceiver(hybridRebecaActorState2);
         hybridRebecaMessage.setName("happiness");
-        Pair<Float, Float> arrivalTime = new Pair<>((float)1, (float)4);
+        Pair<Float, Float> arrivalTime = new Pair<>((float)1, (float)5);
         hybridRebecaMessage.setMessageArrivalInterval(arrivalTime);
-        Pair<Float, Float> arrivalTime2 = new Pair<>((float)1, (float)4);
+        Pair<Float, Float> arrivalTime2 = new Pair<>((float)2, (float)4);
+//        Pair<Float, Float> arrivalTime3 = new Pair<>((float)12, (float)14);
         hybridRebecaMessage2.setMessageArrivalInterval(arrivalTime2);
+//        hybridRebecaMessage3.setMessageArrivalInterval(arrivalTime3);
         messagesArrayList.add(hybridRebecaMessage);
         messagesArrayList2.add(hybridRebecaMessage2);
+//        messagesArrayList2.add(hybridRebecaMessage3);
         Pair<String, String> senderReceiver = new Pair<>(hybridRebecaActorState1.getId(), hybridRebecaActorState2.getId());
         Pair<String, String> senderReceiver2 = new Pair<>(hybridRebecaActorState2.getId(), hybridRebecaActorState1.getId());
 
@@ -51,7 +55,7 @@ public class HybridRebecaNetworkTransferTest {
                 (HybridRebecaNondeterministicTransition<HybridRebecaNetworkState>)
                         hybridRebecaNetworkTransferSOSRule.applyRule(hybridRebecaNetworkState);
 
-//        assertTrue(result.getDestinations().size() == 2);
+        assertTrue(result.getDestinations().size() == 3);
     }
 
     @Test

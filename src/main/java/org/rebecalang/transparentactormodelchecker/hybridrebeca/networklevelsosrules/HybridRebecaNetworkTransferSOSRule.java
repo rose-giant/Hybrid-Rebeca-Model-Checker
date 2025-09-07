@@ -20,61 +20,91 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
-        HybridRebecaNetworkState backup = HybridRebecaStateSerializationUtils.clone(source);
-        HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> originalMessages = source.getReceivedMessages();
-        List<HybridRebecaMessage> sortedList = sortMessages(backup);
-        Float secondEarliest = getSecondEarliestEtaLowerBound(backup);
-        //TODO: check + remove the old message in the second case
+        HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaNondeterministicTransition<>();
+        List<HybridRebecaMessage> sortedList = sortMessages(source);
+        Float secondEarliest = getSecondEarliestEtaLowerBound(source);
+        ArrayList<HybridRebecaAbstractTransition> transitions = new ArrayList<>();
         //Transfer2 condition check
         if (secondEarliest != null) {
             HybridRebecaMessage selectedMessage = sortedList.get(0);
-            if (selectedMessage.getMessageArrivalInterval().getFirst().floatValue() == backup.getNow().getFirst().floatValue()
-                    && backup.getNow().getFirst().floatValue() < secondEarliest.floatValue()
-                    && secondEarliest.floatValue() < backup.getNow().getSecond().floatValue()) {
+            if (selectedMessage.getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue()
+                    && source.getNow().getFirst().floatValue() < secondEarliest.floatValue()
+                    && secondEarliest.floatValue() < source.getNow().getSecond().floatValue()) {
 
+                HybridRebecaNetworkState backup = HybridRebecaStateSerializationUtils.clone(source);
                 for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : backup.getReceivedMessages().entrySet()) {
                     ArrayList<HybridRebecaMessage> messageList = entry.getValue();
                     for (HybridRebecaMessage message : messageList) {
-                        message.setMessageArrivalInterval(new Pair<>(secondEarliest, message.getMessageArrivalInterval().getSecond()));
+                        if (message.getMessageArrivalInterval().getFirst().floatValue() == selectedMessage.getMessageArrivalInterval().getFirst().floatValue()) {
+                            message.setMessageArrivalInterval(new Pair<>(secondEarliest, message.getMessageArrivalInterval().getSecond()));
+                        }
                     }
                 }
 
-                HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaDeterministicTransition<>();
                 MessageAction messageAction = new MessageAction(selectedMessage);
-                result.setDestination(backup);
-                result.setAction(messageAction);
-                return result;
+                result.addDestination(messageAction, backup);
+                transitions.add(result);
             }
         }
         //Nondeterministic case of both transfer and postpone
-        else if (sortedList.get(0).getMessageArrivalInterval().getFirst().floatValue() == backup.getNow().getFirst().floatValue()) {
-            HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaNondeterministicTransition<>();
-
-            for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : backup.getReceivedMessages().entrySet()) {
+        List<HybridRebecaMessage> sortedList2 = sortMessages(source);
+        if (sortedList2.get(0).getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue()) {
+            for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : source.getReceivedMessages().entrySet()) {
                 ArrayList<HybridRebecaMessage> messageList = entry.getValue();
-                for (HybridRebecaMessage message : messageList) {
-                    if (message.getMessageArrivalInterval().getFirst().floatValue() == backup.getNow().getFirst().floatValue()
-                            && backup.getNow().getSecond().floatValue() < message.getMessageArrivalInterval().getSecond().floatValue()) {
+                Iterator<HybridRebecaMessage> iterator = messageList.iterator();
+                while (iterator.hasNext()) {
+                    HybridRebecaMessage message = iterator.next();
 
-                        message.setMessageArrivalInterval(new Pair<>(backup.getNow().getSecond(), message.getMessageArrivalInterval().getSecond()));
-                        result.addDestination(Action.TAU, backup);
+                    //transfer case
+                    if (message.getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue()) {
+                        HybridRebecaNetworkState backup2 = HybridRebecaStateSerializationUtils.clone(source);
+                        HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> clonedMap = new HashMap<>();
+                        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> e : source.getReceivedMessages().entrySet()) {
+                            ArrayList<HybridRebecaMessage> clonedList = new ArrayList<>(e.getValue());
+                            clonedMap.put(e.getKey(), clonedList);
+                        }
+                        ArrayList<HybridRebecaMessage> ms = clonedMap.get(entry.getKey());
+                        ms.remove(message); // safe: source is untouched
+                        clonedMap.put(entry.getKey(), ms);
+                        backup2.setReceivedMessages(clonedMap);
 
-                        message.setMessageArrivalInterval(backup.getNow());
-                        MessageAction messageAction = new MessageAction(message);
-                        result.addDestination(messageAction, backup);
+                        HybridRebecaMessage clonedMessage = HybridRebecaStateSerializationUtils.clone(message);
+                        clonedMessage.setMessageArrivalInterval(backup2.getNow());
+                        MessageAction messageAction = new MessageAction(clonedMessage);
+                        result.addDestination(messageAction, backup2);
+                        transitions.add(result);
                     }
-                    else if(message.getMessageArrivalInterval().getFirst().floatValue() == backup.getNow().getFirst().floatValue()) {
-                        message.setMessageArrivalInterval(backup.getNow());
-                        MessageAction messageAction = new MessageAction(message);
-                        result.addDestination(messageAction, backup);
+                    //postpone case
+                    if (message.getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue()
+                            && source.getNow().getSecond().floatValue() < message.getMessageArrivalInterval().getSecond().floatValue()) {
+
+                        HybridRebecaNetworkState backup3 = HybridRebecaStateSerializationUtils.clone(source);
+                        HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> clonedMap = new HashMap<>();
+                        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> e : source.getReceivedMessages().entrySet()) {
+                            ArrayList<HybridRebecaMessage> clonedList = new ArrayList<>(e.getValue());
+                            clonedMap.put(e.getKey(), clonedList);
+                        }
+                        ArrayList<HybridRebecaMessage> ms = clonedMap.get(entry.getKey());
+                        ms.remove(message); // safe: source is untouched
+                        HybridRebecaMessage clonedMessage = HybridRebecaStateSerializationUtils.clone(message);
+                        clonedMessage.setMessageArrivalInterval(new Pair<>(backup3.getNow().getSecond(), message.getMessageArrivalInterval().getSecond()));
+                        ms.add(clonedMessage);
+                        clonedMap.put(entry.getKey(), ms);
+                        backup3.setReceivedMessages(clonedMap);
+                        result.addDestination(Action.TAU, backup3);
+                        transitions.add(result);
                     }
                 }
             }
-
-            return result;
         }
 
-        return null;
+//        if (result.getDestinations().size() == 1) {
+//            return (HybridRebecaDeterministicTransition) transitions.get(0);
+//        } else if (transitions.size() == 0) {
+//            //TODO: Ottokke!
+//        }
+
+        return result;
     }
 
     public static List<HybridRebecaMessage> getHighPriorityMessages(HybridRebecaNetworkState source) {
