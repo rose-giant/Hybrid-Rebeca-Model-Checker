@@ -34,20 +34,20 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         Float minETA = Collections.min(etas);
 //        Float secondMinETA = getSecondMin(etas);
         HybridRebecaDeterministicTransition<HybridRebecaSystemState> result = new HybridRebecaDeterministicTransition<>();
-        if (minETA > source.getNow().getSecond()) {
-            Pair<Float, Float> newNow = new Pair<>();
-            newNow.setFirst((source.getNow().getFirst() + minETA) / 2);
-            float timeShift = newNow.getFirst() - source.getNow().getFirst();
-            newNow.setSecond(source.getNow().getSecond() + timeShift);
-            source.setNow(newNow);
-            TimeProgressAction timeProgressAction = new TimeProgressAction();
-            timeProgressAction.setTimeProgress(timeShift);
-            result.setDestination(source);
-            result.setAction(timeProgressAction);
-        } else {
-            result.setAction(Action.TAU);
-            result.setDestination(source);
-        }
+//        if (minETA > source.getNow().getSecond()) {
+//            Pair<Float, Float> newNow = new Pair<>();
+//            newNow.setFirst((source.getNow().getFirst() + minETA) / 2);
+//            float timeShift = newNow.getFirst() - source.getNow().getFirst();
+//            newNow.setSecond(source.getNow().getSecond() + timeShift);
+//            source.setNow(newNow);
+//            TimeProgressAction timeProgressAction = new TimeProgressAction();
+//            timeProgressAction.setTimeProgress(timeShift);
+//            result.setDestination(source);
+//            result.setAction(timeProgressAction);
+//        } else {
+//            result.setAction(Action.TAU);
+//            result.setDestination(source);
+//        }
         return result;
 
     }

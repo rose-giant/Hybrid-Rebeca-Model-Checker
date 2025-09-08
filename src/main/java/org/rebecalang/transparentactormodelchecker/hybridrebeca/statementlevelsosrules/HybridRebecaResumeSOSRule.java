@@ -47,30 +47,3 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
         return null;
     }
 }
-
-//if(sourceNow.getFirst().equals(sourceResumeTime.getFirst()) &&
-//        sourceNow.getSecond() < sourceResumeTime.getSecond() ) {
-//HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaNondeterministicTransition<>();
-//Pair<HybridRebecaActorState, InstructionBean> resultInnerPair = new Pair<>(originalSource, source.getSecond());
-//
-//            originalSource.setResumeTime(sourceNow);
-//            result.addDestination(Action.TAU, resultInnerPair);
-//
-//HybridRebecaActorState sourceState = source.getFirst();
-//Pair<Float, Float> postponeResumeTime = new Pair<>(sourceNow.getSecond() ,sourceResumeTime.getSecond());
-//            sourceState.setResumeTime(postponeResumeTime);
-//TimeProgressAction timeProgressAction = new TimeProgressAction();
-//Pair<HybridRebecaActorState, InstructionBean> resultInnerPair2 = new Pair<>(sourceState, source.getSecond());
-//
-//            result.addDestination(timeProgressAction, resultInnerPair2);
-//            return result;
-//        }
-//                else if(sourceNow.getFirst().equals(sourceResumeTime.getFirst())) {
-//HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaDeterministicTransition<>();
-//HybridRebecaActorState sourceState = source.getFirst();
-//            sourceState.setResumeTime(sourceNow);
-//Pair<HybridRebecaActorState, InstructionBean> resultInnerPair = new Pair<>(sourceState, source.getSecond());
-//            result.setDestination(resultInnerPair);
-//            result.setAction(Action.TAU);
-//            return result;
-//        }

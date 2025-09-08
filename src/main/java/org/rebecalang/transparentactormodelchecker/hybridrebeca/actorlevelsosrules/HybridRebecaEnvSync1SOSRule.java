@@ -5,26 +5,37 @@ import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.TimeProgressAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class HybridRebecaEnvSync1SOSRule {
 
     public HybridRebecaDeterministicTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
-        if(source.getLowerBound(source.getResumeTime()) >= source.getUpperBound(source.getNow()))
-            throw new RebecaRuntimeInterpreterException("Execution rule is disabled");
+        HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
+        Pair<Float, Float> now = backup.getNow();
+        Pair<Float, Float> resumeTime = backup.getResumeTime();
+        float progressLowerBound = 0, progressUpperBound = 0;
 
-        //TODO: Revise this
-        Pair<Float, Float> updatedNowTimeInterval = new Pair<>();
-        updatedNowTimeInterval.setFirst(source.getLowerBound(source.getNow()) + 1);
-        updatedNowTimeInterval.setSecond(
-                source.getUpperBound(source.getNow()) + updatedNowTimeInterval.getFirst() - source.getLowerBound(source.getNow()));
-        source.setNow(updatedNowTimeInterval);
+        if(now.getFirst().floatValue() < resumeTime.getFirst().floatValue() &&
+                resumeTime.getFirst().floatValue() <= now.getSecond().floatValue()) {
+            progressLowerBound = resumeTime.getFirst().floatValue();
+            progressUpperBound = resumeTime.getSecond().floatValue();
+        }
+        else if (now.getSecond().floatValue() < resumeTime.getFirst().floatValue()) {
+            progressLowerBound = now.getSecond().floatValue();
+            progressUpperBound = resumeTime.getFirst().floatValue();
+        }
+
+        backup.setNow(new Pair<>(progressLowerBound, progressUpperBound));
+        TimeProgressAction action = new TimeProgressAction();
+        action.setTimeProgress(new Pair(progressLowerBound, progressUpperBound));
 
         HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
                 new HybridRebecaDeterministicTransition<HybridRebecaActorState>();
-        result.setAction(new TimeProgressAction());
-        result.setDestination(source);
+        result.setAction(action);
+        result.setDestination(backup);
+
         return result;
     }
 }
