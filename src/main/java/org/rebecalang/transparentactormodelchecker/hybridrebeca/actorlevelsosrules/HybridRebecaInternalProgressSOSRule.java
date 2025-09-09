@@ -53,6 +53,8 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
     @Autowired
     HybridRebecaDelaySOSRule delaySOSRule = new HybridRebecaDelaySOSRule();
 
+    HybridRebecaEndMethodSOSRule endMethodSOSRule = new HybridRebecaEndMethodSOSRule();
+
     List<Pair<? extends Action, HybridRebecaActorState>> decorateStatementExecutionResult(
             Pair<? extends Action, Pair<HybridRebecaActorState, InstructionBean>> statementExecutionResult) {
         return Arrays.asList(new Pair<Action, HybridRebecaActorState>(Action.TAU, statementExecutionResult.getSecond().getFirst()));
@@ -94,11 +96,15 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
         }
         else if(instruction instanceof PushARInstructionBean) {
-            source.moveToNextStatement();
-            return this.applyRule(source);}
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = pushSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
         else if(instruction instanceof PopARInstructionBean) {
-            source.moveToNextStatement();
-            return this.applyRule(source);        }
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = popSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
         else if(instruction instanceof EndMsgSrvInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
                     executionResult = endMSGSrvSOSRule.applyRule(new Pair<>(source, instruction));
@@ -115,8 +121,10 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
         }
         else if(instruction instanceof EndMethodInstructionBean) {
-            source.moveToNextStatement();
-            return this.applyRule(source);        }
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
+                    executionResult = endMethodSOSRule.applyRule(new Pair<>(source, instruction));
+            destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
         else if(instruction instanceof StartSetModeInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
                     executionResult = setModeSOSRule.applyRule(new Pair<>(source, instruction));

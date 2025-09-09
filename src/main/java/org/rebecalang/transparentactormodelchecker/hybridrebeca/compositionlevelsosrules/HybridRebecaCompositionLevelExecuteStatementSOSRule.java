@@ -12,6 +12,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaMessage;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaNetworkState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
@@ -31,6 +32,8 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
     @Autowired
     HybridRebecaNetworkReceiveSOSRule hybridRebecaNetworkLevelReceiveMessageSOSRule = new HybridRebecaNetworkReceiveSOSRule();
 
+//    public boolean isLastTransitionNonDet = false;
+
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
         HybridRebecaNondeterministicTransition<HybridRebecaSystemState> transitions =
@@ -40,44 +43,54 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
             for(String actorId : backup.getActorsState().keySet()) {
                 HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
                 hybridRebecaActorState.setNow(source.getNow());
-                if (hybridRebecaActorState.getSigma().size() == 0)
-                    continue;
 
-                if(hybridRebecaActorState.noScopeInstructions())
-                    continue;
+                for (int i = 0 ; i <= hybridRebecaActorState.getSigma().size() ; i++) {
+                    HybridRebecaAbstractTransition<HybridRebecaActorState> executionResult =
+                            hybridRebecaActorLevelExecuteStatementSOSRule.applyRule(hybridRebecaActorState);
 
-                HybridRebecaAbstractTransition<HybridRebecaActorState> executionResult =
-                        hybridRebecaActorLevelExecuteStatementSOSRule.applyRule(hybridRebecaActorState);
-
-                if(executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaActorState>) {
-                    HybridRebecaDeterministicTransition<HybridRebecaActorState> transition =
-                            (HybridRebecaDeterministicTransition<HybridRebecaActorState>)executionResult;
-                    if(transition.getAction() instanceof MessageAction) {
-                        hybridRebecaNetworkLevelReceiveMessageSOSRule.applyRule(
-                                transition.getAction(), source.getNetworkState());
-                    } else {
-                        transition.setAction(Action.TAU);
+                    if(executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaActorState>) {
+                        HybridRebecaDeterministicTransition<HybridRebecaActorState> transition =
+                                (HybridRebecaDeterministicTransition<HybridRebecaActorState>)executionResult;
+                        if(transition.getAction() instanceof MessageAction) {
+                            HybridRebecaDeterministicTransition<HybridRebecaNetworkState> networkTransition =
+                                    (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) hybridRebecaNetworkLevelReceiveMessageSOSRule.applyRule(
+                                            transition.getAction(), backup.getNetworkState());
+                            backup.setNetworkState(networkTransition.getDestination());
+                        } else {
+                            transition.setAction(Action.TAU);
+                        }
+                        backup.setActorState(actorId, ((HybridRebecaDeterministicTransition<HybridRebecaActorState>) executionResult).getDestination());
+                        transitions.addDestination(transition.getAction(), backup);
                     }
-                    source.setActorState(actorId, ((HybridRebecaDeterministicTransition<HybridRebecaActorState>) executionResult).getDestination());
-                    transitions.addDestination(transition.getAction(), source);
-                } else if(executionResult instanceof HybridRebecaNondeterministicTransition<HybridRebecaActorState>) {
-                    Iterator<Pair<? extends Action, HybridRebecaActorState>> transitionsIterator =
-                            ((HybridRebecaNondeterministicTransition<HybridRebecaActorState>) executionResult).getDestinations().iterator();
-                    while(transitionsIterator.hasNext()) {
-                        Pair<? extends Action, HybridRebecaActorState> transition = transitionsIterator.next();
-                        HybridRebecaActorState actorState = transition.getSecond();
-                        source.setActorState(actorState.getId(), hybridRebecaActorState);
-                        transitions.addDestination(transition.getFirst(), source);
-                        if(transitionsIterator.hasNext()) {
-                            source = HybridRebecaStateSerializationUtils.clone(backup);
+                    else if(executionResult instanceof HybridRebecaNondeterministicTransition<HybridRebecaActorState>) {
+                        Iterator<Pair<? extends Action, HybridRebecaActorState>> transitionsIterator = executionResult.getDestinations().iterator();
+
+                        while(transitionsIterator.hasNext()) {
+                            Pair<? extends Action, HybridRebecaActorState> transition = transitionsIterator.next();
+                            HybridRebecaActorState actorState = transition.getSecond();
+                            backup.setActorState(actorState.getId(), hybridRebecaActorState);
+                            transitions.addDestination(transition.getFirst(), backup);
+
+                            if(transition.getFirst() instanceof MessageAction) {
+                                MessageAction action = (MessageAction) transition.getFirst();
+                                HybridRebecaDeterministicTransition<HybridRebecaNetworkState> networkTransition =
+                                        (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>)
+                                                hybridRebecaNetworkLevelReceiveMessageSOSRule.applyRule(action, backup.getNetworkState());
+                                backup.setNetworkState(networkTransition.getDestination());
+                            }
                         }
                     }
-                } else {
-                    throw new RebecaRuntimeInterpreterException("Unknown actor transition type");
+                    else {
+                        throw new RebecaRuntimeInterpreterException("Unknown actor transition type");
+                    }
                 }
 
-                source = HybridRebecaStateSerializationUtils.clone(backup);
-//                System.out.println(source.getNow().getSecond());
+//                if (hybridRebecaActorState.getSigma().size() == 0)
+//                    continue;
+//
+//                if(hybridRebecaActorState.noScopeInstructions())
+//                    continue;
+
             }
         return transitions;
     }

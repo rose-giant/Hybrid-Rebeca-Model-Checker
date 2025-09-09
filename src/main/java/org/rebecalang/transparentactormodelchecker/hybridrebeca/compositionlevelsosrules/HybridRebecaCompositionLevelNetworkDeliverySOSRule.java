@@ -2,7 +2,10 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionleve
 
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules.HybridRebecaEnvSync2SOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules.HybridRebecaReceiveSOSRule;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.networklevelsosrules.HybridRebecaNetworkEnvSync1SOSRule;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.networklevelsosrules.HybridRebecaNetworkEnvSync2SOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.networklevelsosrules.HybridRebecaNetworkTransferSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
@@ -45,8 +48,21 @@ public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends Abstract
                 transitions.addDestination(Action.TAU, source);
                 source = backup;
             }
-        } else {
+        }
+        else {
             //TODO
+            return null;
+//            HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result;
+//            if (source.getNetworkState().getReceivedMessages().size() == 0) {
+//                HybridRebecaNetworkEnvSync2SOSRule envSync2SOSRule = new HybridRebecaNetworkEnvSync2SOSRule();
+//                result = (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) envSync2SOSRule.applyRule(source.getNetworkState());
+//            } else {
+//                HybridRebecaNetworkEnvSync1SOSRule envSync1SOSRule = new HybridRebecaNetworkEnvSync1SOSRule();
+//                result = (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) envSync1SOSRule.applyRule(source.getNetworkState());
+//            }
+//            backup = HybridRebecaStateSerializationUtils.clone(source);
+//            backup.setNetworkState(result.getDestination());
+//            transitions.addDestination(result.getAction(), backup);
         }
 
         return transitions;
