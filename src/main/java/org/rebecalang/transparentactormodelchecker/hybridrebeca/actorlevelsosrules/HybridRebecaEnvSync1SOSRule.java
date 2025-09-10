@@ -15,21 +15,28 @@ public class HybridRebecaEnvSync1SOSRule {
         HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
         Pair<Float, Float> now = backup.getNow();
         Pair<Float, Float> resumeTime = backup.getResumeTime();
-        float progressLowerBound = 0, progressUpperBound = 0;
+        Pair<Float, Float> progressLower = new Pair<>(0f, 0f), progressUpper = new Pair<>(0f, 0f);
 
         if(now.getFirst().floatValue() < resumeTime.getFirst().floatValue() &&
                 resumeTime.getFirst().floatValue() <= now.getSecond().floatValue()) {
-            progressLowerBound = resumeTime.getFirst().floatValue();
-            progressUpperBound = resumeTime.getSecond().floatValue();
+            progressLower.setFirst(now.getFirst());
+            progressLower.setSecond(resumeTime.getFirst());
+
+            progressUpper.setFirst(progressLower.getSecond());
+            progressUpper.setSecond(resumeTime.getSecond());
         }
         else if (now.getSecond().floatValue() < resumeTime.getFirst().floatValue()) {
-            progressLowerBound = now.getSecond().floatValue();
-            progressUpperBound = resumeTime.getFirst().floatValue();
+            progressLower.setFirst(now.getFirst());
+            progressLower.setSecond(now.getSecond());
+
+            progressUpper.setFirst(progressLower.getSecond());
+            progressUpper.setSecond(resumeTime.getFirst());
         }
 
-        backup.setNow(new Pair<>(progressLowerBound, progressUpperBound));
+        //considered the maximum time progress:
+        backup.setNow(new Pair<>(progressLower.getSecond(), progressUpper.getSecond()));
         TimeProgressAction action = new TimeProgressAction();
-        action.setTimeProgress(new Pair(progressLowerBound, progressUpperBound));
+        action.setTimeIntervalProgress(new Pair(progressLower, progressUpper));
 
         HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
                 new HybridRebecaDeterministicTransition<HybridRebecaActorState>();
