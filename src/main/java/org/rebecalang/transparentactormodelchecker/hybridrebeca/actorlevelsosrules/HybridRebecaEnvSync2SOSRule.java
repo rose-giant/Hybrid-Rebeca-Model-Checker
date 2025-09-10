@@ -16,8 +16,8 @@ public class HybridRebecaEnvSync2SOSRule extends AbstractHybridSOSRule<HybridReb
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
-        if(!source.messageQueueIsEmpty())
-            throw new RebecaRuntimeInterpreterException("envSync2 rule is disabled");
+//        if(!source.messageQueueIsEmpty())
+//            throw new RebecaRuntimeInterpreterException("envSync2 rule is disabled");
 
         HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
         float lowerBound = Float.MAX_VALUE;

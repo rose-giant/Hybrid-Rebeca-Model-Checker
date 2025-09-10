@@ -44,6 +44,7 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         Pair<Float, Float> newNow = new Pair<>(left, right);
         HybridRebecaNetworkState networkState = source.getNetworkState();
         networkState.setNow(newNow);
+        backup.setNetworkState(networkState);
 
         for(String actorId : backup.getActorsState().keySet()) {
             HybridRebecaActorState actorState = backup.getActorState(actorId);
