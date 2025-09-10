@@ -63,9 +63,9 @@ public class HybridRebecaEnvProgressTest {
 
     @Test
     public void test2() {
-        Pair<Float, Float> interval1 = new Pair<>((float)1, (float)2);
+        Pair<Float, Float> interval1 = new Pair<>((float)0.6, (float)2);
         actorState1.setResumeTime(interval1);
-        actorState1.setNow(new Pair<>(0f, 0.5f));
+        actorState1.setNow(new Pair<>(0.5f, 1f));
 
         message1.setMessageArrivalInterval(interval1);
         message1.setSender(actorState1);
@@ -73,21 +73,21 @@ public class HybridRebecaEnvProgressTest {
         actorState1.receiveMessage(message1);
         systemState.setActorState(actorState1.getId(), actorState1);
 
-        Pair<Float, Float> interval2 = new Pair<>((float)1, (float)2);
+        Pair<Float, Float> interval2 = new Pair<>((float)0.6, (float)0.8);
         message2.setMessageArrivalInterval(interval2);
         message2.setSender(actorState2);
         message2.setReceiver(actorState2);
         networkState.addMessage(message2);
 
-        Pair<Float, Float> interval3 = new Pair<>((float)3, (float)4);
+        Pair<Float, Float> interval3 = new Pair<>((float)0.7, (float)4);
         message3.setMessageArrivalInterval(interval3);
         message3.setSender(actorState1);
         message3.setReceiver(actorState2);
         networkState.addMessage(message3);
-        networkState.setNow(new Pair<>(0f, 0.5f));
+        networkState.setNow(new Pair<>(0.5f, 1f));
         systemState.setNetworkState(networkState);
 
-        Pair<Float, Float> now = new Pair<>((float)0, (float)0.5);
+        Pair<Float, Float> now = new Pair<>((float)0.5, (float)1);
         systemState.setNow(now);
 
         HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
@@ -95,7 +95,7 @@ public class HybridRebecaEnvProgressTest {
                         hybridRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
 
         HybridRebecaSystemState resultState = result.getDestination();
-        assertEquals((float) 0.5, resultState.getNow().getFirst().floatValue());
+        assertEquals((float) 0.6, resultState.getNow().getFirst().floatValue());
         assertEquals((float) 1, resultState.getNow().getSecond().floatValue());
     }
 }

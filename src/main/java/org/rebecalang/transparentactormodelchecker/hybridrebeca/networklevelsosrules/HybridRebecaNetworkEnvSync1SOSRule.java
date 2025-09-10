@@ -35,7 +35,7 @@ public class HybridRebecaNetworkEnvSync1SOSRule extends AbstractHybridSOSRule<Hy
             progressLower.setSecond(firstB);
 
             progressUpper.setFirst(now.getSecond());
-            progressUpper.setFirst(now.getSecond());
+            progressUpper.setSecond(now.getSecond());
         }
         else if(firstB < now.getSecond() && now.getSecond() < secondB) {
             progressLower.setFirst(now.getFirst());
