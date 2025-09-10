@@ -125,7 +125,7 @@ public class HybridRebecaEnvProgressTest {
         networkState.setNow(new Pair<>(1f, 2f));
         systemState.setNetworkState(networkState);
 
-        Pair<Float, Float> now = new Pair<>((float)0.5, (float)1);
+        Pair<Float, Float> now = new Pair<>((float)1, (float)2);
         systemState.setNow(now);
 
         HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
@@ -163,7 +163,7 @@ public class HybridRebecaEnvProgressTest {
         networkState.setNow(new Pair<>(1f, 2f));
         systemState.setNetworkState(networkState);
 
-        Pair<Float, Float> now = new Pair<>((float)0.5, (float)1);
+        Pair<Float, Float> now = new Pair<>((float)1, (float)2);
         systemState.setNow(now);
 
         HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
@@ -173,6 +173,44 @@ public class HybridRebecaEnvProgressTest {
         HybridRebecaSystemState resultState = result.getDestination();
         assertEquals((float) 1.5, resultState.getNow().getFirst().floatValue());
         assertEquals((float) 2, resultState.getNow().getSecond().floatValue());
+    }
+
+    @Test
+    public void test5() {
+        Pair<Float, Float> interval1 = new Pair<>((float)1.5, (float)2);
+        actorState1.setResumeTime(interval1);
+        actorState1.setNow(new Pair<>(1f, 2f));
+
+        message1.setMessageArrivalInterval(interval1);
+        message1.setSender(actorState1);
+        message1.setReceiver(actorState1);
+//        actorState1.receiveMessage(message1);
+        systemState.setActorState(actorState1.getId(), actorState1);
+
+        Pair<Float, Float> interval2 = new Pair<>((float)2, (float)2.8);
+        message2.setMessageArrivalInterval(interval2);
+        message2.setSender(actorState2);
+        message2.setReceiver(actorState2);
+        networkState.addMessage(message2);
+
+        Pair<Float, Float> interval3 = new Pair<>((float)2.5, (float)4);
+        message3.setMessageArrivalInterval(interval3);
+        message3.setSender(actorState1);
+        message3.setReceiver(actorState2);
+        networkState.addMessage(message3);
+        networkState.setNow(new Pair<>(1f, 2f));
+        systemState.setNetworkState(networkState);
+
+        Pair<Float, Float> now = new Pair<>((float)1, (float)2);
+        systemState.setNow(now);
+
+        HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
+                (HybridRebecaDeterministicTransition<HybridRebecaSystemState>)
+                        hybridRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
+
+        HybridRebecaSystemState resultState = result.getDestination();
+        assertEquals((float) 2, resultState.getNow().getFirst().floatValue());
+        assertEquals((float) 2.5, resultState.getNow().getSecond().floatValue());
     }
 }
 
