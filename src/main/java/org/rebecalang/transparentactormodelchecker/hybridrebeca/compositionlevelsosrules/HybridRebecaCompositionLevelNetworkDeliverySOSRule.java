@@ -50,19 +50,7 @@ public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends Abstract
             }
         }
         else {
-            //TODO
             return null;
-//            HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result;
-//            if (source.getNetworkState().getReceivedMessages().size() == 0) {
-//                HybridRebecaNetworkEnvSync2SOSRule envSync2SOSRule = new HybridRebecaNetworkEnvSync2SOSRule();
-//                result = (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) envSync2SOSRule.applyRule(source.getNetworkState());
-//            } else {
-//                HybridRebecaNetworkEnvSync1SOSRule envSync1SOSRule = new HybridRebecaNetworkEnvSync1SOSRule();
-//                result = (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) envSync1SOSRule.applyRule(source.getNetworkState());
-//            }
-//            backup = HybridRebecaStateSerializationUtils.clone(source);
-//            backup.setNetworkState(result.getDestination());
-//            transitions.addDestination(result.getAction(), backup);
         }
 
         return transitions;

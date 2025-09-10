@@ -30,6 +30,7 @@ public class ApplySystemLevelRules {
     HybridRebecaCompositionLevelNetworkDeliverySOSRule networkDeliverySOSRule =
             new HybridRebecaCompositionLevelNetworkDeliverySOSRule();
 
+    //TODO: communication of Network --> Actor is handled but after receiving no scope is added to the actor's scopes
     public void startApplyingRules(HybridRebecaSystemState initialState){
         HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult;
         HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(initialState);
@@ -37,10 +38,11 @@ public class ApplySystemLevelRules {
 
         while (backup.getNow().getFirst() <= backup.getInputInterval().getSecond()) {
 
-            executionResult = levelExecuteStatementSOSRule.applyRule(initialState);
+            executionResult = levelExecuteStatementSOSRule.applyRule(backup);
             if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
                 HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
                         (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
+                backup = HybridRebecaStateSerializationUtils.clone(source.getDestination());
 
                 if (source.getDestination().getNetworkState().getReceivedMessages().size() > 0) {
                     HybridRebecaAbstractTransition<HybridRebecaSystemState> deliveryResult =
@@ -53,7 +55,10 @@ public class ApplySystemLevelRules {
                     System.out.println("time to sync!");
                     HybridRebecaCompositionLevelEnvProgressSOSRule envProgressSOSRule = new HybridRebecaCompositionLevelEnvProgressSOSRule();
                     executionResult = envProgressSOSRule.applyRule(backup);
+                    backup = (HybridRebecaSystemState) ((HybridRebecaDeterministicTransition)executionResult).getDestination();
 //                    break;
+                } else if(executionResult != null) {
+
                 }
             }
 
@@ -76,6 +81,7 @@ public class ApplySystemLevelRules {
                         System.out.println("time to sync!");
                         HybridRebecaCompositionLevelEnvProgressSOSRule envProgressSOSRule = new HybridRebecaCompositionLevelEnvProgressSOSRule();
                         executionResult = envProgressSOSRule.applyRule(backup);
+                        backup = (HybridRebecaSystemState) ((HybridRebecaDeterministicTransition)executionResult).getDestination();
 //                        break;
                     }
                 }

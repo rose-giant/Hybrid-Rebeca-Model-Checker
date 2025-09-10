@@ -45,6 +45,9 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
             for(String actorId : backup.getActorsState().keySet()) {
                 HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
                 hybridRebecaActorState.setNow(source.getNow());
+                if (hybridRebecaActorState.noScopeInstructions()) {
+                    continue;
+                }
 
                 for (int i = 0 ; i <= hybridRebecaActorState.getSigma().size() ; i++) {
                     HybridRebecaAbstractTransition<HybridRebecaActorState> executionResult =
@@ -87,15 +90,9 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                         throw new RebecaRuntimeInterpreterException("Unknown actor transition type");
                     }
                 }
-
-//                if (hybridRebecaActorState.getSigma().size() == 0)
-//                    continue;
-//
-//                if(hybridRebecaActorState.noScopeInstructions())
-//                    continue;
-
             }
 
+        if (transitions.isEmpty()) return new HybridRebecaDeterministicTransition<>(Action.TAU, backup);
         return transitions.get(transitions.size() - 1);
     }
 

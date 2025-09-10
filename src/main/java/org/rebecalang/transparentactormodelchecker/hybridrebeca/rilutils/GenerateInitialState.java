@@ -44,6 +44,7 @@ public class GenerateInitialState {
 
         Pair<Float, Float> now = new Pair<>((float)0, (float)0);
         systemStateZero.setNow(now);
+        systemStateZero.getNetworkState().setNow(now);
         Pair<Float, Float> inputInterval = new Pair<>((float)0, (float)10);
         systemStateZero.setInputInterval(inputInterval);
 
