@@ -19,30 +19,43 @@ public class HybridRebecaNetworkEnvSync1SOSRule extends AbstractHybridSOSRule<Hy
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
         ArrayList<Float> bounds = getAllBounds(source);
         Pair<Float, Float> now = source.getNow();
-        float progressLowerBound=0, progressUpperBound=0;
+        Pair<Float, Float> progressLower = new Pair<>(0f, 0f), progressUpper = new Pair<>(0f, 0f);
         float firstB = bounds.get(0);
         float secondB = bounds.get(1);
 
         if (now.getSecond() < firstB) {
-            progressUpperBound = now.getSecond();
-            progressUpperBound = firstB;
+            progressLower.setFirst(now.getFirst());
+            progressLower.setSecond(now.getSecond());
+
+            progressUpper.setFirst(now.getSecond());
+            progressUpper.setSecond(firstB);
         }
         else if (firstB < now.getSecond() && secondB <= now.getSecond()) {
-            progressLowerBound = firstB;
-            progressUpperBound = now.getSecond();
+            progressLower.setFirst(now.getFirst());
+            progressLower.setSecond(firstB);
+
+            progressUpper.setFirst(now.getSecond());
+            progressUpper.setFirst(now.getSecond());
         }
         else if(firstB < now.getSecond() && now.getSecond() < secondB) {
-            progressLowerBound = firstB;
-            progressUpperBound = secondB;
-        } else if (firstB == now.getSecond()) {
-            progressLowerBound = firstB;
-            progressUpperBound = secondB;
+            progressLower.setFirst(now.getFirst());
+            progressLower.setSecond(firstB);
+
+            progressUpper.setFirst(now.getSecond());
+            progressUpper.setSecond(secondB);
+        }
+        else if (firstB == now.getSecond()) {
+            progressLower.setFirst(firstB);
+            progressLower.setSecond(firstB);
+
+            progressUpper.setFirst(firstB);
+            progressUpper.setSecond(secondB);
         }
 
         HybridRebecaNetworkState backup = HybridRebecaStateSerializationUtils.clone(source);
-        backup.setNow(new Pair<>(progressLowerBound, progressUpperBound));
+        backup.setNow(new Pair<>(progressLower.getSecond(), progressUpper.getSecond()));
         TimeProgressAction action = new TimeProgressAction();
-        action.setTimeProgress(new Pair<>(progressLowerBound, progressUpperBound));
+        action.setTimeIntervalProgress(new Pair<>(progressLower, progressUpper));
 
         HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaDeterministicTransition<>();
         result.setAction(action);
