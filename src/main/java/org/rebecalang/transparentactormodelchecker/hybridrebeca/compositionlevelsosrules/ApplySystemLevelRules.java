@@ -53,57 +53,39 @@ public class ApplySystemLevelRules {
                     executionResult = deliveryResult;
                 }
 
-                if (systemCanExecuteStatements(source.getDestination()) && executionResult == null) {
+                if (!systemCanExecuteStatements(source.getDestination()) && executionResult == null) {
                     System.out.println("time to sync!");
-                    break;
+//                    break;
                 }
             }
+
             else if (executionResult instanceof HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) {
                 HybridRebecaNondeterministicTransition<HybridRebecaSystemState> source =
                         (HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) executionResult;
-
-                Pair<? extends Action, HybridRebecaSystemState> src = source.getDestinations().iterator().next();
-                HybridRebecaSystemState systemState = src.getSecond();
-
                 Iterator<Pair<? extends Action, HybridRebecaSystemState>> transitionsIterator = (source).getDestinations().iterator();
+                while (transitionsIterator.hasNext()) {
+                    Pair<? extends Action, HybridRebecaSystemState> transition = transitionsIterator.next();
+                    HybridRebecaSystemState systemState = transition.getSecond();
 
-//                if (systemCanExecuteStatements(((HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult).getDestination())) {
-//                    startApplyingRules(((HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult).getDestination());
-//                }
+                    if (systemState.getNetworkState().getReceivedMessages().size() > 0) {
+                        HybridRebecaAbstractTransition<HybridRebecaSystemState> deliveryResult =
+                                networkDeliverySOSRule.applyRule(systemState);
 
-                if (systemState.getNetworkState().getReceivedMessages().size() > 0) {
-                    HybridRebecaAbstractTransition<HybridRebecaSystemState> deliveryResult =
-                            networkDeliverySOSRule.applyRule(systemState);
+                        executionResult = deliveryResult;
+                    }
 
-                    executionResult = deliveryResult;
-                }
-
-                if (executionResult == null) {
-                    //TODO: Call envProgress Method and pass the current system state to it and progress the global time
-                    System.out.println("time to sync!");
-                    break;
-                }
-//                while (transitionsIterator.hasNext()) {
-//                    Pair<? extends Action, HybridRebecaSystemState> transition = transitionsIterator.next();
-//                    HybridRebecaSystemState systemState = transition.getSecond();
-//
-////                    if (systemCanExecuteStatements(systemState)) {
-////                        startApplyingRules(systemState);
-////                    }
-//
-//                    if (systemState.getNetworkState().getReceivedMessages().size() > 0) {
-//                        HybridRebecaAbstractTransition<HybridRebecaSystemState> deliveryResult =
-//                                networkDeliverySOSRule.applyRule(systemState);
-//
-//                        executionResult = deliveryResult;
-//                    }
-//
-//                    if (systemCanExecuteStatements(systemState) && executionResult == null) {
-//                        System.out.println("time to sync!");
+                    if (!systemCanExecuteStatements(systemState) && executionResult == null) {
+                        System.out.println("time to sync!");
 //                        break;
-//                    }
-//                }
+                    }
+                }
             }
+
+//            if (executionResult == null) {
+//                //TODO: Call envProgress Method and pass the current system state to it and progress the global time
+//                System.out.println("time to sync!");
+//                break;
+//            }
             AbstractTransparentActorState transparentActorState = new AbstractTransparentActorState();
             transparentActorStateSpace.addStateToStateSpace(transparentActorState);
         }
@@ -114,7 +96,7 @@ public class ApplySystemLevelRules {
     public boolean systemCanExecuteStatements(HybridRebecaSystemState initialState) {
         for(String actorId : initialState.getActorsState().keySet()) {
             HybridRebecaActorState hybridRebecaActorState = initialState.getActorState(actorId);
-            if (!hybridRebecaActorState.getSigma().isEmpty()) {
+            if (!hybridRebecaActorState.noScopeInstructions()) {
                 return true;
             }
         }

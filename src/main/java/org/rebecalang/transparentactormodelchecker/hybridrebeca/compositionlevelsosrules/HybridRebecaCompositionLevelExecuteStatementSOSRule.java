@@ -21,6 +21,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 @Component
@@ -36,8 +37,9 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
-        HybridRebecaNondeterministicTransition<HybridRebecaSystemState> transitions =
-                new HybridRebecaNondeterministicTransition<HybridRebecaSystemState>();
+//        HybridRebecaNondeterministicTransition<HybridRebecaSystemState> transitions =
+//                new HybridRebecaNondeterministicTransition<HybridRebecaSystemState>();
+        ArrayList<HybridRebecaAbstractTransition> transitions = new ArrayList<>();
 
         HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
             for(String actorId : backup.getActorsState().keySet()) {
@@ -53,14 +55,14 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                                 (HybridRebecaDeterministicTransition<HybridRebecaActorState>)executionResult;
                         if(transition.getAction() instanceof MessageAction) {
                             HybridRebecaDeterministicTransition<HybridRebecaNetworkState> networkTransition =
-                                    (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) hybridRebecaNetworkLevelReceiveMessageSOSRule.applyRule(
-                                            transition.getAction(), backup.getNetworkState());
+                                    (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>)
+                                            hybridRebecaNetworkLevelReceiveMessageSOSRule.applyRule(transition.getAction(), backup.getNetworkState());
                             backup.setNetworkState(networkTransition.getDestination());
                         } else {
                             transition.setAction(Action.TAU);
                         }
                         backup.setActorState(actorId, ((HybridRebecaDeterministicTransition<HybridRebecaActorState>) executionResult).getDestination());
-                        transitions.addDestination(transition.getAction(), backup);
+                        transitions.add(new HybridRebecaDeterministicTransition(transition.getAction(), backup));
                     }
                     else if(executionResult instanceof HybridRebecaNondeterministicTransition<HybridRebecaActorState>) {
                         Iterator<Pair<? extends Action, HybridRebecaActorState>> transitionsIterator = executionResult.getDestinations().iterator();
@@ -69,7 +71,8 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                             Pair<? extends Action, HybridRebecaActorState> transition = transitionsIterator.next();
                             HybridRebecaActorState actorState = transition.getSecond();
                             backup.setActorState(actorState.getId(), hybridRebecaActorState);
-                            transitions.addDestination(transition.getFirst(), backup);
+//                            transitions.addDestination(transition.getFirst(), backup);
+                            transitions.add(new HybridRebecaDeterministicTransition(transition.getFirst(), backup));
 
                             if(transition.getFirst() instanceof MessageAction) {
                                 MessageAction action = (MessageAction) transition.getFirst();
@@ -92,14 +95,17 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
 //                    continue;
 
             }
-        return transitions;
+
+        return transitions.get(transitions.size() - 1);
     }
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(Action synchAction, HybridRebecaSystemState source) {
         return null;
     }
+
 }
+
 
 //            HybridRebecaNetworkState hybridRebecaNetworkState = source.getNetworkState();
 //            HybridRebecaAbstractTransition<HybridRebecaNetworkState> executionResult =
