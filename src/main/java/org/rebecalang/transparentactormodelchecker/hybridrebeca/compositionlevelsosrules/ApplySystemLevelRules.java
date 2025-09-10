@@ -42,10 +42,6 @@ public class ApplySystemLevelRules {
                 HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
                         (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
 
-//                if (systemCanExecuteStatements(((HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult).getDestination())) {
-//                    startApplyingRules(((HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult).getDestination());
-//                }
-
                 if (source.getDestination().getNetworkState().getReceivedMessages().size() > 0) {
                     HybridRebecaAbstractTransition<HybridRebecaSystemState> deliveryResult =
                             networkDeliverySOSRule.applyRule(source.getDestination());
@@ -55,6 +51,8 @@ public class ApplySystemLevelRules {
 
                 if (!systemCanExecuteStatements(source.getDestination()) && executionResult == null) {
                     System.out.println("time to sync!");
+                    HybridRebecaCompositionLevelEnvProgressSOSRule envProgressSOSRule = new HybridRebecaCompositionLevelEnvProgressSOSRule();
+                    executionResult = envProgressSOSRule.applyRule(backup);
 //                    break;
                 }
             }
@@ -76,6 +74,8 @@ public class ApplySystemLevelRules {
 
                     if (!systemCanExecuteStatements(systemState) && executionResult == null) {
                         System.out.println("time to sync!");
+                        HybridRebecaCompositionLevelEnvProgressSOSRule envProgressSOSRule = new HybridRebecaCompositionLevelEnvProgressSOSRule();
+                        executionResult = envProgressSOSRule.applyRule(backup);
 //                        break;
                     }
                 }

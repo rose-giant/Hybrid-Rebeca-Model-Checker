@@ -16,28 +16,12 @@ import java.util.Map;
 public class HybridRebecaNetworkEnvSyncSOSRule  extends AbstractHybridSOSRule<HybridRebecaNetworkState> {
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
-        float minETA = Float.MAX_VALUE;
-        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : source.getReceivedMessages().entrySet()) {
-            ArrayList<HybridRebecaMessage> messages = entry.getValue();
-            for (HybridRebecaMessage message : messages) {
-                float etaLowerBound = message.getMessageArrivalInterval().getFirst();
-                if (etaLowerBound < minETA) minETA = etaLowerBound;
-                if (etaLowerBound < source.getNow().getSecond()) {
-                    return null;
-                }
-            }
+        if (source.getReceivedMessages().isEmpty()) {
+            HybridRebecaNetworkEnvSync2SOSRule envSync2SOSRule = new HybridRebecaNetworkEnvSync2SOSRule();
+            return envSync2SOSRule.applyRule(source);
         }
-
-        float nowLowerBound = (source.getNow().getFirst() + source.getNow().getSecond()) / 2;
-        float nowUpperBound = minETA + (float) 0.1;
-        Pair<Float, Float> newNow = new Pair<>(nowLowerBound, nowUpperBound);
-        source.setNow(newNow);
-        HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaDeterministicTransition<>();
-        TimeProgressAction timeProgressAction = new TimeProgressAction();
-        result.setAction(timeProgressAction);
-        result.setDestination(source);
-
-        return result;
+        HybridRebecaNetworkEnvSync1SOSRule envSync1SOSRule = new HybridRebecaNetworkEnvSync1SOSRule();
+        return envSync1SOSRule.applyRule(source);
     }
 
     @Override

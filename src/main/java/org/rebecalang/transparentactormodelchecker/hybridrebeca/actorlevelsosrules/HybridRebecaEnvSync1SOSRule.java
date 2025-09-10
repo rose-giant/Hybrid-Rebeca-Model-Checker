@@ -2,14 +2,17 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosru
 
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
+import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.TimeProgressAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HybridRebecaEnvSync1SOSRule {
+public class HybridRebecaEnvSync1SOSRule extends AbstractHybridSOSRule<HybridRebecaActorState> {
 
     public HybridRebecaDeterministicTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
         HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
@@ -44,5 +47,10 @@ public class HybridRebecaEnvSync1SOSRule {
         result.setDestination(backup);
 
         return result;
+    }
+
+    @Override
+    public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(Action synchAction, HybridRebecaActorState source) {
+        return null;
     }
 }
