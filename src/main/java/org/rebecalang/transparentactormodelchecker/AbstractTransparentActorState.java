@@ -3,9 +3,16 @@ package org.rebecalang.transparentactormodelchecker;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 
+import java.util.ArrayList;
+
 public class AbstractTransparentActorState {
     private HybridRebecaSystemState systemState = new HybridRebecaSystemState();
     private HybridRebecaAbstractTransition abstractTransition;
+    private ArrayList<HybridRebecaAbstractTransition> transitions = new ArrayList<>();
+
+    public void addTransition(HybridRebecaAbstractTransition<HybridRebecaSystemState> transition) {
+        transitions.add(transition);
+    }
 
     public void AbstractTransparentActorState(HybridRebecaSystemState newSystemState, HybridRebecaAbstractTransition newAbstractTransition) {
         systemState = newSystemState;

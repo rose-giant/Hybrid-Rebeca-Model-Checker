@@ -8,8 +8,8 @@ reactiveclass Controller(1) {
     }
 
     Controller() {
-     self.test();
-        //self.test() after(0.1, 0.2);
+     //self.test();
+        self.test() after(0.1, 0.2);
         //self.test() after(0.9, 1);
     }
 
