@@ -3,7 +3,9 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionleve
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.transparentactormodelchecker.AbstractTransparentActorState;
 import org.rebecalang.transparentactormodelchecker.TransparentActorStateSpace;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules.HybridRebecaTakeMessageSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
@@ -29,74 +31,71 @@ public class ApplySystemLevelRules {
     HybridRebecaCompositionLevelExecuteStatementSOSRule levelExecuteStatementSOSRule;
     HybridRebecaCompositionLevelNetworkDeliverySOSRule networkDeliverySOSRule =
             new HybridRebecaCompositionLevelNetworkDeliverySOSRule();
-
-    //TODO: communication of Network --> Actor is handled but after receiving no scope is added to the actor's scopes
+    
     public void startApplyingRules(HybridRebecaSystemState initialState){
-        HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult;
-        HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(initialState);
-        initialState.setNow(new Pair<>((float)0, (float)0));
+        HybridRebecaDeterministicTransition<HybridRebecaSystemState> executionResult = new HybridRebecaDeterministicTransition<>();
+        executionResult.setDestination(initialState);
+        executionResult.setAction(Action.TAU);
 
-        while (backup.getNow().getFirst() <= backup.getInputInterval().getSecond()) {
+        runSystemRules(executionResult);
+        AbstractTransparentActorState transparentActorState = new AbstractTransparentActorState();
+        transparentActorStateSpace.addStateToStateSpace(transparentActorState);
+    }
 
-            executionResult = levelExecuteStatementSOSRule.applyRule(backup);
-            if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
-                HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
-                        (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
-                backup = HybridRebecaStateSerializationUtils.clone(source.getDestination());
+    public void runSystemRules(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
 
-                if (source.getDestination().getNetworkState().getReceivedMessages().size() > 0) {
-                    HybridRebecaAbstractTransition<HybridRebecaSystemState> deliveryResult =
-                            networkDeliverySOSRule.applyRule(source.getDestination());
-
-                    executionResult = deliveryResult;
-                }
-
-                if (!systemCanExecuteStatements(source.getDestination()) && executionResult == null) {
-                    System.out.println("time to sync!");
-                    HybridRebecaCompositionLevelEnvProgressSOSRule envProgressSOSRule = new HybridRebecaCompositionLevelEnvProgressSOSRule();
-                    executionResult = envProgressSOSRule.applyRule(backup);
-                    backup = (HybridRebecaSystemState) ((HybridRebecaDeterministicTransition)executionResult).getDestination();
-//                    break;
-                } else if(executionResult != null) {
-
-                }
+        if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
+            HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
+                    (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
+            HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source.getDestination());
+            if (backup.getNow().getFirst() > backup.getInputInterval().getSecond()) {
+                return;
             }
+            executionResult = runApplicableRule(backup);
+            //make the state
+            runSystemRules(executionResult);
+        }
+        else if (executionResult instanceof HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) {
+            HybridRebecaNondeterministicTransition<HybridRebecaSystemState> source =
+                    (HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) executionResult;
+            Iterator<Pair<? extends Action, HybridRebecaSystemState>> transitionsIterator = (source).getDestinations().iterator();
 
-            else if (executionResult instanceof HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) {
-                HybridRebecaNondeterministicTransition<HybridRebecaSystemState> source =
-                        (HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) executionResult;
-                Iterator<Pair<? extends Action, HybridRebecaSystemState>> transitionsIterator = (source).getDestinations().iterator();
-                while (transitionsIterator.hasNext()) {
-                    Pair<? extends Action, HybridRebecaSystemState> transition = transitionsIterator.next();
-                    HybridRebecaSystemState systemState = transition.getSecond();
-
-                    if (systemState.getNetworkState().getReceivedMessages().size() > 0) {
-                        HybridRebecaAbstractTransition<HybridRebecaSystemState> deliveryResult =
-                                networkDeliverySOSRule.applyRule(systemState);
-
-                        executionResult = deliveryResult;
-                    }
-
-                    if (!systemCanExecuteStatements(systemState) && executionResult == null) {
-                        System.out.println("time to sync!");
-                        HybridRebecaCompositionLevelEnvProgressSOSRule envProgressSOSRule = new HybridRebecaCompositionLevelEnvProgressSOSRule();
-                        executionResult = envProgressSOSRule.applyRule(backup);
-                        backup = (HybridRebecaSystemState) ((HybridRebecaDeterministicTransition)executionResult).getDestination();
-//                        break;
-                    }
+            while (transitionsIterator.hasNext()) {
+                Pair<? extends Action, HybridRebecaSystemState> transition = transitionsIterator.next();
+                HybridRebecaSystemState systemState = transition.getSecond();
+                if (systemState.getNow().getFirst() > systemState.getInputInterval().getSecond()) {
+                    return;
                 }
+                executionResult = runApplicableRule(systemState);
+                //make the state
+                runSystemRules(executionResult);
             }
+        }
+    }
 
-//            if (executionResult == null) {
-//                //TODO: Call envProgress Method and pass the current system state to it and progress the global time
-//                System.out.println("time to sync!");
-//                break;
-//            }
-            AbstractTransparentActorState transparentActorState = new AbstractTransparentActorState();
-            transparentActorStateSpace.addStateToStateSpace(transparentActorState);
+    public HybridRebecaAbstractTransition<HybridRebecaSystemState> runApplicableRule(HybridRebecaSystemState backup) {
+        if(systemCanExecuteStatements(backup)) {
+            HybridRebecaAbstractTransition<HybridRebecaSystemState> result = levelExecuteStatementSOSRule.applyRule(backup);
+            return result;
         }
 
-        System.out.println("state number: "+transparentActorStateSpace.getStatesNumber());
+        HybridRebecaCompositionLevelTakeMessageSOSRule takeMessageSOSRule = new HybridRebecaCompositionLevelTakeMessageSOSRule();
+        HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult = takeMessageSOSRule.applyRule(backup);
+        if (executionResult != null) {
+            return executionResult;
+        }
+
+        if (backup.getNetworkState().getReceivedMessages().size() > 0) {
+            HybridRebecaAbstractTransition<HybridRebecaSystemState> deliveryResult = networkDeliverySOSRule.applyRule(backup);
+            if (deliveryResult != null) {
+                return deliveryResult;
+            }
+        }
+
+        System.out.println("time to sync!");
+        HybridRebecaCompositionLevelEnvProgressSOSRule envProgressSOSRule = new HybridRebecaCompositionLevelEnvProgressSOSRule();
+        executionResult = envProgressSOSRule.applyRule(backup);
+        return executionResult;
     }
 
     public boolean systemCanExecuteStatements(HybridRebecaSystemState initialState) {
@@ -110,4 +109,3 @@ public class ApplySystemLevelRules {
         return false;
     }
 }
-

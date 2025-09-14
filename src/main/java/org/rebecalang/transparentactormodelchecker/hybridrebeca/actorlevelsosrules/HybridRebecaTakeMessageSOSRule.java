@@ -21,7 +21,7 @@ public class HybridRebecaTakeMessageSOSRule extends AbstractHybridSOSRule<Hybrid
         if(source.messageQueueIsEmpty())
             throw new RebecaRuntimeInterpreterException("Execution rule is disabled");
         HybridRebecaMessage message = source.getFirstMessage();
-        source.pushToScope();
+        source.addScope(message.getName());
         HashMap<String,Object> parameters = message.getParameters();
         for(Map.Entry<String, Object> entry : parameters.entrySet()) {
             source.addVariableToScope(entry.getKey(), entry.getValue());
@@ -45,7 +45,6 @@ public class HybridRebecaTakeMessageSOSRule extends AbstractHybridSOSRule<Hybrid
     }
 
     public boolean isEnable(HybridRebecaActorState source) {
-        return !source.hasVariableInScope(HybridRebecaActorState.PC) &&
-                !source.messageQueueIsEmpty();
+        return !source.messageQueueIsEmpty();
     }
 }

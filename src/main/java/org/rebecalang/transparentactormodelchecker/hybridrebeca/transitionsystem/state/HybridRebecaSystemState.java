@@ -1,6 +1,9 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state;
 
 import org.rebecalang.compiler.utils.Pair;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -72,5 +75,17 @@ public class HybridRebecaSystemState implements Serializable {
         for(HybridRebecaActorState actorState : actorsState.values())
             result += actorState + "\n";
         return result;
+    }
+
+    public boolean isTakeEnable() {
+        HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(this);
+        for (String actorId : backup.getActorsIds()) {
+            HybridRebecaActorState hybridRebecaActorState = this.getActorState(actorId);
+            if (!hybridRebecaActorState.messageQueueIsEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class HybridRebecaCompositionLevelTakeMessageSOSRule extends AbstractHybridSOSRule<HybridRebecaSystemState> {
 
     @Autowired
-    HybridRebecaTakeMessageSOSRule hybridRebecaTakeMessageSOSRule;
+    HybridRebecaTakeMessageSOSRule hybridRebecaTakeMessageSOSRule = new HybridRebecaTakeMessageSOSRule();
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
@@ -34,6 +34,9 @@ public class HybridRebecaCompositionLevelTakeMessageSOSRule extends AbstractHybr
             }
         }
 
+        if (transitions.getDestinations().isEmpty()) {
+            return null;
+        }
         return transitions;
     }
 
