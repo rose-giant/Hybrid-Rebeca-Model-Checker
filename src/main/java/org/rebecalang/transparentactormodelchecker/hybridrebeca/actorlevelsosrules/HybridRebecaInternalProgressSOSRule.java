@@ -53,6 +53,8 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
     @Autowired
     HybridRebecaDelaySOSRule delaySOSRule = new HybridRebecaDelaySOSRule();
 
+    HybridRebecaResumeSOSRule rebecaResumeSOSRule = new HybridRebecaResumeSOSRule();
+
     HybridRebecaEndMethodSOSRule endMethodSOSRule = new HybridRebecaEndMethodSOSRule();
 
     List<Pair<? extends Action, HybridRebecaActorState>> decorateStatementExecutionResult(
@@ -144,6 +146,9 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
                     executionResult = assignmentSOSRule.applyRule(new Pair<>(source, instruction));
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
+        }
+        else if(instruction == null){
+
         }
         else {
             throw new RebecaRuntimeInterpreterException("Unknown rule for the statement " + instruction);

@@ -132,6 +132,8 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
         scopes.get(scopes.size() - 1).setPC(lineNumber);
     }
 
+
+
     public Pair<Float, Float> getNow() {
         return nowInterval;
     }
@@ -192,6 +194,10 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
 
     public InstructionBean getInstruction() {
         return rilModel.getInstructionList(scopes.get(scopes.size() - 1).getBlockName()).get(scopes.get(scopes.size()-1).getPC());
+    }
+
+    public void addInstruction() {
+        rilModel.getInstructionList(scopes.get(scopes.size() - 1).getBlockName()).add(null);
     }
 
     public void setCurrentBlockName(String name) {

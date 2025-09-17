@@ -43,8 +43,7 @@ public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends Abstract
                 backup = HybridRebecaStateSerializationUtils.clone(source);
                 MessageAction action = (MessageAction) deliverable.getFirst();
                 source.setNetworkState(deliverable.getSecond());
-                source.getActorState(action.getMessage().getReceiver().getId()).
-                        receiveMessage(action.getMessage());
+                source.getActorState(action.getMessage().getReceiver().getId()).receiveMessage(action.getMessage());
                 transitions.addDestination(Action.TAU, source);
                 source = backup;
             }

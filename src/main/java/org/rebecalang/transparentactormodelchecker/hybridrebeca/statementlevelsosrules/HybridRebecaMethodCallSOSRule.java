@@ -6,7 +6,9 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MethodCallI
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 
 import java.util.ArrayList;
 
@@ -16,8 +18,14 @@ public class HybridRebecaMethodCallSOSRule extends AbstractHybridSOSRule<Pair<Hy
         HybridRebecaActorState actorState = source.getFirst();
         MethodCallInstructionBean methodCallInstruction = (MethodCallInstructionBean) source.getSecond();
         String methodName = methodCallInstruction.getMethodName();
+        if (methodName.equals("delay")) {
+            HybridRebecaDelaySOSRule delaySOSRule = new HybridRebecaDelaySOSRule();
+            HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>result = delaySOSRule.applyRule(source);
+            return result;
+        }
 
-        ArrayList<InstructionBean> methodInstructionList = actorState.getRilEquivalentActorClass().getMethods().get(methodName);
+        ArrayList<InstructionBean> methodInstructionList = actorState.getRILModel().getInstructionList(methodName);
+
         actorState.setCurrentBlockName(methodName);
 
         return null;

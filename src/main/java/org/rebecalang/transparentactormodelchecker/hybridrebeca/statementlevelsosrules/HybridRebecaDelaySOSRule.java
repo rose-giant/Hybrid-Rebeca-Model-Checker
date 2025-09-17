@@ -2,6 +2,7 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevels
 
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MethodCallInstructionBean;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.ContnuousNonDetInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
@@ -25,20 +26,27 @@ public class HybridRebecaDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridR
 
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState,InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
+        MethodCallInstructionBean methodCallInstruction = (MethodCallInstructionBean) source.getSecond();
+        Object delayParam = methodCallInstruction.getParameters().get("interval_bound");
         Float delayLowerBound = (float)0;
         Float delayUpperBound = (float) 0;
-        if (source.getSecond() instanceof ContnuousNonDetInstructionBean) {
-            ContnuousNonDetInstructionBean delayInterval = (ContnuousNonDetInstructionBean) source.getSecond();
-            delayLowerBound = (Float) delayInterval.getLowerBound();
-            delayUpperBound = (Float) delayInterval.getUpperBound();
+        if (delayParam instanceof ContnuousNonDetInstructionBean) {
+            ContnuousNonDetInstructionBean delayInterval = (ContnuousNonDetInstructionBean) delayParam;
+//            Object a = delayInterval.getLowerBound().toString();
+//            Object b = delayInterval.getUpperBound().getClass();
+            delayLowerBound = Float.parseFloat(delayInterval.getLowerBound().toString());
+            delayUpperBound = Float.parseFloat(delayInterval.getUpperBound().toString());
         }
 
         source.getFirst().setResumeTime(new Pair<>(source.getFirst().getResumeTime().getFirst() + delayLowerBound, source.getFirst().getResumeTime().getSecond() + delayUpperBound));
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
-//        source.getFirst().moveToNextStatement();
+
+        source.getFirst().moveToNextStatement();
         result.setDestination(source);
         result.setAction(Action.TAU);
+
+//        return result;
         HybridRebecaResumeSOSRule rebecaResumeSOSRule = new HybridRebecaResumeSOSRule();
         return rebecaResumeSOSRule.applyRule(source);
     }

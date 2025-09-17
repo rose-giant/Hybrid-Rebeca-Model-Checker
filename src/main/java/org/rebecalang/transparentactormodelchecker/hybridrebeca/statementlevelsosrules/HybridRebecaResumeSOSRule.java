@@ -39,7 +39,10 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
         }
 
         //TODO: what if none is applicable?
-        return null;
+        HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaDeterministicTransition<>();
+        result.setAction(Action.TAU);
+        result.setDestination(source);
+        return result;
     }
 
     @Override

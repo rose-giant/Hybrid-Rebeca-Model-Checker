@@ -7,6 +7,7 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MsgsrvCallI
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.MsgsrvCallWithAfterInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
+import org.rebecalang.transparentactormodelchecker.corerebeca.transitionsystem.state.CoreRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
@@ -42,7 +43,9 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
         if (msgsrvCall.getBase().getVarName().startsWith("self")) {
             message.setReceiver(senderActor);
         } else {
-            message.setReceiver((HybridRebecaActorState) senderActor.getVariableValue(msgsrvCall.getBase().getVarName()));
+            String receiverName = msgsrvCall.getBase().getVarName();
+            HybridRebecaActorState receiverState = new HybridRebecaActorState(receiverName);
+            message.setReceiver(receiverState);
         }
 
         for(Map.Entry<String, Object> entry : msgsrvCall.getParameters().entrySet()) {
