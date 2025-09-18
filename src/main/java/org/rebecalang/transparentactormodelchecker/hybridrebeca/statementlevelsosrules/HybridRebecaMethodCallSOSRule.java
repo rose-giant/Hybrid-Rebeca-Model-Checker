@@ -3,14 +3,18 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevels
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.MethodCallInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.ActorScope;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class HybridRebecaMethodCallSOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
     @Override
@@ -24,11 +28,25 @@ public class HybridRebecaMethodCallSOSRule extends AbstractHybridSOSRule<Pair<Hy
             return result;
         }
 
-        ArrayList<InstructionBean> methodInstructionList = actorState.getRILModel().getInstructionList(methodName);
+//        HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source.getFirst());
+//        backup.setRILModel(source.getFirst().getRILModel());
+        source.getFirst().moveToNextStatement();
+        source.getFirst().addScope(methodName);
+        for(Map.Entry<String, Object> entry : methodCallInstruction.getParameters().entrySet()) {
+            Object value = entry.getValue();
+            if(value instanceof Variable) {
+                Object variableValue = source.getFirst().getVariableValue(entry.getValue().toString());
+                source.getFirst().addVariableToScope(entry.getKey().toString(), variableValue);
+            }
+            methodCallInstruction.addParameter(entry.getKey(), value);
+        }
 
-        actorState.setCurrentBlockName(methodName);
+        HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result
+                = new HybridRebecaDeterministicTransition<>();
+        result.setDestination(source);
+        result.setAction(Action.TAU);
 
-        return null;
+        return result;
     }
 
     @Override

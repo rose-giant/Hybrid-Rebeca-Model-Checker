@@ -52,7 +52,7 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     }
 
     public void addVariableToScope(String varName, Object value) {
-        this.scopes.get(0).addVariableToScope(varName, value);
+        this.scopes.get(scopes.size()-1).addVariableToScope(varName, value);
     }
 
     public void setVariableValue(Variable leftVarName, Object value) {
@@ -60,10 +60,14 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     }
 
     public Object getVariableValue(String varName) {
-        Object object = this.scopes.get(scopes.size() - 1).getVariableValue(varName);
-        if (object != null) {
-            return object;
+        //look for the value in a reversed order in the scopes, ok?
+        for (int i = scopes.size()-1 ; i >= 0; i--) {
+            Object object = this.scopes.get(i).getVariableValue(varName);
+            if (object != null) {
+                return object;
+            }
         }
+
         return environment.getVariableValue(varName);
     }
 
