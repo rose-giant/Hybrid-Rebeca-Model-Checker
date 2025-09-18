@@ -185,11 +185,17 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     }
 
     public ArrayList<InstructionBean> getSigma() {
+        if (scopes.isEmpty()) return new ArrayList<>();
         return rilModel.getInstructionList(scopes.get(scopes.size() - 1).getBlockName());
     }
 
     public boolean noScopeInstructions() {
-        return scopes.get(scopes.size()-1).getPC() == this.getSigma().size() - 1 ;
+        if (scopes.isEmpty()) return true;
+        boolean noInstructions = scopes.get(scopes.size()-1).getPC() == this.getSigma().size() - 1 ;
+        if (noInstructions) {
+            scopes.remove(scopes.size()-1);
+        }
+        return noInstructions;
     }
 
     public InstructionBean getInstruction() {
