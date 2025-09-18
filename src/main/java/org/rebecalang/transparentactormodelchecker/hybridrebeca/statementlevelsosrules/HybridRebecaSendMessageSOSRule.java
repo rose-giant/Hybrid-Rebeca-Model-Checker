@@ -48,6 +48,7 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
             message.setReceiver(receiverState);
         }
 
+        //TODO: Check for all arg cases
         for(Map.Entry<String, Object> entry : msgsrvCall.getParameters().entrySet()) {
             Object value = entry.getValue();
             if(value instanceof Variable) {

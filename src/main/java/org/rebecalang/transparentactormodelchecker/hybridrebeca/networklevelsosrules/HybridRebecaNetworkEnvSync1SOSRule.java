@@ -10,9 +10,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class HybridRebecaNetworkEnvSync1SOSRule extends AbstractHybridSOSRule<HybridRebecaNetworkState> {
     @Override
@@ -78,7 +76,11 @@ public class HybridRebecaNetworkEnvSync1SOSRule extends AbstractHybridSOSRule<Hy
                 bounds.add(message.getMessageArrivalInterval().getSecond());
             }
         }
-        Collections.sort(bounds);
+        List<Float> uniqueSortedBounds = bounds.stream().distinct().sorted().toList();
+        bounds.clear();
+        for (Float element: uniqueSortedBounds) {
+            bounds.add(element);
+        }
         return bounds;
     }
 }
