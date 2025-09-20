@@ -49,6 +49,7 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         for(String actorId : backup.getActorsState().keySet()) {
             HybridRebecaActorState actorState = backup.getActorState(actorId);
             actorState.setNow(newNow);
+            actorState.setResumeTime(newNow);
         }
 
         HybridRebecaDeterministicTransition<HybridRebecaSystemState> result = new HybridRebecaDeterministicTransition<>();

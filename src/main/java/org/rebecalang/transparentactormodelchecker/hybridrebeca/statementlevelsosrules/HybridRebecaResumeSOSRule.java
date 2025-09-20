@@ -38,6 +38,11 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
             return result;
         }
 
+        //suspension case
+        if (now.getFirst().floatValue() < resumeTime.getFirst().floatValue()) {
+            return null;
+        }
+
         //TODO: what if none is applicable?
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaDeterministicTransition<>();
         result.setAction(Action.TAU);

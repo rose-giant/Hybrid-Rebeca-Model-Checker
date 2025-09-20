@@ -44,11 +44,19 @@ public class ApplySystemLevelRules {
         System.out.println(transparentActorStateSpace.getStatesNumber());
     }
 
-    public void runSystemRules(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
-        System.out.println("made a state!");
+    public void printStateSpace(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
         AbstractTransparentActorState actorState = new AbstractTransparentActorState();
+        System.out.println("s" + states.size());
         actorState.addTransition(executionResult);
         transparentActorStateSpace.addStateToStateSpace(actorState);
+    }
+
+    public void runSystemRules(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
+//        System.out.println("made a state!");
+        printStateSpace(executionResult);
+//        AbstractTransparentActorState actorState = new AbstractTransparentActorState();
+//        actorState.addTransition(executionResult);
+//        transparentActorStateSpace.addStateToStateSpace(actorState);
 
         if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
             HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
@@ -82,7 +90,9 @@ public class ApplySystemLevelRules {
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> runApplicableRule(HybridRebecaSystemState backup) {
         if(systemCanExecuteStatements(backup)) {
             HybridRebecaAbstractTransition<HybridRebecaSystemState> result = levelExecuteStatementSOSRule.applyRule(backup);
-            return result;
+            if (result != null) {
+                return result;
+            }
         }
 
         HybridRebecaCompositionLevelTakeMessageSOSRule takeMessageSOSRule = new HybridRebecaCompositionLevelTakeMessageSOSRule();

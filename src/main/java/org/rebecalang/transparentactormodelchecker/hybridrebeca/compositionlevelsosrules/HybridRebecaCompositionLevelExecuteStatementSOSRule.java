@@ -86,6 +86,10 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                             }
                         }
                     }
+                    //suspension case
+                    else if (executionResult == null) {
+                        return null;
+                    }
                     else {
                         throw new RebecaRuntimeInterpreterException("Unknown actor transition type");
                     }

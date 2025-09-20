@@ -64,6 +64,10 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
 
     HybridRebecaAbstractTransition<HybridRebecaActorState> convertStatementResultToActorResult(
             HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result) {
+        //suspension case
+        if (result == null) {
+            return null;
+        }
         return new HybridRebecaDeterministicTransition<HybridRebecaActorState>(
                 result.getAction(), result.getDestination().getFirst());
     }
@@ -146,9 +150,6 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>>
                     executionResult = assignmentSOSRule.applyRule(new Pair<>(source, instruction));
             destinations = convertStatementResultToActorResult((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) executionResult);
-        }
-        else if(instruction == null){
-
         }
         else {
             throw new RebecaRuntimeInterpreterException("Unknown rule for the statement " + instruction);

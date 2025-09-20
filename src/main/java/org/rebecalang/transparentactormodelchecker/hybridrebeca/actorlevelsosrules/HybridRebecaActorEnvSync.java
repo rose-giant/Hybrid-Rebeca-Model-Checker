@@ -10,7 +10,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 public class HybridRebecaActorEnvSync extends AbstractHybridSOSRule<HybridRebecaActorState> {
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
-        if (source.messageQueueIsEmpty()) {
+        if (source.messageQueueIsEmpty() && source.getNow().getFirst().floatValue() == source.getResumeTime().getFirst().floatValue()) {
             HybridRebecaEnvSync2SOSRule envSync2SOSRule = new HybridRebecaEnvSync2SOSRule();
             return envSync2SOSRule.applyRule(source);
         }
