@@ -41,8 +41,8 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
                     }
                 }
 
-                MessageAction messageAction = new MessageAction(selectedMessage);
-                result.addDestination(messageAction, backup);
+//                MessageAction messageAction = new MessageAction(selectedMessage);
+                result.addDestination(Action.TAU, backup);
                 transitions.add(result);
             }
         }
