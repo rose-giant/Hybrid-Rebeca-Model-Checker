@@ -65,9 +65,9 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
     HybridRebecaAbstractTransition<HybridRebecaActorState> convertStatementResultToActorResult(
             HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result) {
         //suspension case
-        if (result == null) {
-            return null;
-        }
+//        if (result == null) {
+//            return null;
+//        }
         return new HybridRebecaDeterministicTransition<HybridRebecaActorState>(
                 result.getAction(), result.getDestination().getFirst());
     }
@@ -75,8 +75,6 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
         HybridRebecaAbstractTransition<HybridRebecaActorState> destinations = null;
-//        InstructionBean instruction = source.getEnabledInstruction();
-        HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
         if (source.noScopeInstructions()) {
             HybridRebecaDeterministicTransition<HybridRebecaActorState> result = new HybridRebecaDeterministicTransition<>();
             result.setDestination(source);

@@ -52,12 +52,7 @@ public class ApplySystemLevelRules {
     }
 
     public void runSystemRules(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
-//        System.out.println("made a state!");
         printStateSpace(executionResult);
-//        AbstractTransparentActorState actorState = new AbstractTransparentActorState();
-//        actorState.addTransition(executionResult);
-//        transparentActorStateSpace.addStateToStateSpace(actorState);
-
         if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
             HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
                     (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
@@ -117,7 +112,7 @@ public class ApplySystemLevelRules {
     public boolean systemCanExecuteStatements(HybridRebecaSystemState initialState) {
         for(String actorId : initialState.getActorsState().keySet()) {
             HybridRebecaActorState hybridRebecaActorState = initialState.getActorState(actorId);
-            if (!hybridRebecaActorState.noScopeInstructions()) {
+            if (!hybridRebecaActorState.noScopeInstructions() && !hybridRebecaActorState.isSuspended()) {
                 return true;
             }
         }

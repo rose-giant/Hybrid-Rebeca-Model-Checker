@@ -54,6 +54,7 @@ public class GenerateInitialState {
         for (RebecInstantiationInstructionBean instantiation: instantiations) {
             HybridRebecaActorState newActor = new HybridRebecaActorState(instantiation.getInstanceName());
             newActor.setResumeTime(new Pair<>(0f, 0f));
+            newActor.setNow(new Pair<>(0f, 0f));
             String actorType = instantiation.getType().getTypeName();
             newActor.setRILModel(rilModel);
 //            TODO: add the constructor to the scope

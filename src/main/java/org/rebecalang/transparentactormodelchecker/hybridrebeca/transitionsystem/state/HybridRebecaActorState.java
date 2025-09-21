@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class HybridRebecaActorState extends HybridRebecaAbstractState implements Serializable {
+    private boolean isSuspended;
     public final static String PC = "$PC$";
     public int pc;
     transient RILModel rilModel;
@@ -24,6 +25,14 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     private String activeMode;
     private Pair<Float, Float> resumeTimeInterval;
     private Pair<Float, Float> nowInterval;
+
+    public void setSuspended(boolean suspended) {
+        isSuspended = suspended;
+    }
+
+    public boolean isSuspended() {
+        return this.getNow().getFirst().floatValue() < this.getResumeTime().getFirst().floatValue();
+    }
 
     public HybridRebecaActorState(String id) {
         this.scopes = new ArrayList<>();
