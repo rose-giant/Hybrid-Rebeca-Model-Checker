@@ -49,7 +49,7 @@ public class StateSpaceGenTest {
 
     @Test
     public void InvariantConditionIsTransformedToRils() {
-        String modelName = "networkSample";  // Using the simple "main" model here
+        String modelName = "exactpaperexample";  // Using the simple "main" model here
         File model = new File(HYBRID_MODEL_FILES_BASE + modelName + ".rebeca");
         System.out.println("model is" + model);
         Set<CompilerExtension> extension;
@@ -66,14 +66,14 @@ public class StateSpaceGenTest {
         ApplySystemLevelRules applySystemLevelRules = new ApplySystemLevelRules(generateInitialState.getInitialState());
 //        System.out.println(generateInitialState.getInitialState());
 
-        for(String methodName : transformModel.getMethodNames()) {
-            System.out.println(methodName);
-            int counter = 0;
-            for(InstructionBean instruction : transformModel.getInstructionList(methodName)) {
-                System.out.println(counter++ +":" + instruction);
-            }
-            System.out.println("...............................................");
-        }
+//        for(String methodName : transformModel.getMethodNames()) {
+//            System.out.println(methodName);
+//            int counter = 0;
+//            for(InstructionBean instruction : transformModel.getInstructionList(methodName)) {
+//                System.out.println(counter++ +":" + instruction);
+//            }
+//            System.out.println("...............................................");
+//        }
     }
 
     @Test
