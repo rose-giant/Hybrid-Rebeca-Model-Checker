@@ -6,6 +6,7 @@ import org.rebecalang.transparentactormodelchecker.TransparentActorStateSpace;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules.HybridRebecaTakeMessageSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.TimeProgressAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaActorState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
@@ -46,18 +47,33 @@ public class ApplySystemLevelRules {
 
     public void printStateSpace(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
         AbstractTransparentActorState actorState = new AbstractTransparentActorState();
-        System.out.println("s" + states.size());
+//        System.out.println("s" + states.size());
         actorState.addTransition(executionResult);
         transparentActorStateSpace.addStateToStateSpace(actorState);
     }
 
+    public void printState(String transitionType, Object action, HybridRebecaSystemState systemState) {
+        String actionStr = "TAU";
+        if (action instanceof MessageAction){
+            actionStr = ((MessageAction) action).getActionLabel();
+        }
+        else if (action instanceof TimeProgressAction) {
+            actionStr = ((TimeProgressAction) action).getIntervalTimeProgress().toString();
+        }
+        if (states.isEmpty()) System.out.println("s" + states.size());
+        else {
+            System.out.println(transitionType+" ----- "+actionStr+" ----->s" + states.size());
+        }
+        states.add(systemState);
+    }
+
     public void runSystemRules(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
-        printStateSpace(executionResult);
+//        printStateSpace(executionResult);
         if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
             HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
                     (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
             HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source.getDestination());
-            states.add(backup);
+            printState("Det", ((HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult).getAction(),backup);
             if (backup.getNow().getFirst() > backup.getInputInterval().getSecond()) {
                 return;
             }
@@ -72,7 +88,7 @@ public class ApplySystemLevelRules {
             while (transitionsIterator.hasNext()) {
                 Pair<? extends Action, HybridRebecaSystemState> transition = transitionsIterator.next();
                 HybridRebecaSystemState systemState = transition.getSecond();
-                states.add(systemState);
+                printState("Nondet", transition.getFirst(),systemState);
                 if (systemState.getNow().getFirst() > systemState.getInputInterval().getSecond()) {
                     return;
                 }
@@ -103,7 +119,7 @@ public class ApplySystemLevelRules {
             }
         }
 
-        System.out.println("time to sync!");
+//        System.out.println("time to sync!");
         HybridRebecaCompositionLevelEnvProgressSOSRule envProgressSOSRule = new HybridRebecaCompositionLevelEnvProgressSOSRule();
         executionResult = envProgressSOSRule.applyRule(backup);
         return executionResult;

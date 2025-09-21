@@ -41,10 +41,15 @@ public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends Abstract
         if (deliveredMessageTransitions instanceof HybridRebecaNondeterministicTransition<HybridRebecaNetworkState>) {
             for(Pair<? extends Action, HybridRebecaNetworkState> deliverable : deliveredMessageTransitions.getDestinations()) {
                 backup = HybridRebecaStateSerializationUtils.clone(source);
-                MessageAction action = (MessageAction) deliverable.getFirst();
+                Action action;
+                if (deliverable.getFirst() instanceof MessageAction) {
+                    action = deliverable.getFirst();
+                    source.getActorState(((MessageAction)action).getMessage().getReceiver().getId()).receiveMessage(((MessageAction)action).getMessage());
+                } else {
+                    action = Action.TAU;
+                }
                 source.setNetworkState(deliverable.getSecond());
-                source.getActorState(action.getMessage().getReceiver().getId()).receiveMessage(action.getMessage());
-                transitions.addDestination(Action.TAU, source);
+                transitions.addDestination(action, source);
                 source = backup;
             }
         }
