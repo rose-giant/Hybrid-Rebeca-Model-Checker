@@ -49,10 +49,11 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         for(String actorId : backup.getActorsState().keySet()) {
             HybridRebecaActorState actorState = backup.getActorState(actorId);
             actorState.setNow(newNow);
-            if (actorState.isSuspended() && left < actorState.getResumeTime().getFirst().floatValue()) {
-
-            } else {
+            if (!actorState.isSuspent()) {
                 actorState.setResumeTime(newNow);
+            } else if(actorState.getResumeTime().getFirst().floatValue() == left &&
+                        actorState.getResumeTime().getSecond().floatValue() == right) {
+                actorState.setSuspent(false);
             }
         }
 

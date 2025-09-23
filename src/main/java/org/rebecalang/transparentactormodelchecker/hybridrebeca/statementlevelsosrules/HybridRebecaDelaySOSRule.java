@@ -26,6 +26,7 @@ public class HybridRebecaDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridR
 
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState,InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
+        source.getFirst().setSuspent(true);
         MethodCallInstructionBean methodCallInstruction = (MethodCallInstructionBean) source.getSecond();
         Object delayParam = methodCallInstruction.getParameters().get("interval_bound");
         Float delayLowerBound = (float)0;

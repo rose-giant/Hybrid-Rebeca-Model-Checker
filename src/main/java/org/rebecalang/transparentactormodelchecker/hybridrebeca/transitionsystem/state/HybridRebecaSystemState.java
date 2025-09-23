@@ -88,4 +88,15 @@ public class HybridRebecaSystemState implements Serializable {
 
         return false;
     }
+
+    public boolean thereIsSuspension() {
+        for(String actorId : this.getActorsState().keySet()) {
+            HybridRebecaActorState hybridRebecaActorState = this.getActorState(actorId);
+            if (hybridRebecaActorState.isSuspent()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

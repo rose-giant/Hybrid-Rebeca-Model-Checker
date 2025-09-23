@@ -4,6 +4,7 @@ import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.transparentactormodelchecker.AbstractTransparentActorState;
 import org.rebecalang.transparentactormodelchecker.TransparentActorStateSpace;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules.HybridRebecaTakeMessageSOSRule;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules.HybridRebecaResumeSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.TimeProgressAction;
@@ -42,7 +43,11 @@ public class ApplySystemLevelRules {
         executionResult.setDestination(initialState);
         executionResult.setAction(Action.TAU);
         runSystemRules(executionResult);
-        System.out.println(transparentActorStateSpace.getStatesNumber());
+//        System.out.println(transparentActorStateSpace.getStatesNumber());
+    }
+
+    private void printTransparentActorStateSpace(TransparentActorStateSpace stateSpace) {
+        System.out.println();
     }
 
     public void printStateSpace(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
@@ -68,7 +73,7 @@ public class ApplySystemLevelRules {
     }
 
     public void runSystemRules(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
-//        printStateSpace(executionResult);
+        printStateSpace(executionResult);
         if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
             HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
                     (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
@@ -99,6 +104,14 @@ public class ApplySystemLevelRules {
     }
 
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> runApplicableRule(HybridRebecaSystemState backup) {
+        if (backup.thereIsSuspension()) {
+            HybridRebecaResumeSOSRule rebecaResumeSOSRule = new HybridRebecaResumeSOSRule();
+            HybridRebecaAbstractTransition<HybridRebecaSystemState> result = rebecaResumeSOSRule.respost(backup);
+            if (result != null) {
+                return rebecaResumeSOSRule.respost(backup);
+            }
+        }
+
         if(systemCanExecuteStatements(backup)) {
             HybridRebecaAbstractTransition<HybridRebecaSystemState> result = levelExecuteStatementSOSRule.applyRule(backup);
             if (result != null) {
@@ -128,7 +141,7 @@ public class ApplySystemLevelRules {
     public boolean systemCanExecuteStatements(HybridRebecaSystemState initialState) {
         for(String actorId : initialState.getActorsState().keySet()) {
             HybridRebecaActorState hybridRebecaActorState = initialState.getActorState(actorId);
-            if (!hybridRebecaActorState.noScopeInstructions() && !hybridRebecaActorState.isSuspended()) {
+            if (!hybridRebecaActorState.noScopeInstructions() && !hybridRebecaActorState.isSuspent()) {
                 return true;
             }
         }

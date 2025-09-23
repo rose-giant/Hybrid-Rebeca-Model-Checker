@@ -25,7 +25,7 @@ public class HybridRebecaCompositionLevelTakeMessageSOSRule extends AbstractHybr
         HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
         for (String actorId : backup.getActorsIds()) {
             HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
-            if (hybridRebecaTakeMessageSOSRule.isEnable(hybridRebecaActorState) && !hybridRebecaActorState.isSuspended()) {
+            if (hybridRebecaTakeMessageSOSRule.isEnable(hybridRebecaActorState) && !hybridRebecaActorState.isSuspent()) {
 
                 HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
                         (HybridRebecaDeterministicTransition<HybridRebecaActorState>) hybridRebecaTakeMessageSOSRule.applyRule(hybridRebecaActorState);

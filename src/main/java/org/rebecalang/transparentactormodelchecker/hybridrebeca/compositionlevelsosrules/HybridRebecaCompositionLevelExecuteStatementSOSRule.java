@@ -45,15 +45,12 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
             for(String actorId : backup.getActorsState().keySet()) {
                 HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
                 hybridRebecaActorState.setNow(source.getNow());
-                if (hybridRebecaActorState.isSuspended() || hybridRebecaActorState.noScopeInstructions()) {
+                if (hybridRebecaActorState.isSuspent() || hybridRebecaActorState.noScopeInstructions()) {
                     continue;
                 }
 
                 for (int i = 0 ; i <= hybridRebecaActorState.getSigma().size() ; i++) {
-                    if (hybridRebecaActorState.isSuspended()) {
-//                        HybridRebecaDeterministicTransition<HybridRebecaActorState> result = new HybridRebecaDeterministicTransition<>();
-//                        result.setAction(Action.TAU);
-//                        result.setDestination(hybridRebecaActorState);
+                    if (hybridRebecaActorState.isSuspent()) {
                         return transitions.get(transitions.size() - 1);
                     }
                     HybridRebecaAbstractTransition<HybridRebecaActorState> executionResult =

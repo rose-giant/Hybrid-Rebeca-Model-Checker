@@ -25,18 +25,28 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     private String activeMode;
     private Pair<Float, Float> resumeTimeInterval;
     private Pair<Float, Float> nowInterval;
+    private boolean isSuspent;
 
-    public void setSuspended(boolean suspended) {
-        isSuspended = suspended;
+    public boolean isSuspent() {
+        return isSuspent;
     }
 
-    public boolean isSuspended() {
-        return this.getNow().getFirst().floatValue() < this.getResumeTime().getFirst().floatValue();
+    public void setSuspent(boolean suspent) {
+        isSuspent = suspent;
     }
+
+//    public void setSuspended(boolean suspended) {
+//        isSuspended = suspended;
+//    }
+//
+//    public boolean isSuspended() {
+//        return this.getNow().getFirst().floatValue() < this.getResumeTime().getFirst().floatValue();
+//    }
 
     public HybridRebecaActorState(String id) {
         this.scopes = new ArrayList<>();
         this.id = id;
+        this.isSuspent = false;
 //        ActorScope actorScope = new ActorScope();
 //        actorScope.setBlockName();
 //        this.scopes.add(actorScope);
