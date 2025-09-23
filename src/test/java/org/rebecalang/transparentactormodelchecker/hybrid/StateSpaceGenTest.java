@@ -56,6 +56,7 @@ public class StateSpaceGenTest {
         extension = new HashSet<>();
         extension.add(CompilerExtension.HYBRID_REBECA);
 
+
         Pair<RebecaModel, SymbolTable> compilationResult =
                 compileModel(model, extension, CoreVersion.CORE_2_3);
 
