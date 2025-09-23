@@ -57,24 +57,26 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
         boolean applicable = false;
         for(String actorId : source.getActorsState().keySet()) {
             HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
-            Pair<Float, Float> resumeTime = hybridRebecaActorState.getResumeTime();
-            //postpone case
-            if (now.getFirst().floatValue() == resumeTime.getFirst().floatValue() && now.getSecond().floatValue() < resumeTime.getSecond().floatValue()) {
-                HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
-                HybridRebecaActorState backupActor = HybridRebecaStateSerializationUtils.clone(hybridRebecaActorState);
-                backupActor.setResumeTime(new Pair<>(now.getSecond(), resumeTime.getSecond()));
-                backup.setActorState(actorId, backupActor);
-                result.addDestination(Action.TAU, backup);
-                applicable = true;
-            }
-            //resume case
-            if (now.getFirst().floatValue() == resumeTime.getFirst().floatValue()) {
-                HybridRebecaSystemState backup2 = HybridRebecaStateSerializationUtils.clone(source);
-                HybridRebecaActorState backupActor = HybridRebecaStateSerializationUtils.clone(hybridRebecaActorState);
-                backupActor.setSuspent(false);
-                backup2.setActorState(actorId, backupActor);
-                result.addDestination(Action.TAU, backup2);
-                applicable = true;
+            if (hybridRebecaActorState.isSuspent()){
+                Pair<Float, Float> resumeTime = hybridRebecaActorState.getResumeTime();
+                //postpone case
+                if (now.getFirst().floatValue() == resumeTime.getFirst().floatValue() && now.getSecond().floatValue() < resumeTime.getSecond().floatValue()) {
+                    HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
+                    HybridRebecaActorState backupActor = HybridRebecaStateSerializationUtils.clone(hybridRebecaActorState);
+                    backupActor.setResumeTime(new Pair<>(now.getSecond(), resumeTime.getSecond()));
+                    backup.setActorState(actorId, backupActor);
+                    result.addDestination(Action.TAU, backup);
+                    applicable = true;
+                }
+                //resume case
+                if (now.getFirst().floatValue() == resumeTime.getFirst().floatValue()) {
+                    HybridRebecaSystemState backup2 = HybridRebecaStateSerializationUtils.clone(source);
+                    HybridRebecaActorState backupActor = HybridRebecaStateSerializationUtils.clone(hybridRebecaActorState);
+                    backupActor.setSuspent(false);
+                    backup2.setActorState(actorId, backupActor);
+                    result.addDestination(Action.TAU, backup2);
+                    applicable = true;
+                }
             }
         }
 
