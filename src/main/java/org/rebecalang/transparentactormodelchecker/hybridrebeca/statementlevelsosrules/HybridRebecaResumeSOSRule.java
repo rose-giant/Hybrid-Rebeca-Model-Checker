@@ -63,6 +63,7 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
                 if (now.getFirst().floatValue() == resumeTime.getFirst().floatValue() && now.getSecond().floatValue() < resumeTime.getSecond().floatValue()) {
                     HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
                     HybridRebecaActorState backupActor = HybridRebecaStateSerializationUtils.clone(hybridRebecaActorState);
+                    backupActor.setRILModel(hybridRebecaActorState.getRILModel());
                     backupActor.setResumeTime(new Pair<>(now.getSecond(), resumeTime.getSecond()));
                     backup.setActorState(actorId, backupActor);
                     result.addDestination(Action.TAU, backup);
@@ -72,6 +73,7 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
                 if (now.getFirst().floatValue() == resumeTime.getFirst().floatValue()) {
                     HybridRebecaSystemState backup2 = HybridRebecaStateSerializationUtils.clone(source);
                     HybridRebecaActorState backupActor = HybridRebecaStateSerializationUtils.clone(hybridRebecaActorState);
+                    backupActor.setRILModel(hybridRebecaActorState.getRILModel());
                     backupActor.setSuspent(false);
                     backup2.setActorState(actorId, backupActor);
                     result.addDestination(Action.TAU, backup2);

@@ -49,7 +49,7 @@ public class StateSpaceGenTest {
 
     @Test
     public void InvariantConditionIsTransformedToRils() {
-        String modelName = "suspension";  // Using the simple "main" model here
+        String modelName = "exactpaperexample";  // Using the simple "main" model here
         File model = new File(HYBRID_MODEL_FILES_BASE + modelName + ".rebeca");
         System.out.println("model is" + model);
         Set<CompilerExtension> extension;
