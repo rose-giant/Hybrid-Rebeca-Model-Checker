@@ -49,7 +49,7 @@ public class StateSpaceGenTest {
 
     @Test
     public void InvariantConditionIsTransformedToRils() {
-        String modelName = "exactpaperexample";  // Using the simple "main" model here
+        String modelName = "pingpong";  // Using the simple "main" model here
         File model = new File(HYBRID_MODEL_FILES_BASE + modelName + ".rebeca");
         System.out.println("model is" + model);
         Set<CompilerExtension> extension;
@@ -61,9 +61,9 @@ public class StateSpaceGenTest {
                 compileModel(model, extension, CoreVersion.CORE_2_3);
 
         // Transform Rebeca model to RILS
+        Pair<Float, Float> inputInterval = new Pair<>(0f, (float)6);
         RILModel transformModel = rebeca2RIL.transformModel(compilationResult, extension, CoreVersion.CORE_2_3);
-//        ActorClassMakerFromRIL actorClassMakerFromRIL = new ActorClassMakerFromRIL(transformModel);
-        GenerateInitialState generateInitialState = new GenerateInitialState(transformModel);
+        GenerateInitialState generateInitialState = new GenerateInitialState(transformModel, inputInterval);
         ApplySystemLevelRules applySystemLevelRules = new ApplySystemLevelRules(generateInitialState.getInitialState());
 //        System.out.println(generateInitialState.getInitialState());
 
