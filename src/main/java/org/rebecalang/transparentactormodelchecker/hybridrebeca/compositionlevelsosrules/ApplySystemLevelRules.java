@@ -3,7 +3,6 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionleve
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.transparentactormodelchecker.AbstractTransparentActorState;
 import org.rebecalang.transparentactormodelchecker.TransparentActorStateSpace;
-import org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules.HybridRebecaTakeMessageSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules.HybridRebecaResumeSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
@@ -14,13 +13,9 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class ApplySystemLevelRules {
 
@@ -106,9 +101,9 @@ public class ApplySystemLevelRules {
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> runApplicableRule(HybridRebecaSystemState backup) {
         if (backup.thereIsSuspension()) {
             HybridRebecaResumeSOSRule rebecaResumeSOSRule = new HybridRebecaResumeSOSRule();
-            HybridRebecaAbstractTransition<HybridRebecaSystemState> result = rebecaResumeSOSRule.respost(backup);
+            HybridRebecaAbstractTransition<HybridRebecaSystemState> result = rebecaResumeSOSRule.systemLevelResumePostpone(backup);
             if (result != null) {
-                return rebecaResumeSOSRule.respost(backup);
+                return result;
             }
         }
 

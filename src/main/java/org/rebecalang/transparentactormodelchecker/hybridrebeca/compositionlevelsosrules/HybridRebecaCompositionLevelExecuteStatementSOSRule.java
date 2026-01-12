@@ -37,22 +37,20 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
-//        HybridRebecaNondeterministicTransition<HybridRebecaSystemState> transitions =
-//                new HybridRebecaNondeterministicTransition<HybridRebecaSystemState>();
         ArrayList<HybridRebecaAbstractTransition> transitions = new ArrayList<>();
-
         HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
             for(String actorId : backup.getActorsState().keySet()) {
                 HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
                 hybridRebecaActorState.setNow(source.getNow());
-                if (hybridRebecaActorState.isSuspent() || hybridRebecaActorState.noScopeInstructions()) {
+                if (hybridRebecaActorState.noScopeInstructions()) {
                     continue;
                 }
 
                 for (int i = 0 ; i <= hybridRebecaActorState.getSigma().size() ; i++) {
-                    if (hybridRebecaActorState.isSuspent()) {
-                        return transitions.get(transitions.size() - 1);
-                    }
+//                    if (hybridRebecaActorState.isSuspent()) {
+//                        return transitions.get(transitions.size() - 1);
+//                    }
+
                     HybridRebecaAbstractTransition<HybridRebecaActorState> executionResult =
                             hybridRebecaActorLevelExecuteStatementSOSRule.applyRule(hybridRebecaActorState);
 

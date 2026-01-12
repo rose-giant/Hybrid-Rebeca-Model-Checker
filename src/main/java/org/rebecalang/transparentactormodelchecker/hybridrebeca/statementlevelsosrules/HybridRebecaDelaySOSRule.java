@@ -47,9 +47,9 @@ public class HybridRebecaDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridR
         result.setDestination(source);
         result.setAction(Action.TAU);
 
-//        return result;
-        HybridRebecaResumeSOSRule rebecaResumeSOSRule = new HybridRebecaResumeSOSRule();
-        return rebecaResumeSOSRule.applyRule(source);
+        return result;
+//        HybridRebecaResumeSOSRule rebecaResumeSOSRule = new HybridRebecaResumeSOSRule();
+//        return rebecaResumeSOSRule.applyRule(source);
     }
 
     private static HybridRebecaActorState getHybridRebecaActorState(Pair<HybridRebecaActorState, InstructionBean> source) {

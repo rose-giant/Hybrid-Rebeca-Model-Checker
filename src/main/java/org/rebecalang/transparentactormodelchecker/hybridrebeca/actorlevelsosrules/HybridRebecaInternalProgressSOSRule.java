@@ -71,9 +71,7 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
         HybridRebecaAbstractTransition<HybridRebecaActorState> destinations = null;
-//        HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> postponeResult =
-//                (HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>)
-//                        rebecaResumeSOSRule.applyPostponeRule(new Pair<>(source, new DeclarationInstructionBean("postpone")));
+        InstructionBean instruction = source.getInstruction();
 
         if (source.noScopeInstructions()) {
             HybridRebecaDeterministicTransition<HybridRebecaActorState> result = new HybridRebecaDeterministicTransition<>();
@@ -81,9 +79,6 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
             result.setAction(Action.TAU);
             return result;
         }
-        InstructionBean instruction = source.getInstruction();
-
-        //t = temp_exp is not being handled
         if(instruction instanceof AssignmentInstructionBean) {
             HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean> >
                     executionResult = assignmentSOSRule.applyRule(new Pair<>(source, instruction));
@@ -152,6 +147,7 @@ public class HybridRebecaInternalProgressSOSRule extends AbstractHybridSOSRule<H
         else {
             throw new RebecaRuntimeInterpreterException("Unknown rule for the statement " + instruction);
         }
+
         return destinations;
     }
 
