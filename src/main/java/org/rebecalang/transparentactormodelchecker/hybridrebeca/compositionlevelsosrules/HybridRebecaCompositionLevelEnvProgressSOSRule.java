@@ -25,7 +25,7 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
     }
 
     private static HybridRebecaDeterministicTransition<HybridRebecaSystemState> applyLocalRule(HybridRebecaSystemState source) {
-        ArrayList<Pair<Pair<Float, Float>, Pair<Float, Float>>> progressIntervals = new ArrayList<>();
+        ArrayList<Pair<Float, Float>> progressIntervals = new ArrayList<>();
         progressIntervals.add(getNetworkSyncInterval(source));
 
         HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
@@ -37,9 +37,9 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         //compute the correct intersection
         float left = source.getNow().getSecond().floatValue();
         float right = Float.MAX_VALUE;
-        for (Pair<Pair<Float, Float>, Pair<Float, Float>> interval: progressIntervals) {
-            if (interval.getSecond().getSecond() < right) {
-                right = interval.getSecond().getSecond();
+        for (Pair<Float, Float> interval: progressIntervals) {
+            if (interval.getSecond() < right) {
+                right = interval.getSecond();
             }
         }
 
@@ -132,20 +132,20 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         return result;
     }
 
-    private static Pair<Pair<Float, Float>, Pair<Float, Float>> getActorSyncInterval(HybridRebecaActorState source) {
+    private static Pair<Float, Float> getActorSyncInterval(HybridRebecaActorState source) {
         HybridRebecaActorEnvSync envSync = new HybridRebecaActorEnvSync();
         HybridRebecaDeterministicTransition actorTransition = (HybridRebecaDeterministicTransition) envSync.applyRule(source);
         TimeProgressAction timeAction = (TimeProgressAction) actorTransition.getAction();
-        return timeAction.getNonDetIntervalTimeProgress();
+        return timeAction.getIntervalTimeProgress();
     }
 
-    private static Pair<Pair<Float, Float>, Pair<Float, Float>> getNetworkSyncInterval(HybridRebecaSystemState source) {
+    private static Pair<Float, Float> getNetworkSyncInterval(HybridRebecaSystemState source) {
         HybridRebecaNetworkEnvSyncSOSRule envSyncSOSRule = new HybridRebecaNetworkEnvSyncSOSRule();
         HybridRebecaAbstractTransition<HybridRebecaNetworkState> networkTransition =
                 envSyncSOSRule.applyRule(source.getNetworkState());
         HybridRebecaDeterministicTransition detNetworkTransition = (HybridRebecaDeterministicTransition) networkTransition;
         TimeProgressAction timeAction = (TimeProgressAction) detNetworkTransition.getAction();
-        return timeAction.getNonDetIntervalTimeProgress();
+        return timeAction.getIntervalTimeProgress();
     }
 
     @Override

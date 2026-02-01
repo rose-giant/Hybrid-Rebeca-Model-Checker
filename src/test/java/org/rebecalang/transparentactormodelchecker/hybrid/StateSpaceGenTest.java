@@ -212,4 +212,23 @@ public class StateSpaceGenTest {
         HybridRebecaSystemState clone = HybridRebecaStateSerializationUtils.clone(systemState);
     }
 
+    @Test
+    public void newTests() {
+        String modelName = "a";  // Using the simple "main" model here
+        File model = new File(HYBRID_MODEL_FILES_BASE + modelName + ".rebeca");
+        System.out.println("model is" + model);
+        Set<CompilerExtension> extension;
+        extension = new HashSet<>();
+        extension.add(CompilerExtension.HYBRID_REBECA);
+
+        Pair<RebecaModel, SymbolTable> compilationResult =
+                compileModel(model, extension, CoreVersion.CORE_2_3);
+
+        // Transform Rebeca model to RILS
+        Pair<Float, Float> inputInterval = new Pair<>(0f, (float)110);
+        RILModel transformModel = rebeca2RIL.transformModel(compilationResult, extension, CoreVersion.CORE_2_3);
+        GenerateInitialState generateInitialState = new GenerateInitialState(transformModel, inputInterval);
+        ApplySystemLevelRules applySystemLevelRules = new ApplySystemLevelRules(generateInitialState.getInitialState());
+    }
+
 }

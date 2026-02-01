@@ -23,7 +23,7 @@ public class HybridRebecaNetworkEnvSync2SOSRule extends AbstractHybridSOSRule<Hy
         HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaDeterministicTransition<>();
         result.setDestination(backup);
         TimeProgressAction timeAction = new TimeProgressAction();
-        timeAction.setTimeIntervalProgress(new Pair<>(new Pair<>(lowerBound, lowerBound), new Pair<>(upperBound, upperBound)));
+        timeAction.setTimeProgress(new Pair<>(lowerBound, upperBound));
         result.setAction(timeAction);
         return result;
     }

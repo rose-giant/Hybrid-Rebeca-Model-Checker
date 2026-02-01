@@ -20,13 +20,13 @@ public class HybridRebecaEnvSync2SOSRule extends AbstractHybridSOSRule<HybridReb
 
         }
         HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
-        float lowerBound = Float.MAX_VALUE;
+        float lowerBound = source.getNow().getSecond().floatValue();
         float upperBound = Float.MAX_VALUE;
         backup.setNow(new Pair<>(backup.getNow().getSecond(), upperBound));
         HybridRebecaDeterministicTransition<HybridRebecaActorState> result = new HybridRebecaDeterministicTransition<>();
         result.setDestination(backup);
         TimeProgressAction timeAction = new TimeProgressAction();
-        timeAction.setTimeIntervalProgress(new Pair<>(new Pair<>(lowerBound, lowerBound), new Pair<>(upperBound, upperBound)));
+        timeAction.setTimeProgress(new Pair<>(lowerBound, upperBound));
         result.setAction(timeAction);
         return result;
     }
