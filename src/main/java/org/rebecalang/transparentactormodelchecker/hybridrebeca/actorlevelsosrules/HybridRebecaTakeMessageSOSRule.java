@@ -31,6 +31,7 @@ public class HybridRebecaTakeMessageSOSRule extends AbstractHybridSOSRule<Hybrid
         pc.setFirst(message.getName());
         pc.setSecond(0);
         source.addVariableToScope(HybridRebecaActorState.PC, pc);
+        source.setNow(message.getMessageArrivalInterval());
 
         HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
                 new HybridRebecaDeterministicTransition<HybridRebecaActorState>();
