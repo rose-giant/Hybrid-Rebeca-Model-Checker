@@ -224,7 +224,7 @@ public class StateSpaceGenTest {
         Pair<RebecaModel, SymbolTable> compilationResult =
                 compileModel(model, extension, CoreVersion.CORE_2_3);
 
-        // Transform Rebeca model to RILS
+        // Transform Rebeca model to RILSasdasd
         Pair<Float, Float> inputInterval = new Pair<>(0f, (float)110);
         RILModel transformModel = rebeca2RIL.transformModel(compilationResult, extension, CoreVersion.CORE_2_3);
         GenerateInitialState generateInitialState = new GenerateInitialState(transformModel, inputInterval);
