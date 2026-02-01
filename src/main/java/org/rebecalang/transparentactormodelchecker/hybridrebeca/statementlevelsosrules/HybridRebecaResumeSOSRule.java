@@ -22,14 +22,11 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         Pair<Float, Float> now = source.getFirst().getNow();
         Pair<Float, Float> resumeTime = source.getFirst().getResumeTime();
-        if (now.getFirst().floatValue() <= resumeTime.getFirst().floatValue()
-                && resumeTime.getFirst().floatValue() < now.getSecond().floatValue()
-                && now.getSecond().floatValue() < resumeTime.getSecond().floatValue()) {
+        if (resumeTime.getFirst().floatValue() < now.getFirst().floatValue() &&
+            now.getSecond().floatValue() < resumeTime.getSecond().floatValue()) {
             HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaNondeterministicTransition<>();
             HybridRebecaActorState backup1 = HybridRebecaStateSerializationUtils.clone(source.getFirst());
             backup1.setSuspent(false);
-            //new check
-//            backup1.setNow(new Pair<>(resumeTime.getFirst().floatValue(), min( resumeTime.getSecond().floatValue(), now.getSecond().floatValue() )));
             backup1.setResumeTime(backup1.getNow());
             Pair<HybridRebecaActorState, InstructionBean> newSource = new Pair<>(backup1, source.getSecond());
             result.addDestination(Action.TAU, newSource);
@@ -43,11 +40,10 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
             System.out.println("Resume and Postpone" + backup2.getResumeTime() + backup1.getResumeTime());
             return result;
         }
-        else if (now.getFirst().floatValue() <= resumeTime.getFirst().floatValue()
-                && resumeTime.getFirst().floatValue() < now.getSecond().floatValue()) {
+        else if ((resumeTime.getFirst().floatValue() < now.getSecond().floatValue() ||
+                now.getSecond().floatValue() == resumeTime.getSecond().floatValue())
+                && !(now.getSecond().floatValue() < resumeTime.getSecond().floatValue()) ) {
             HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source.getFirst());
-            //new check
-//            backup.setNow(new Pair<>(resumeTime.getFirst().floatValue(), min( resumeTime.getSecond().floatValue(), now.getSecond().floatValue() )));
             backup.setResumeTime(backup.getNow());
             backup.setSuspent(false);
             HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaDeterministicTransition<>();
