@@ -67,7 +67,7 @@ public class HybridRebecaNetworkEnvSync1SOSRule extends AbstractHybridSOSRule<Hy
         return null;
     }
 
-    private ArrayList<Float> getAllBounds(HybridRebecaNetworkState networkState) {
+    public ArrayList<Float> getAllBounds(HybridRebecaNetworkState networkState) {
         ArrayList<Float> bounds = new ArrayList<>();
         for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : networkState.getReceivedMessages().entrySet()) {
             ArrayList<HybridRebecaMessage> messages = entry.getValue();

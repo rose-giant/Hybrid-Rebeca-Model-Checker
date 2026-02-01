@@ -22,7 +22,6 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         Pair<Float, Float> now = source.getFirst().getNow();
         Pair<Float, Float> resumeTime = source.getFirst().getResumeTime();
-
         if (now.getFirst().floatValue() <= resumeTime.getFirst().floatValue()
                 && resumeTime.getFirst().floatValue() < now.getSecond().floatValue()
                 && now.getSecond().floatValue() < resumeTime.getSecond().floatValue()) {
@@ -54,6 +53,7 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
             HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaDeterministicTransition<>();
             source.setFirst(backup);
             result.setDestination(source);
+            result.setAction(Action.TAU);
             System.out.println("Resume" + backup.getResumeTime());
             return result;
         }

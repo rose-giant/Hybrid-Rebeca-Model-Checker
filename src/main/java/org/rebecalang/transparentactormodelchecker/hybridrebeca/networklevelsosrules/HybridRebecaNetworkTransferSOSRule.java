@@ -48,7 +48,8 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
         }
         //Nondeterministic case of both transfer and postpone
         List<HybridRebecaMessage> sortedList2 = sortMessages(source);
-        if (sortedList2.get(0).getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue()) {
+        if (sortedList2.get(0).getMessageArrivalInterval().getFirst().floatValue() >= source.getNow().getFirst().floatValue() &&
+                sortedList2.get(0).getMessageArrivalInterval().getFirst().floatValue() < source.getNow().getSecond().floatValue()) {
             for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : source.getReceivedMessages().entrySet()) {
                 ArrayList<HybridRebecaMessage> messageList = entry.getValue();
                 Iterator<HybridRebecaMessage> iterator = messageList.iterator();
@@ -56,7 +57,8 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
                     HybridRebecaMessage message = iterator.next();
 
                     //transfer case
-                    if (message.getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue()) {
+                    if (message.getMessageArrivalInterval().getFirst().floatValue() >= source.getNow().getFirst().floatValue() &&
+                            message.getMessageArrivalInterval().getFirst().floatValue() < source.getNow().getSecond().floatValue()) {
                         HybridRebecaNetworkState backup2 = HybridRebecaStateSerializationUtils.clone(source);
                         HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> clonedMap = new HashMap<>();
                         for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> e : source.getReceivedMessages().entrySet()) {
@@ -84,7 +86,8 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
                         transitions.add(result);
                     }
                     //postpone case
-                    if (message.getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue()
+                    if (message.getMessageArrivalInterval().getFirst().floatValue() >= source.getNow().getFirst().floatValue() &&
+                            message.getMessageArrivalInterval().getFirst().floatValue() < source.getNow().getSecond().floatValue()
                             && source.getNow().getSecond().floatValue() < message.getMessageArrivalInterval().getSecond().floatValue()) {
 
                         HybridRebecaNetworkState backup3 = HybridRebecaStateSerializationUtils.clone(source);

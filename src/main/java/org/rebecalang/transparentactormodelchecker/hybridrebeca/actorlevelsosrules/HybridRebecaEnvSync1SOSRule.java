@@ -9,6 +9,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.TimeSyncHelper;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,55 +19,23 @@ public class HybridRebecaEnvSync1SOSRule extends AbstractHybridSOSRule<HybridReb
         HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
         Pair<Float, Float> now = backup.getNow();
         Pair<Float, Float> resumeTime = backup.getResumeTime();
-        Pair<Float, Float> progressLower = new Pair<>(0f, 0f), progressUpper = new Pair<>(0f, 0f);
+        Pair<Float, Float> progress = new Pair<>(0f, 0f);
 
-//        if(now.getFirst().floatValue() < resumeTime.getFirst().floatValue() &&
-//                resumeTime.getFirst().floatValue() <= now.getSecond().floatValue()) {
-//            progressLower.setFirst(now.getFirst());
-//            progressLower.setSecond(resumeTime.getFirst());
-//
-//            progressUpper.setFirst(progressLower.getSecond());
-//            progressUpper.setSecond(resumeTime.getSecond());
-//        }
-//        else if (now.getSecond().floatValue() < resumeTime.getFirst().floatValue()) {
-//            progressLower.setFirst(now.getFirst());
-//            progressLower.setSecond(now.getSecond());
-//
-//            progressUpper.setFirst(progressLower.getSecond());
-//            progressUpper.setSecond(resumeTime.getFirst());
-//        }
+        TimeSyncHelper timeSyncHelper = new TimeSyncHelper();
 
-        if (now.getFirst().floatValue() < resumeTime.getFirst().floatValue() && resumeTime.getFirst().floatValue() < now.getSecond().floatValue() ) {
-            progressLower.setFirst(now.getFirst());
-            progressLower.setSecond(resumeTime.getFirst());
-        }
-        if (((now.getFirst().floatValue() == now.getSecond().floatValue() && now.getSecond().floatValue() < resumeTime.getFirst().floatValue()) ) ||
-        now.getSecond().floatValue() == resumeTime.getFirst().floatValue()) {
-            progressLower.setFirst(now.getSecond());
-            progressLower.setSecond(now.getSecond());
-        }
-        if (now.getFirst().floatValue() < now.getSecond().floatValue() && now.getSecond().floatValue() < resumeTime.getFirst().floatValue() ) {
-            progressLower.setFirst(now.getFirst());
-            progressLower.setSecond(now.getSecond());
-        }
-
-        if(now.getSecond() < resumeTime.getFirst()) {
-            progressUpper.setFirst(now.getSecond());
-            progressUpper.setSecond(resumeTime.getFirst());
-        }
-        if(resumeTime.getFirst().floatValue() <= now.getSecond().floatValue() && resumeTime.getSecond().floatValue() <= now.getSecond().floatValue()) {
-            progressUpper.setFirst(progressLower.getSecond());
-            progressUpper.setSecond(now.getSecond());
-        }
-        if(resumeTime.getFirst().floatValue() <= now.getSecond().floatValue() && now.getSecond().floatValue() < resumeTime.getSecond().floatValue()) {
-            progressUpper.setFirst(now.getSecond());
-            progressUpper.setSecond(resumeTime.getSecond());
+        progress.setFirst(now.getSecond());
+        if ((now.getFirst().floatValue() < resumeTime.getFirst().floatValue()) ||
+            (now.getSecond().floatValue() == resumeTime.getFirst().floatValue() &&
+            now.getFirst().floatValue() != now.getSecond().floatValue() &&
+                    resumeTime.getFirst().floatValue() != resumeTime.getSecond().floatValue())
+        ) {
+            progress.setSecond(timeSyncHelper.Up(now.getSecond(), resumeTime.getFirst(), resumeTime.getSecond()));
         }
 
         //considered the maximum time progress:
-        backup.setNow(new Pair<>(progressLower.getSecond(), progressUpper.getSecond()));
+        backup.setNow(new Pair<>(progress.getFirst(), progress.getSecond()));
         TimeProgressAction action = new TimeProgressAction();
-        action.setTimeIntervalProgress(new Pair(progressLower, progressUpper));
+        action.setTimeProgress(progress);
 
         HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
                 new HybridRebecaDeterministicTransition<HybridRebecaActorState>();

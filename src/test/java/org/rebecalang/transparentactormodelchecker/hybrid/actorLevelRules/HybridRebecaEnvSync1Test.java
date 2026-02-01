@@ -25,13 +25,13 @@ public class HybridRebecaEnvSync1Test {
     @Test
     public void testEnvSync1ResultCase1() {
         hybridRebecaActorState1.setNow(new Pair<>((float) 1, (float) 3));
-        hybridRebecaActorState1.setResumeTime(new Pair<>((float) 2, (float) 4));
+        hybridRebecaActorState1.setResumeTime(new Pair<>((float) 3, (float) 4));
 
         HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
                 (HybridRebecaDeterministicTransition<HybridRebecaActorState>) envSync1SOSRule.applyRule(hybridRebecaActorState1);
 
         HybridRebecaActorState destination = result.getDestination();
-        assertTrue(destination.getNow().getFirst().floatValue() == hybridRebecaActorState1.getResumeTime().getFirst().floatValue());
+        assertTrue(destination.getNow().getFirst().floatValue() == hybridRebecaActorState1.getNow().getSecond().floatValue());
         assertTrue(destination.getNow().getSecond().floatValue() == hybridRebecaActorState1.getResumeTime().getSecond().floatValue());
     }
 

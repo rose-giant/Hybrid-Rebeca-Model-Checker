@@ -15,15 +15,6 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebe
 
 public class HybridRebecaDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
 
-//    @Override
-//    public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
-//        HybridRebecaActorState hybridRebecaActorState = getHybridRebecaActorState(source);
-//        source.setFirst(hybridRebecaActorState);
-//        HybridRebecaAbstractTransition<Pair<HybridRebecaActorState,InstructionBean>> result = resume(source);
-//        return result;
-//        return null;
-//    }
-
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState,InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
         source.getFirst().setSuspent(true);
@@ -40,6 +31,7 @@ public class HybridRebecaDelaySOSRule extends AbstractHybridSOSRule<Pair<HybridR
         }
 
         source.getFirst().setResumeTime(new Pair<>(source.getFirst().getResumeTime().getFirst() + delayLowerBound, source.getFirst().getResumeTime().getSecond() + delayUpperBound));
+        System.out.println(source.getFirst().getId() + ", " +  source.getFirst().getResumeTime());
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
                 new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
 

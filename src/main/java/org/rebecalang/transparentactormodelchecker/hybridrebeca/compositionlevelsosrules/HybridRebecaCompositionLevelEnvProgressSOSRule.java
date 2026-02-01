@@ -3,6 +3,7 @@ package org.rebecalang.transparentactormodelchecker.hybridrebeca.compositionleve
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.transparentactormodelchecker.AbstractHybridSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.actorlevelsosrules.HybridRebecaActorEnvSync;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.networklevelsosrules.HybridRebecaNetworkEnvSync1SOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.networklevelsosrules.HybridRebecaNetworkEnvSyncSOSRule;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.TimeProgressAction;
@@ -19,6 +20,11 @@ import java.util.*;
 public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybridSOSRule<HybridRebecaSystemState> {
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
+//        return applyGlobalRule(source);
+        return applyLocalRule(source);
+    }
+
+    private static HybridRebecaDeterministicTransition<HybridRebecaSystemState> applyLocalRule(HybridRebecaSystemState source) {
         ArrayList<Pair<Pair<Float, Float>, Pair<Float, Float>>> progressIntervals = new ArrayList<>();
         progressIntervals.add(getNetworkSyncInterval(source));
 
@@ -54,8 +60,71 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
             }
             if (!actorState.isSuspent()) {
                 actorState.setResumeTime(newNow);
+            }
+//            else if(actorState.getResumeTime().getFirst().floatValue() >= left &&
+//                        actorState.getResumeTime().getFirst().floatValue() < right) {
+//                actorState.setSuspent(false);
+//            }
+        }
+
+        HybridRebecaDeterministicTransition<HybridRebecaSystemState> result = new HybridRebecaDeterministicTransition<>();
+        TimeProgressAction timeAction = new TimeProgressAction();
+        timeAction.setTimeProgress(newNow);
+        result.setAction(timeAction);
+        backup.setNow(newNow);
+        result.setDestination(backup);
+
+        return result;
+    }
+
+    public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyGlobalRule(HybridRebecaSystemState source) {
+        HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
+        HybridRebecaNetworkEnvSync1SOSRule networkEnvSync1SOSRule = new HybridRebecaNetworkEnvSync1SOSRule();
+        HybridRebecaNetworkState networkState = source.getNetworkState();
+        ArrayList<Float> bounds = networkEnvSync1SOSRule.getAllBounds(networkState);
+        for(String actorId: source.getActorsIds()) {
+            HybridRebecaActorState actorState = source.getActorState(actorId);
+            if (actorState.isSuspent()) {
+                bounds.add(actorState.getResumeTime().getFirst());
+                bounds.add(actorState.getResumeTime().getSecond());
+            }
+        }
+//        bounds.add(source.getNow().getSecond());
+
+        List<Float> uniqueSortedBounds = bounds.stream().distinct().sorted().toList();
+        bounds.clear();
+        for (Float element: uniqueSortedBounds) {
+            bounds.add(element);
+        }
+
+        float left = Float.MAX_VALUE;
+        float right = Float.MAX_VALUE;
+
+        if (bounds.size() > 1) {
+            if (backup.getNow().getFirst().floatValue() == bounds.get(0).floatValue() && backup.getNow().getSecond().floatValue() != 0) {
+                left = bounds.get(1);
+                right = bounds.get(2);
+            } else {
+                left = bounds.get(0);
+                right = bounds.get(1);
+            }
+        }
+//        if (bounds.size() == 1) left = bounds.get(0);
+
+        Pair<Float, Float> newNow = new Pair<>(left, right);
+        networkState.setNow(newNow);
+        backup.setNetworkState(networkState);
+
+        for(String actorId : backup.getActorsState().keySet()) {
+            HybridRebecaActorState actorState = backup.getActorState(actorId);
+            actorState.setNow(newNow);
+            if (actorState.getResumeTime().getFirst().floatValue() < newNow.getFirst().floatValue()) {
+                actorState.setResumeTime(new Pair<>(newNow.getFirst(), actorState.getResumeTime().getSecond()));
+            }
+            if (!actorState.isSuspent()) {
+                actorState.setResumeTime(newNow);
             } else if(actorState.getResumeTime().getFirst().floatValue() == left &&
-                        actorState.getResumeTime().getSecond().floatValue() == right) {
+                    actorState.getResumeTime().getSecond().floatValue() == right) {
                 actorState.setSuspent(false);
             }
         }
