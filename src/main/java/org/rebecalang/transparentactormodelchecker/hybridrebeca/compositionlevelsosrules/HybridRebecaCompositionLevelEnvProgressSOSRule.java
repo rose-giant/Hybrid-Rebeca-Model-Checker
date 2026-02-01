@@ -35,13 +35,9 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         }
 
         //compute the correct intersection
-        float left = Float.MAX_VALUE;
+        float left = source.getNow().getSecond().floatValue();
         float right = Float.MAX_VALUE;
         for (Pair<Pair<Float, Float>, Pair<Float, Float>> interval: progressIntervals) {
-            if (interval.getFirst().getSecond() < left) {
-                left = interval.getFirst().getSecond();
-            }
-
             if (interval.getSecond().getSecond() < right) {
                 right = interval.getSecond().getSecond();
             }
@@ -52,6 +48,7 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         networkState.setNow(newNow);
         backup.setNetworkState(networkState);
 
+//        TODO: should I remove this??
         for(String actorId : backup.getActorsState().keySet()) {
             HybridRebecaActorState actorState = backup.getActorState(actorId);
             actorState.setNow(newNow);
@@ -61,10 +58,6 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
             if (!actorState.isSuspent()) {
                 actorState.setResumeTime(newNow);
             }
-//            else if(actorState.getResumeTime().getFirst().floatValue() >= left &&
-//                        actorState.getResumeTime().getFirst().floatValue() < right) {
-//                actorState.setSuspent(false);
-//            }
         }
 
         HybridRebecaDeterministicTransition<HybridRebecaSystemState> result = new HybridRebecaDeterministicTransition<>();
