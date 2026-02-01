@@ -17,7 +17,7 @@ public class HybridRebecaNetworkEnvSync2SOSRule extends AbstractHybridSOSRule<Hy
             throw new RebecaRuntimeInterpreterException("envSync2 rule is disabled");
 
         HybridRebecaNetworkState backup = HybridRebecaStateSerializationUtils.clone(source);
-        float lowerBound = Float.MAX_VALUE;
+        float lowerBound = source.getNow().getSecond().floatValue();
         float upperBound = Float.MAX_VALUE;
         backup.setNow(new Pair<>(lowerBound, upperBound));
         HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaDeterministicTransition<>();

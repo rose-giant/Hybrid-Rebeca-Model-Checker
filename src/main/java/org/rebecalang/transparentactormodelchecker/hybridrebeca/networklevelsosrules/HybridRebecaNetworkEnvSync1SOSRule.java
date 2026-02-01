@@ -9,6 +9,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.TimeSyncHelper;
 
 import java.util.*;
 
@@ -17,43 +18,22 @@ public class HybridRebecaNetworkEnvSync1SOSRule extends AbstractHybridSOSRule<Hy
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
         ArrayList<Float> bounds = getAllBounds(source);
         Pair<Float, Float> now = source.getNow();
-        Pair<Float, Float> progressLower = new Pair<>(0f, 0f), progressUpper = new Pair<>(0f, 0f);
+        Pair<Float, Float> progress = new Pair<>(0f, 0f);
         float firstB = bounds.get(0);
         float secondB = bounds.get(1);
+        float minEte = source.getMinETE();
+        float minEta = source.getMinETA();
 
-        if (now.getSecond() < firstB) {
-            progressLower.setFirst(now.getFirst());
-            progressLower.setSecond(now.getSecond());
-
-            progressUpper.setFirst(now.getSecond());
-            progressUpper.setSecond(firstB);
-        }
-        else if (firstB < now.getSecond() && secondB <= now.getSecond()) {
-            progressLower.setFirst(now.getFirst());
-            progressLower.setSecond(firstB);
-
-            progressUpper.setFirst(now.getSecond());
-            progressUpper.setSecond(now.getSecond());
-        }
-        else if(firstB < now.getSecond() && now.getSecond() < secondB) {
-            progressLower.setFirst(now.getFirst());
-            progressLower.setSecond(firstB);
-
-            progressUpper.setFirst(now.getSecond());
-            progressUpper.setSecond(secondB);
-        }
-        else if (firstB == now.getSecond()) {
-            progressLower.setFirst(firstB);
-            progressLower.setSecond(firstB);
-
-            progressUpper.setFirst(firstB);
-            progressUpper.setSecond(secondB);
+        progress.setFirst(now.getSecond().floatValue());
+        TimeSyncHelper timeSyncHelper = new TimeSyncHelper();
+        if ( (!(minEta < now.getSecond().floatValue()) ) && (!(minEte == now.getSecond().floatValue())) ) {
+            progress.setSecond(timeSyncHelper.Up(now.getSecond().floatValue(), firstB, secondB));
         }
 
         HybridRebecaNetworkState backup = HybridRebecaStateSerializationUtils.clone(source);
-        backup.setNow(new Pair<>(progressLower.getSecond(), progressUpper.getSecond()));
+        backup.setNow(progress);
         TimeProgressAction action = new TimeProgressAction();
-        action.setTimeIntervalProgress(new Pair<>(progressLower, progressUpper));
+        action.setTimeProgress(progress);
 
         HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaDeterministicTransition<>();
         result.setAction(action);
