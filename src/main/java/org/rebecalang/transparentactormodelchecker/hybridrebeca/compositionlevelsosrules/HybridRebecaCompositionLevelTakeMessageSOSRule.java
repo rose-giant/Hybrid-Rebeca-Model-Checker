@@ -21,17 +21,25 @@ public class HybridRebecaCompositionLevelTakeMessageSOSRule extends AbstractHybr
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> applyRule(HybridRebecaSystemState source) {
         HybridRebecaNondeterministicTransition<HybridRebecaSystemState> transitions = new HybridRebecaNondeterministicTransition<HybridRebecaSystemState>();
-
         HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
         for (String actorId : backup.getActorsIds()) {
             HybridRebecaActorState hybridRebecaActorState = source.getActorState(actorId);
             if (hybridRebecaTakeMessageSOSRule.isEnable(hybridRebecaActorState) && !hybridRebecaActorState.isSuspent()) {
 
                 HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
-                        (HybridRebecaDeterministicTransition<HybridRebecaActorState>) hybridRebecaTakeMessageSOSRule.applyRule(hybridRebecaActorState);
+                        (HybridRebecaDeterministicTransition<HybridRebecaActorState>)
+                        hybridRebecaTakeMessageSOSRule.applyRule(hybridRebecaActorState);
+
                 transitions.addDestination(result.getAction(), source);
                 source = HybridRebecaStateSerializationUtils.clone(backup);
             }
+        }
+
+        if (transitions.getDestinations().size() == 1) {
+            HybridRebecaDeterministicTransition<HybridRebecaSystemState> transition = new HybridRebecaDeterministicTransition<>();
+            transition.setDestination(transitions.getDestinations().get(0).getSecond());
+            transition.setAction(transitions.getDestinations().get(0).getFirst());
+            return transition;
         }
 
         if (transitions.getDestinations().isEmpty()) {

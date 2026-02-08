@@ -36,7 +36,8 @@ public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends Abstract
         HybridRebecaSystemState backup = null;
         HybridRebecaNetworkState networkState = source.getNetworkState();
         networkState.setNow(source.getNow());
-        HybridRebecaAbstractTransition<HybridRebecaNetworkState> deliveredMessageTransitions = hybridRebecaNetworkTransferSOSRule.applyRule(networkState);
+        HybridRebecaAbstractTransition<HybridRebecaNetworkState> deliveredMessageTransitions =
+                hybridRebecaNetworkTransferSOSRule.applyRule(networkState);
 
         if (deliveredMessageTransitions instanceof HybridRebecaNondeterministicTransition<HybridRebecaNetworkState>) {
             for(Pair<? extends Action, HybridRebecaNetworkState> deliverable : deliveredMessageTransitions.getDestinations()) {
@@ -55,6 +56,13 @@ public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends Abstract
         }
         else {
             return null;
+        }
+
+        if (transitions.getDestinations().size() == 1) {
+            HybridRebecaDeterministicTransition<HybridRebecaSystemState> transition = new HybridRebecaDeterministicTransition<>();
+            transition.setDestination(transitions.getDestinations().get(0).getSecond());
+            transition.setAction(transitions.getDestinations().get(0).getFirst());
+            return transition;
         }
 
         return transitions;

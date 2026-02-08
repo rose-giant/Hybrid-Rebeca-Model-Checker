@@ -14,10 +14,15 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 public class ApplySystemLevelRules {
+    Map<HybridRebecaSystemState, Integer> stateIds = new IdentityHashMap<>();
+    int nextStateId = 0;
+
+    private int getStateId(HybridRebecaSystemState s) {
+        return stateIds.computeIfAbsent(s, k -> nextStateId++);
+    }
 
     ArrayList<HybridRebecaSystemState> states = new ArrayList<>();
     TransparentActorStateSpace transparentActorStateSpace = new TransparentActorStateSpace();
@@ -33,71 +38,93 @@ public class ApplySystemLevelRules {
     HybridRebecaCompositionLevelNetworkDeliverySOSRule networkDeliverySOSRule =
             new HybridRebecaCompositionLevelNetworkDeliverySOSRule();
 
-    public void startApplyingRules(HybridRebecaSystemState initialState){
-        HybridRebecaDeterministicTransition<HybridRebecaSystemState> executionResult = new HybridRebecaDeterministicTransition<>();
-        executionResult.setDestination(initialState);
-        executionResult.setAction(Action.TAU);
-        runSystemRules(executionResult);
-//        System.out.println(transparentActorStateSpace.getStatesNumber());
+    public void startApplyingRules(HybridRebecaSystemState initialState) {
+        HybridRebecaDeterministicTransition<HybridRebecaSystemState> t =
+                new HybridRebecaDeterministicTransition<>();
+
+        t.setDestination(initialState);
+        t.setAction(Action.TAU);
+
+        getStateId(initialState); // ensure s0 exists
+
+        runSystemRules(initialState, t);
     }
 
-    private void printTransparentActorStateSpace(TransparentActorStateSpace stateSpace) {
-        System.out.println();
-    }
 
     public void printStateSpace(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
-        AbstractTransparentActorState actorState = new AbstractTransparentActorState();
+        AbstractTransparentActorState transparentState = new AbstractTransparentActorState();
 //        System.out.println("s" + states.size());
-        actorState.addTransition(executionResult);
-        transparentActorStateSpace.addStateToStateSpace(actorState);
+        transparentState.addTransition(executionResult);
+        transparentActorStateSpace.addStateToStateSpace(transparentState);
     }
 
-    public void printState(String transitionType, Object action, HybridRebecaSystemState systemState) {
+    public void printState(
+            int sourceId,
+            String transitionType,
+            Object action,
+            HybridRebecaSystemState destState
+    ) {
+        int destId = getStateId(destState);
+
         String actionStr = "TAU";
-        if (action instanceof MessageAction){
+        if (action instanceof MessageAction) {
             actionStr = ((MessageAction) action).getActionLabel();
+        } else if (action instanceof TimeProgressAction) {
+            actionStr = ((TimeProgressAction) action)
+                    .getIntervalTimeProgress().toString();
         }
-        else if (action instanceof TimeProgressAction) {
-            actionStr = ((TimeProgressAction) action).getIntervalTimeProgress().toString();
-        }
-        if (states.isEmpty()) System.out.println("s" + states.size());
-        else {
-            System.out.println(transitionType+" ----- "+actionStr+" ----->s" + states.size());
-        }
-        states.add(systemState);
+
+        System.out.println(
+                "s" + sourceId +
+                        " ---" + transitionType + "(" + actionStr + ")---> " +
+                        "s" + destId
+        );
     }
 
-    public void runSystemRules(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
+    public void runSystemRules(HybridRebecaSystemState sourceState,
+            HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
         printStateSpace(executionResult);
-        if (executionResult instanceof HybridRebecaDeterministicTransition<HybridRebecaSystemState>) {
-            HybridRebecaDeterministicTransition<HybridRebecaSystemState> source =
+        currentStateIdx ++;
+        if (executionResult instanceof HybridRebecaDeterministicTransition) {
+            HybridRebecaDeterministicTransition<HybridRebecaSystemState> t =
                     (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
-            HybridRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source.getDestination());
-            printState("Det", ((HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult).getAction(),backup);
-            if (backup.getNow().getFirst() > backup.getInputInterval().getSecond()) {
+            HybridRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(t.getDestination());
+            printState(getStateId(sourceState), "Det", t.getAction(), dest);
+            if (dest.getNow().getFirst() > dest.getInputInterval().getSecond()) {
                 return;
             }
-            executionResult = runApplicableRule(backup);
-            runSystemRules(executionResult);
-        }
-        else if (executionResult instanceof HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) {
-            HybridRebecaNondeterministicTransition<HybridRebecaSystemState> source =
-                    (HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) executionResult;
-            Iterator<Pair<? extends Action, HybridRebecaSystemState>> transitionsIterator = (source).getDestinations().iterator();
 
-            while (transitionsIterator.hasNext()) {
-                Pair<? extends Action, HybridRebecaSystemState> transition = transitionsIterator.next();
-                HybridRebecaSystemState systemState = transition.getSecond();
-                printState("Nondet", transition.getFirst(),systemState);
-                if (systemState.getNow().getFirst() > systemState.getInputInterval().getSecond()) {
-                    return;
+            HybridRebecaAbstractTransition<HybridRebecaSystemState> next = runApplicableRule(dest);
+            runSystemRules(dest, next);
+        }
+
+        else if (executionResult instanceof HybridRebecaNondeterministicTransition) {
+            HybridRebecaNondeterministicTransition<HybridRebecaSystemState> t =
+                    (HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) executionResult;
+
+            int sourceId = getStateId(sourceState);
+
+            List<HybridRebecaSystemState> successors = new ArrayList<>();
+
+            // Phase 1: print all nondet edges
+            for (Pair<? extends Action, HybridRebecaSystemState> p : t.getDestinations()) {
+                HybridRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(p.getSecond());
+                printState(sourceId, "Nondet", p.getFirst(), dest);
+                if (dest.getNow().getFirst() <= dest.getInputInterval().getSecond()) {
+                    successors.add(dest);
                 }
-                executionResult = runApplicableRule(systemState);
-                runSystemRules(executionResult);
+            }
+
+            // Phase 2: explore
+            for (HybridRebecaSystemState dest : successors) {
+                HybridRebecaAbstractTransition<HybridRebecaSystemState> next = runApplicableRule(dest);
+                runSystemRules(dest, next);
             }
         }
+
     }
 
+    int currentStateIdx = 0;
     public HybridRebecaAbstractTransition<HybridRebecaSystemState> runApplicableRule(HybridRebecaSystemState backup) {
         if (backup.thereIsSuspension()) {
             HybridRebecaResumeSOSRule rebecaResumeSOSRule = new HybridRebecaResumeSOSRule();
