@@ -1,5 +1,5 @@
 
-reactiveclass Sensor(10) {
+reactiveclass Sensor(2) {
     knownrebecs {
         CollisionMonitor cm;
     }
@@ -17,13 +17,13 @@ reactiveclass Sensor(10) {
         distance = 120;
         velocity = 2;
 
-        cm.sensorData(distance, velocity) after(25, 25);
+        cm.sensorData(distance, velocity) after(10, 30);
 
-        self.sample() after(70, 70);
+        self.sample() after(50, 100);
     }
 }
 
-reactiveclass CollisionMonitor(10) {
+reactiveclass CollisionMonitor(2) {
     knownrebecs {
         Controller ctrl;
     }
@@ -35,7 +35,7 @@ reactiveclass CollisionMonitor(10) {
     }
 }
 
-reactiveclass Controller(10) {
+reactiveclass Controller(2) {
 
     statevars {
         boolean braking;
@@ -56,3 +56,4 @@ main {
     CollisionMonitor cm(ctrl):();
     Sensor s(cm):();
 }
+

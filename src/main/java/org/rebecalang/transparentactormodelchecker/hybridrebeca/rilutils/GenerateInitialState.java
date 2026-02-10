@@ -19,12 +19,12 @@ public class GenerateInitialState {
 //    ActorClassMakerFromRIL maker;
     RILModel rilModel = new RILModel();
     HybridRebecaSystemState initialState = new HybridRebecaSystemState();
-    Pair<Float, Float> inputInterval = new Pair<>(0f, 200f);
-    public GenerateInitialState(RILModel rilModel, Pair<Float, Float> inputInterval) {
+    Pair<Float, Float> inputInterval;
+    public GenerateInitialState(RILModel rilModel, Pair<Float, Float> inputInterval2) {
 //        this.maker = actorClassMakerFromRIL;
         this.rilModel = rilModel;
+        this.inputInterval = inputInterval2;
         this.initialState = this.processMainBlock();
-        this.inputInterval = inputInterval;
     }
 
     public HybridRebecaSystemState getInitialState() {

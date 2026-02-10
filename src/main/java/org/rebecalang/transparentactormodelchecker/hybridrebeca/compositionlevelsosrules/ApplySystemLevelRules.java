@@ -83,7 +83,7 @@ public class ApplySystemLevelRules {
                     (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
             HybridRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(t.getDestination());
             printState(getStateId(sourceState), "", t.getAction(), dest);
-            if (dest.getNow().getFirst() > dest.getInputInterval().getSecond()) {
+            if (dest.getNow().getFirst() >= dest.getInputInterval().getSecond()) {
                 return;
             }
 
