@@ -1,0 +1,58 @@
+
+reactiveclass Sensor(10) {
+    knownrebecs {
+        CollisionMonitor cm;
+    }
+
+    statevars {
+        int distance;
+        int velocity;
+    }
+
+    Sensor() {
+        self.sample();
+    }
+
+    msgsrv sample() {
+        distance = 120;
+        velocity = 2;
+
+        cm.sensorData(distance, velocity) after(25, 25);
+
+        self.sample() after(70, 70);
+    }
+}
+
+reactiveclass CollisionMonitor(10) {
+    knownrebecs {
+        Controller ctrl;
+    }
+
+    msgsrv sensorData(int d, int v) {
+        if (v > 0 && d / v <= 200) {
+            ctrl.collisionDetected();
+        }
+    }
+}
+
+reactiveclass Controller(10) {
+
+    statevars {
+        boolean braking;
+    }
+
+    msgsrv collisionDetected() {
+        braking = true;
+        self.brake();
+    }
+
+    msgsrv brake() {
+
+    }
+}
+
+main {
+    Controller ctrl():();
+    CollisionMonitor cm(ctrl):();
+    Sensor s(cm):();
+}

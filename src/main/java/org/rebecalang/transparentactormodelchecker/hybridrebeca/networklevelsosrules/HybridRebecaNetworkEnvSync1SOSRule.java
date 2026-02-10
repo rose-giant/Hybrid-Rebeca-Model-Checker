@@ -61,6 +61,7 @@ public class HybridRebecaNetworkEnvSync1SOSRule extends AbstractHybridSOSRule<Hy
         for (Float element: uniqueSortedBounds) {
             bounds.add(element);
         }
+        if (bounds.size() == 1) bounds.add(bounds.get(0));
         return bounds;
     }
 }
