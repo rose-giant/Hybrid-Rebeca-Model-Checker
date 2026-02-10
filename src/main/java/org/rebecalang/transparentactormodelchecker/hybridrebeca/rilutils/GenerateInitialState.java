@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class GenerateInitialState {
 
-//    ActorClassMakerFromRIL maker;
+//    ActorClassMakerFromRIL maker;sda
     RILModel rilModel = new RILModel();
     HybridRebecaSystemState initialState = new HybridRebecaSystemState();
     Pair<Float, Float> inputInterval;
