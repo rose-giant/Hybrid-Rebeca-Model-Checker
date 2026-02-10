@@ -32,6 +32,7 @@ public class ApplySystemLevelRules {
         this.initialState = initialState;
         startApplyingRules(initialState);
         System.out.println(states.size());
+        dot.writeToFile("output.dot");
     }
 
     HybridRebecaCompositionLevelExecuteStatementSOSRule levelExecuteStatementSOSRule;
@@ -50,14 +51,7 @@ public class ApplySystemLevelRules {
         runSystemRules(initialState, t);
     }
 
-
-    public void printStateSpace(HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
-        AbstractTransparentActorState transparentState = new AbstractTransparentActorState();
-//        System.out.println("s" + states.size());
-        transparentState.addTransition(executionResult);
-        transparentActorStateSpace.addStateToStateSpace(transparentState);
-    }
-
+    private DotExporter dot = new DotExporter();
     public void printState(
             int sourceId,
             String transitionType,
@@ -74,22 +68,21 @@ public class ApplySystemLevelRules {
                     .getIntervalTimeProgress().toString();
         }
 
-        System.out.println(
-                "s" + sourceId +
-                        " ---" + transitionType + "(" + actionStr + ")---> " +
-                        "s" + destId
-        );
+        // OLD:
+        // System.out.println(...);
+
+        // NEW:
+        dot.addTransition(sourceId, transitionType, actionStr, destId);
     }
 
     public void runSystemRules(HybridRebecaSystemState sourceState,
             HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
-        printStateSpace(executionResult);
         currentStateIdx ++;
         if (executionResult instanceof HybridRebecaDeterministicTransition) {
             HybridRebecaDeterministicTransition<HybridRebecaSystemState> t =
                     (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
             HybridRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(t.getDestination());
-            printState(getStateId(sourceState), "Det", t.getAction(), dest);
+            printState(getStateId(sourceState), "", t.getAction(), dest);
             if (dest.getNow().getFirst() > dest.getInputInterval().getSecond()) {
                 return;
             }
@@ -109,7 +102,7 @@ public class ApplySystemLevelRules {
             // Phase 1: print all nondet edges
             for (Pair<? extends Action, HybridRebecaSystemState> p : t.getDestinations()) {
                 HybridRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(p.getSecond());
-                printState(sourceId, "Nondet", p.getFirst(), dest);
+                printState(sourceId, "", p.getFirst(), dest);
                 if (dest.getNow().getFirst() <= dest.getInputInterval().getSecond()) {
                     successors.add(dest);
                 }

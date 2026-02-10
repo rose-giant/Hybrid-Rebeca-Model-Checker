@@ -14,6 +14,9 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+
 import static org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridExpressionEvaluator.hybridExpressionEvaluator;
 
 @Component
@@ -23,6 +26,15 @@ public class HybridRebecaJumpSOSRule extends AbstractHybridSOSRule<Pair<HybridRe
     //else: pc = 9
     @Override
     public HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> applyRule(Pair<HybridRebecaActorState, InstructionBean> source) {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+            out.writeObject(source.getFirst());
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();   // THIS is what we want
+        }
+
         HybridRebecaActorState backup1 = HybridRebecaStateSerializationUtils.clone(source.getFirst());
         backup1.setRILModel(source.getFirst().getRILModel());
         HybridRebecaActorState backup2 = HybridRebecaStateSerializationUtils.clone(source.getFirst());

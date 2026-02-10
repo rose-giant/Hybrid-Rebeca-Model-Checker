@@ -1,5 +1,6 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.utils;
 
+import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.rilutils.RILEquivalentActorClass;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.*;
@@ -11,13 +12,17 @@ public class HybridRebecaStateSerializationUtils {
         return clone;
     }
 
+    public static Pair clone(Pair pair) {
+        Pair clone = SerializationUtils.clone(pair);
+        return clone;
+    }
+
     public static Environment clone(Environment environment) {
         Environment clone = SerializationUtils.clone(environment);
         return clone;
     }
 
     public static HybridRebecaActorState clone(HybridRebecaActorState object) {
-//        HybridRebecaActorState clone = KryoCloner.clone(object);
         HybridRebecaActorState clone = SerializationUtils.clone(object);
         return clone;
     }
@@ -43,6 +48,11 @@ public class HybridRebecaStateSerializationUtils {
 //        for(HybridRebecaActorState state : clone.getActorsStatesValues())
 //            state.setRILModel(rilModel);
 
+        return clone;
+    }
+
+    public static ActorScope clone(ActorScope actorScope) {
+        ActorScope clone = SerializationUtils.clone(actorScope);
         return clone;
     }
 }

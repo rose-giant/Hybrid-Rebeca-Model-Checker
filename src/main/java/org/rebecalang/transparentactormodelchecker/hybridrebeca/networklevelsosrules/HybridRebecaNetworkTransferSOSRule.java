@@ -16,19 +16,19 @@ import java.util.*;
 
 import static java.lang.System.in;
 
-public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<HybridRebecaNetworkState> {
+public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<HybridRebecaNetworkState> {
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
         HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaNondeterministicTransition<>();
         List<HybridRebecaMessage> sortedList = sortMessages(source);
-        Float secondEarliest = getSecondEarliestEtaLowerBound(source);
+//        Float secondEarliest = getSecondEarliestEtaLowerBound(source);
         ArrayList<HybridRebecaAbstractTransition> transitions = new ArrayList<>();
 
         //Nondeterministic case of both transfer and postpone
         List<HybridRebecaMessage> sortedList2 = sortMessages(source);
-        if (sortedList2.get(0).getMessageArrivalInterval().getFirst().floatValue() >= source.getNow().getFirst().floatValue() &&
-                sortedList2.get(0).getMessageArrivalInterval().getFirst().floatValue() < source.getNow().getSecond().floatValue()) {
+//        if (sortedList2.get(0).getMessageArrivalInterval().getFirst().floatValue() >= source.getNow().getFirst().floatValue() &&
+//                sortedList2.get(0).getMessageArrivalInterval().getFirst().floatValue() < source.getNow().getSecond().floatValue()) {
             for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : source.getReceivedMessages().entrySet()) {
                 ArrayList<HybridRebecaMessage> messageList = entry.getValue();
                 Iterator<HybridRebecaMessage> iterator = messageList.iterator();
@@ -46,6 +46,7 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
                         }
                         ArrayList<HybridRebecaMessage> ms = clonedMap.get(entry.getKey());
                         ms.remove(message); // safe: source is untouched
+                        ms = removeAndUpdateNetworkMessages(ms, message.getMessageArrivalInterval().getFirst());
                         clonedMap.put(entry.getKey(), ms);
                         List<Pair<String, String>> keysToRemove = new ArrayList<>();
                         for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry2 : clonedMap.entrySet()) {
@@ -88,7 +89,7 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
                     }
                 }
             }
-        }
+//        }
 
         if (transitions.size() == 0) {
             //TODO: Ottokke!
@@ -116,6 +117,15 @@ public class HybridRebecaNetworkTransferSOSRule  extends AbstractHybridSOSRule<H
             }
         }
         return earliestMessages;
+    }
+
+    private ArrayList<HybridRebecaMessage> removeAndUpdateNetworkMessages(ArrayList<HybridRebecaMessage> messages, Float arrival_l) {
+        for (HybridRebecaMessage msg: messages) {
+            msg.setMessageArrivalInterval(new Pair<>(Math.max(arrival_l.floatValue(), msg.getMessageArrivalInterval().getFirst().floatValue()),
+                    msg.getMessageArrivalInterval().getSecond().floatValue()));
+        }
+
+        return messages;
     }
 
     public static Float getSecondEarliestEtaLowerBound(HybridRebecaNetworkState source) {

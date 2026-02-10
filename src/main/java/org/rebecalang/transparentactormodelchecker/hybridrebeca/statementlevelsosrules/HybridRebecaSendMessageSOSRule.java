@@ -52,7 +52,7 @@ public class HybridRebecaSendMessageSOSRule extends AbstractHybridSOSRule<Pair<H
         for(Map.Entry<String, Object> entry : msgsrvCall.getParameters().entrySet()) {
             Object value = entry.getValue();
             if(value instanceof Variable) {
-                value = senderActor.getVariableValue(msgsrvCall.getBase().getVarName());
+                value = senderActor.getVariableValue(((Variable) value).getVarName());
             }
             message.addParameter(entry.getKey(), value);
         }

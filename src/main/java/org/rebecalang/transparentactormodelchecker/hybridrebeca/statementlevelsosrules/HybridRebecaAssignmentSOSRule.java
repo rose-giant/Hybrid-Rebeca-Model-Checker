@@ -1,7 +1,6 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.statementlevelsosrules;
 
 import org.rebecalang.compiler.modelcompiler.SemanticCheckerUtils;
-import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.BinaryExpression;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AssignmentInstructionBean;
@@ -15,11 +14,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
-import org.rebecalang.transparentactormodelchecker.hybridrebeca.utils.HybridRebecaStateSerializationUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
 
 @Component
 public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
@@ -63,6 +58,7 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
         Object valueSecond = getValue(aib.getSecondOperand(), source.getFirst());
         String expressionOperator = aib.getOperator();
         String operator = "=";
+
         Object rightSideResult = new Object();
         if (expressionOperator != null) {
             if (valueFirst instanceof HybridRebecaActorState) {
@@ -83,6 +79,7 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
                 rightSideResult = (float)valueFirst < (float)valueSecond;
             }
             else if (expressionOperator.equals(">")) {
+
                 rightSideResult = (float)valueFirst > (float)valueSecond;
             }
             else if (expressionOperator.equals("==")) {
@@ -100,13 +97,23 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
             else if (expressionOperator.equals("*")) {
                 rightSideResult = (float)valueFirst * (float)valueSecond;
             }
+            else if (expressionOperator.equals("/")) {
+                rightSideResult = (float)valueFirst / (float)valueSecond;
+            }
             else
                 rightSideResult = SemanticCheckerUtils.evaluateConstantTerm(operator, null, valueFirst, valueSecond);
         } else {
             rightSideResult = valueFirst;
         }
 
-        source.getFirst().setVariableValue((Variable) aib.getLeftVarName(), rightSideResult);
+        if (rightSideResult instanceof Float) {
+            source.getFirst().setVariableValue((Variable) aib.getLeftVarName(), (Float)rightSideResult);
+        } else if (rightSideResult instanceof Boolean) {
+            source.getFirst().setVariableValue((Variable) aib.getLeftVarName(), (Boolean)rightSideResult);
+        }
+        else {
+            source.getFirst().setVariableValue((Variable) aib.getLeftVarName(), rightSideResult);
+        }
         source.getFirst().moveToNextStatement();
 
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =

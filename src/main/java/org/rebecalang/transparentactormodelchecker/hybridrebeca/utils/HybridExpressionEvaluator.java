@@ -1,5 +1,6 @@
 package org.rebecalang.transparentactormodelchecker.hybridrebeca.utils;
 
+import org.rebecalang.compiler.modelcompiler.corerebeca.objectmodel.BinaryExpression;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.JumpIfNotInstructionBean;
@@ -21,6 +22,13 @@ public class HybridExpressionEvaluator {
             Object right = bean.getRightSide();
             String op = bean.getOperator();
             Object left = bean.getLeftSide();
+
+            if (left instanceof StartUnbreakableConditionInstructionBean) {
+                left = unbreakableExpressionEvaluator(left, source.getFirst());
+            }
+            if (right instanceof StartUnbreakableConditionInstructionBean) {
+                right = unbreakableExpressionEvaluator(right, source.getFirst());
+            }
 
             if (left instanceof Pair<?,?> && right instanceof Number) {
                 Pair<Number, Number> leftInterval = (Pair<Number, Number>) left;
@@ -88,6 +96,18 @@ public class HybridExpressionEvaluator {
                 };
 
             }
+
+            if (right instanceof Boolean && left instanceof Variable) {
+                boolean leftVal = (boolean) source.getFirst().getVariableValue(((Variable) left).getVarName());
+                boolean rightVal = (boolean) right;
+                return switch (op) {
+                    case "&&" -> leftVal && rightVal;
+                    case "||" -> leftVal || rightVal;
+                    case "==" -> leftVal == rightVal;
+                    case "!=" -> leftVal != rightVal;
+                    default -> throw new UnsupportedOperationException("Unknown operator: " + op);
+                };
+            }
             if (left instanceof String || right instanceof String) {
                 String leftStr = left.toString();
                 String rightStr = right.toString();
@@ -99,9 +119,96 @@ public class HybridExpressionEvaluator {
                     default -> throw new UnsupportedOperationException("Unsupported string operator: " + op);
                 };
             }
+
             throw new IllegalArgumentException("Unsupported operand types: " + left.getClass() + " and " + right.getClass());
         }
 
         return expression;
     }
+
+    private static Object unbreakableExpressionEvaluator(Object expression, HybridRebecaActorState source) {
+        if (expression instanceof StartUnbreakableConditionInstructionBean) {
+            StartUnbreakableConditionInstructionBean bean = (StartUnbreakableConditionInstructionBean) expression;
+            Object right = bean.getRightSide();
+            String op = bean.getOperator();
+            Object left = bean.getLeftSide();
+
+            if (left instanceof Pair<?, ?> && right instanceof Number) {
+                Pair<Number, Number> leftInterval = (Pair<Number, Number>) left;
+                float floatRight = ((Number) right).floatValue();
+                float leftFirst = leftInterval.getFirst().floatValue();
+                float leftSecond = leftInterval.getSecond().floatValue();
+
+                if (op == "<") {
+                    if (leftSecond < floatRight) {
+                        return true;
+                    }
+                    if (floatRight < leftSecond && floatRight > leftFirst) {
+                        return null;
+                    }
+                    if (floatRight < leftFirst) {
+                        return false;
+                    }
+                } else if (op == ">=") {
+                    if (leftSecond < floatRight) {
+                        return false;
+                    }
+                    if (floatRight < leftSecond && floatRight > leftFirst) {
+                        return null;
+                    }
+                    if (floatRight < leftFirst) {
+                        return true;
+                    }
+                }
+            } else if (left instanceof Number && right instanceof Number) {
+                double leftVal = ((Number) left).doubleValue();
+                double rightVal = ((Number) right).doubleValue();
+
+                return switch (op) {
+                    case ">" -> leftVal > rightVal;
+                    case ">=" -> leftVal >= rightVal;
+                    case "<" -> leftVal < rightVal;
+                    case "<=" -> leftVal <= rightVal;
+                    case "==" -> leftVal == rightVal;
+                    case "!=" -> leftVal != rightVal;
+                    case "+" -> leftVal + rightVal;
+                    case "-" -> leftVal - rightVal;
+                    case "*" -> leftVal * rightVal;
+                    case "/" -> rightVal != 0 ? leftVal / rightVal : Double.NaN;
+                    default -> throw new UnsupportedOperationException("Unknown operator: " + op);
+                };
+            } else if (left instanceof Variable && right instanceof Number) {
+                float leftVal = (float) source.getVariableValue(((Variable) left).getVarName());
+                float rightVal = (float) right;
+                return switch (op) {
+                    case ">" -> leftVal > rightVal;
+                    case ">=" -> leftVal >= rightVal;
+                    case "<" -> leftVal < rightVal;
+                    case "<=" -> leftVal <= rightVal;
+                    case "==" -> leftVal == rightVal;
+                    case "!=" -> leftVal != rightVal;
+                    case "+" -> leftVal + rightVal;
+                    case "-" -> leftVal - rightVal;
+                    case "*" -> leftVal * rightVal;
+                    case "/" -> rightVal != 0 ? leftVal / rightVal : Double.NaN;
+                    default -> throw new UnsupportedOperationException("Unknown operator: " + op);
+                };
+
+            }
+            if (left instanceof String || right instanceof String) {
+                String leftStr = left.toString();
+                String rightStr = right.toString();
+
+                return switch (op) {
+                    case "==" -> leftStr.equals(rightStr);
+                    case "!=" -> !leftStr.equals(rightStr);
+                    case "+" -> leftStr + rightStr;
+                    default -> throw new UnsupportedOperationException("Unsupported string operator: " + op);
+                };
+            }
+        }
+
+        return null;
+    }
+
 }
