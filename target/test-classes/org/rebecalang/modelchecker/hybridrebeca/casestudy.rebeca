@@ -18,8 +18,7 @@ reactiveclass Sensor(2) {
         velocity = 2;
 
         cm.sensorData(distance, velocity) after(10, 30);
-
-        self.sample() after(50, 100);
+        self.sample() after(100, 150);
     }
 }
 
