@@ -59,6 +59,10 @@ public class ApplySystemLevelRules {
             HybridRebecaSystemState destState
     ) {
         int destId = getStateId(destState);
+        if (destId == 41) {
+            System.out.println("reached!");
+        }
+        currentStateIdx++;
 
         String actionStr = "TAU";
         if (action instanceof MessageAction) {
@@ -77,7 +81,9 @@ public class ApplySystemLevelRules {
 
     public void runSystemRules(HybridRebecaSystemState sourceState,
             HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
-        currentStateIdx ++;
+//        if (currentStateIdx >= 100) {
+//            return;
+//        }
         if (executionResult instanceof HybridRebecaDeterministicTransition) {
             HybridRebecaDeterministicTransition<HybridRebecaSystemState> t =
                     (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;

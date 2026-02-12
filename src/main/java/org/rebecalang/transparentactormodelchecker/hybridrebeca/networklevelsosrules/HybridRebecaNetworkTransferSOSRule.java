@@ -7,6 +7,7 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaMessage;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaNetworkState;
+import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.state.HybridRebecaSystemState;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
@@ -21,8 +22,6 @@ public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<Hy
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaNetworkState> applyRule(HybridRebecaNetworkState source) {
         HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> result = new HybridRebecaNondeterministicTransition<>();
-        List<HybridRebecaMessage> sortedList = sortMessages(source);
-//        Float secondEarliest = getSecondEarliestEtaLowerBound(source);
         ArrayList<HybridRebecaAbstractTransition> transitions = new ArrayList<>();
 
         //Nondeterministic case of both transfer and postpone
@@ -94,6 +93,13 @@ public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<Hy
         if (transitions.size() == 0) {
             //TODO: Ottokke!
             return null;
+        }
+
+        if (transitions.size() == 1) {
+            HybridRebecaDeterministicTransition firstTransition = new HybridRebecaDeterministicTransition<>();
+            firstTransition.setDestination(result.getDestinations().get(0).getSecond());
+            firstTransition.setAction(result.getDestinations().get(0).getFirst());
+            return firstTransition;
         }
 
         return result;

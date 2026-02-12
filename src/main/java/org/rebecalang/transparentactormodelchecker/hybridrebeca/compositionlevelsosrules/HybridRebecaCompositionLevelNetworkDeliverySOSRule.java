@@ -53,17 +53,33 @@ public class HybridRebecaCompositionLevelNetworkDeliverySOSRule extends Abstract
                 transitions.addDestination(action, source);
                 source = backup;
             }
+        } else if (deliveredMessageTransitions instanceof HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) {
+            backup = HybridRebecaStateSerializationUtils.clone(source);
+            HybridRebecaDeterministicTransition result = new HybridRebecaDeterministicTransition<>();
+            result.setDestination(deliveredMessageTransitions);
+            Action action;
+            if (((HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) deliveredMessageTransitions).getAction() instanceof MessageAction) {
+                action = ((HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) deliveredMessageTransitions).getAction();
+                source.getActorState(((MessageAction)action).getMessage().getReceiver().getId()).receiveMessage(((MessageAction)action).getMessage());
+            } else {
+                action = Action.TAU;
+            }
+
+            source.setNetworkState(((HybridRebecaDeterministicTransition<HybridRebecaNetworkState>) deliveredMessageTransitions).getDestination());
+            result.setDestination(source);
+            result.setAction(action);
+            return result;
         }
-        else {
+        else if (deliveredMessageTransitions == null) {
             return null;
         }
 
-        if (transitions.getDestinations().size() == 1) {
-            HybridRebecaDeterministicTransition<HybridRebecaSystemState> transition = new HybridRebecaDeterministicTransition<>();
-            transition.setDestination(transitions.getDestinations().get(0).getSecond());
-            transition.setAction(transitions.getDestinations().get(0).getFirst());
-            return transition;
-        }
+//        if (transitions.getDestinations().size() == 1) {
+//            HybridRebecaDeterministicTransition<HybridRebecaSystemState> transition = new HybridRebecaDeterministicTransition<>();
+//            transition.setDestination(transitions.getDestinations().get(0).getSecond());
+//            transition.setAction(transitions.getDestinations().get(0).getFirst());
+//            return transition;
+//        }
 
         return transitions;
     }
