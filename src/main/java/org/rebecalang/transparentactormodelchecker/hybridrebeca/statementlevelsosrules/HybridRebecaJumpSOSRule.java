@@ -54,7 +54,7 @@ public class HybridRebecaJumpSOSRule extends AbstractHybridSOSRule<Pair<HybridRe
         }
 
         HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> ifResult =
-                new HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState,InstructionBean>>();
+                new HybridRebecaDeterministicTransition<>();
         backup1.moveToNextStatement();
         source.setFirst(backup1);
         ifResult.setDestination(source);

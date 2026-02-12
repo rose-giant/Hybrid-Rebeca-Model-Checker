@@ -215,9 +215,9 @@ public class HybridRebecaActorState extends HybridRebecaAbstractState implements
     public boolean noScopeInstructions() {
         if (scopes.isEmpty()) return true;
         boolean noInstructions = scopes.get(scopes.size()-1).getPC() == this.getSigma().size() - 1 ;
-        if (noInstructions) {
-            scopes.remove(scopes.size()-1);
-        }
+//        if (noInstructions) {
+//            scopes.remove(scopes.size()-1);
+//        }
         return noInstructions;
     }
 

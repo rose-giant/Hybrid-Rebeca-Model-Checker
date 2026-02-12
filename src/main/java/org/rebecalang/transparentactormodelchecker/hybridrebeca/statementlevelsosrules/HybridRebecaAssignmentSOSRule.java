@@ -16,6 +16,8 @@ import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem
 import org.rebecalang.transparentactormodelchecker.hybridrebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 @Component
 public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<HybridRebecaActorState, InstructionBean>> {
 
@@ -25,6 +27,13 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
             return actorState.getVariableValue(varName);
         }
         return reference;
+    }
+
+    public static float randomFloatInclusive(float min, float max) {
+        if (min > max) {
+            throw new IllegalArgumentException("min must be <= max");
+        }
+        return min + (max - min) * ThreadLocalRandom.current().nextFloat();
     }
 
     private HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> handleContinuousAssignment(Pair<HybridRebecaActorState, InstructionBean> source) {
@@ -37,6 +46,11 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
             }
             else if (sucib.getRightSide() instanceof Variable) {
                 source.getFirst().setVariableValue(((Variable) sucib.getLeftSide()) ,source.getFirst().getVariableValue(((Variable) sucib.getRightSide()).getVarName()));
+            }
+            else if (sucib.getRightSide() instanceof NonDetValue) {
+                float lower = (float) ((NonDetValue) sucib.getRightSide()).getNonDetValues().getFirst();
+                float upper = (float) ((NonDetValue) sucib.getRightSide()).getNonDetValues().getLast();
+                source.getFirst().setVariableValue(leftSide, randomFloatInclusive(lower, upper));
             }
         }
 
