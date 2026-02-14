@@ -43,6 +43,9 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                 }
 
                 for (int i = 0 ; i <= hybridRebecaActorState.getSigma().size() ; i++) {
+                    if (hybridRebecaActorState.isSuspent()) {
+                        continue;
+                    }
                     HybridRebecaAbstractTransition<HybridRebecaActorState> executionResult =
                             hybridRebecaActorLevelExecuteStatementSOSRule.applyRule(hybridRebecaActorState);
 

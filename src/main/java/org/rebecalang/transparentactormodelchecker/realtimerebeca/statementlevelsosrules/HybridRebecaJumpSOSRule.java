@@ -77,10 +77,9 @@ public class HybridRebecaJumpSOSRule extends AbstractHybridSOSRule<Pair<HybridRe
 
         if (conditionEval instanceof Boolean) {
             if ((Boolean) conditionEval) return ifResult;
+            else return elseResult;
         }
-        else {
-            return elseResult;
-        }
+
         return null;
     }
 
