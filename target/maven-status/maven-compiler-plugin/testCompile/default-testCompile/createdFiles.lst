@@ -1,7 +1,0 @@
-org\rebecalang\modelchecker\utils\StateSpaceComparator.class
-org\rebecalang\modelchecker\InheritanceTest.class
-org\rebecalang\transparentactormodelchecker\StatementsSOSRulesTest.class
-org\rebecalang\transparentactormodelchecker\TransitionSystemSOSRulesTest.class
-org\rebecalang\modelchecker\CoreRebecaModelCheckerTest.class
-org\rebecalang\modelchecker\utils\StateSpaceUtil.class
-org\rebecalang\modelchecker\TimedRebecaTest.class

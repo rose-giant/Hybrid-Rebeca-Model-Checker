@@ -1,0 +1,25 @@
+package org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.action;
+
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaMessage;
+
+public class TakeMessageAction extends Action {
+    private HybridRebecaMessage message;
+
+    public TakeMessageAction(HybridRebecaMessage message) {
+        this.message = message;
+    }
+    public HybridRebecaMessage getMessage() {
+        return message;
+    }
+    public void setMessage(HybridRebecaMessage message) {
+        this.message = message;
+    }
+
+    public String getActionLabel() {
+        return message.getName();
+    }
+
+    public String toString() {
+        return message.toString();
+    }
+}
