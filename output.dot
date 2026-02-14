@@ -3,11 +3,22 @@ digraph G {
 
     s0 -> s1 [label="(TAU)"];
     s1 -> s2 [label="(TAU)"];
-    s1 -> s3 [label="(TAU)"];
-    s2 -> s4 [label="(TAU)"];
-    s4 -> s5 [label="((0.0, 3.4028235E38))"];
-    s5 -> s6 [label="((3.4028235E38, 3.4028235E38))"];
-    s3 -> s7 [label="(TAU)"];
-    s7 -> s8 [label="((0.0, 3.4028235E38))"];
-    s8 -> s9 [label="((3.4028235E38, 3.4028235E38))"];
+    s2 -> s3 [label="(AbstractSensor.trigger)"];
+    s3 -> s4 [label="(TAU)"];
+    s4 -> s5 [label="(TAU)"];
+    s5 -> s6 [label="((0.0, 0.5))"];
+    s6 -> s7 [label="((0.5, 1.0))"];
+    s7 -> s8 [label="(Controller.control$float)"];
+    s8 -> s9 [label="(TAU)"];
+    s9 -> s10 [label="(TAU)"];
+    s9 -> s11 [label="(TAU)"];
+    s10 -> s12 [label="(TAU)"];
+    s12 -> s13 [label="(Controller.notify)"];
+    s13 -> s14 [label="(TAU)"];
+    s14 -> s15 [label="(TAU)"];
+    s15 -> s16 [label="((1.0, 3.4028235E38))"];
+    s16 -> s17 [label="((3.4028235E38, 3.4028235E38))"];
+    s11 -> s18 [label="(TAU)"];
+    s18 -> s19 [label="((1.0, 3.4028235E38))"];
+    s19 -> s20 [label="((3.4028235E38, 3.4028235E38))"];
 }

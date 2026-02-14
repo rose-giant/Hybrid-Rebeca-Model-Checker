@@ -1,0 +1,39 @@
+reactiveclass Controller(2) {
+      knownrebecs {
+          //Alarm a;
+      }
+      Controller() {}
+
+      msgsrv control(float t) {
+          if (t < 18.5) {
+              self.notify();
+              //a.notify() after (0.3, 0.5);
+          }
+      }
+
+      msgsrv notify(){}
+}
+
+reactiveclass AbstractSensor(2) {
+    knownrebecs {
+        Controller c;
+    }
+    statevars {
+        int temp;
+    }
+
+    AbstractSensor() {
+        self.trigger();
+    }
+
+    msgsrv trigger() {
+         temp = ?(18, 19);
+         c.control(temp) after (0.5,1);
+    }
+}
+
+main {
+   // Alarm a():();
+    Controller c(a):();
+    AbstractSensor as(c):();
+}

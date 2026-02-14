@@ -1,16 +1,20 @@
 package org.rebecalang.transparentactormodelchecker.realtimerebeca.utils;
 
+import org.rebecalang.compiler.modelcompiler.SemanticCheckerUtils;
 import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AssignmentInstructionBean;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.JumpIfNotInstructionBean;
-import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
+import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakableConditionInstructionBean;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
+
+import java.util.ArrayList;
 
 public class HybridExpressionEvaluator {
 
     public static Object hybridExpressionEvaluator(Pair<HybridRebecaActorState, InstructionBean> source) {
+        if (source.getSecond() instanceof JumpIfNotInstructionBean) {
+            return evaluate(((JumpIfNotInstructionBean) source.getSecond()).getCondition(), source.getFirst());
+        }
 //        Object expression = ((JumpIfNotInstructionBean) source.getSecond()).getCondition();
         Object expression = source.getSecond();
 
@@ -117,8 +121,73 @@ public class HybridExpressionEvaluator {
             };
         }
 
+        if (left instanceof NonDetValue) {
+//            StartUnbreakableConditionInstructionBean aib = (StartUnbreakableConditionInstructionBean) expression;
+//            NonDetValue valueFirst = (NonDetValue) getValue(aib.getFirstOperand(), state);
+//            Object valueSecond = getValue(aib.getSecondOperand(), state);
+//            String expressionOperator = aib.getOperator();
+//            ArrayList<Object> results = new ArrayList<>();
+//            for (Object val: valueFirst.getNonDetValues()) {
+//                AssignmentInstructionBean instructionBean = new AssignmentInstructionBean(aib.getLeftVarName(), val, valueSecond, expressionOperator);
+//                results.add(evaluateAssignmentExpression(instructionBean ,state));
+//            }
+//
+//            return results;
+            return left;
+        }
+
         throw new IllegalArgumentException(
                 "Unsupported operand types: " + left.getClass() + " and " + right.getClass());
     }
+
+    private static Object getValue(Object reference, HybridRebecaActorState actorState) {
+        if (reference instanceof Variable) {
+            String varName = ((Variable) reference).getVarName();
+            return actorState.getVariableValue(varName);
+        }
+        return reference;
+    }
+
+    private static Object evaluateAssignmentExpression(AssignmentInstructionBean aib, HybridRebecaActorState state) {
+        Object valueFirst = getValue(aib.getFirstOperand(), state);
+        Object valueSecond = getValue(aib.getSecondOperand(), state);
+        String op = aib.getOperator();
+
+        if (op == null) {
+            return valueFirst;
+        }
+
+        if (valueFirst instanceof NonDetValue) {
+            return valueFirst;
+        }
+
+        if (valueFirst instanceof HybridRebecaActorState) {
+            if (op.equals("=="))
+                return ((HybridRebecaActorState) valueFirst).getId()
+                        .equals(((HybridRebecaActorState) valueSecond).getId());
+            if (op.equals("!="))
+                return !((HybridRebecaActorState) valueFirst).getId()
+                        .equals(((HybridRebecaActorState) valueSecond).getId());
+
+            throw new RebecaRuntimeInterpreterException(
+                    "this case should have been reported as an error by the compiler.");
+        }
+
+        float a = ((Number) valueFirst).floatValue();
+        float b = ((Number) valueSecond).floatValue();
+
+        return switch (op) {
+            case "<" -> a < b;
+            case ">" -> a > b;
+            case "==" -> a == b;
+            case "!=" -> a != b;
+            case "+" -> a + b;
+            case "-" -> a - b;
+            case "*" -> a * b;
+            case "/" -> a / b;
+            default -> SemanticCheckerUtils.evaluateConstantTerm("=", null, valueFirst, valueSecond);
+        };
+    }
+
 
 }

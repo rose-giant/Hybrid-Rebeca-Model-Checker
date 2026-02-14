@@ -44,8 +44,8 @@ reactiveclass AbstractSensor(2) {
     }
 
     msgsrv trigger() {
-        //temp = ?(18, 19);
-        temp = 18.2;
+         temp = ?(18, 19);
+        //temp = 18.2;
         delay(1,2);
         c.control(temp) after (0.5,1);
 

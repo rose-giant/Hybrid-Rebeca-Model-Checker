@@ -65,19 +65,20 @@ public class HybridRebecaCompositionLevelExecuteStatementSOSRule extends Abstrac
                         Action action = Action.TAU;
                         Iterator<Pair<? extends Action, HybridRebecaActorState>> transitionsIterator = executionResult.getDestinations().iterator();
                         while(transitionsIterator.hasNext()) {
+                            HybridRebecaSystemState backup1 = HybridRebecaStateSerializationUtils.clone(source);
                             Pair<? extends Action, HybridRebecaActorState> transition = transitionsIterator.next();
                             HybridRebecaActorState actorState = transition.getSecond();
-                            backup.setActorState(actorState.getId(), actorState);
-//                            transitions.addDestination(transition.getFirst(), backup);
-                            transitions.add(new HybridRebecaDeterministicTransition(transition.getFirst(), backup));
+                            backup1.setActorState(actorState.getId(), actorState);
+//                            transitions.addDestination(transition.getFirst(), backup1);
+                            transitions.add(new HybridRebecaDeterministicTransition(transition.getFirst(), backup1));
                             if(transition.getFirst() instanceof MessageAction) {
                                 action = (MessageAction) transition.getFirst();
                                 HybridRebecaDeterministicTransition<HybridRebecaNetworkState> networkTransition =
                                         (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>)
-                                                hybridRebecaNetworkLevelReceiveMessageSOSRule.applyRule(action, backup.getNetworkState());
-                                backup.setNetworkState(networkTransition.getDestination());
+                                                hybridRebecaNetworkLevelReceiveMessageSOSRule.applyRule(action, backup1.getNetworkState());
+                                backup1.setNetworkState(networkTransition.getDestination());
                             }
-                            result.addDestination(action, backup);
+                            result.addDestination(action, backup1);
                         }
 
                         return result;
