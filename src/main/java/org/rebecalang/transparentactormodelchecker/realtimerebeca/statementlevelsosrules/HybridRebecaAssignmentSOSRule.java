@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.rebecalang.transparentactormodelchecker.realtimerebeca.utils.HybridExpressionEvaluator.evaluateNonDet;
 import static org.rebecalang.transparentactormodelchecker.realtimerebeca.utils.HybridExpressionEvaluator.hybridExpressionEvaluator;
 
 @Component
@@ -90,45 +91,81 @@ public class HybridRebecaAssignmentSOSRule extends AbstractHybridSOSRule<Pair<Hy
         return buildTauTransition(source);
     }
 
-    private Object evaluateAssignmentExpression(AssignmentInstructionBean aib, HybridRebecaActorState state) {
-        Object valueFirst = getValue(aib.getFirstOperand(), state);
-        Object valueSecond = getValue(aib.getSecondOperand(), state);
+    private Object evaluateAssignmentExpression(AssignmentInstructionBean aib,
+                                                HybridRebecaActorState state) {
+
+        Object left = getValue(aib.getFirstOperand(), state);
+        Object right = getValue(aib.getSecondOperand(), state);
         String op = aib.getOperator();
 
         if (op == null) {
-            return valueFirst;
+            return left;
         }
 
-        if (valueFirst instanceof NonDetValue) {
-            return valueFirst;
+        // ===== nondet present → lift computation =====
+        if (left instanceof NonDetValue || right instanceof NonDetValue) {
+            return evaluateNonDet(left, op, right);
         }
 
-        if (valueFirst instanceof HybridRebecaActorState) {
-            if (op.equals("=="))
-                return ((HybridRebecaActorState) valueFirst).getId()
-                        .equals(((HybridRebecaActorState) valueSecond).getId());
-            if (op.equals("!="))
-                return !((HybridRebecaActorState) valueFirst).getId()
-                        .equals(((HybridRebecaActorState) valueSecond).getId());
-
-            throw new RebecaRuntimeInterpreterException(
-                    "this case should have been reported as an error by the compiler.");
+        // ===== actor equality =====
+        if (left instanceof HybridRebecaActorState && right instanceof HybridRebecaActorState) {
+            return switch (op) {
+                case "==" -> ((HybridRebecaActorState) left).getId()
+                        .equals(((HybridRebecaActorState) right).getId());
+                case "!=" -> !((HybridRebecaActorState) left).getId()
+                        .equals(((HybridRebecaActorState) right).getId());
+                default -> throw new RebecaRuntimeInterpreterException(
+                        "this case should have been reported as an error by the compiler.");
+            };
         }
 
-        float a = ((Number) valueFirst).floatValue();
-        float b = ((Number) valueSecond).floatValue();
+        // ===== numeric =====
+        if (left instanceof Number && right instanceof Number) {
+            float a = ((Number) left).floatValue();
+            float b = ((Number) right).floatValue();
 
-        return switch (op) {
-            case "<" -> a < b;
-            case ">" -> a > b;
-            case "==" -> a == b;
-            case "!=" -> a != b;
-            case "+" -> a + b;
-            case "-" -> a - b;
-            case "*" -> a * b;
-            case "/" -> a / b;
-            default -> SemanticCheckerUtils.evaluateConstantTerm("=", null, valueFirst, valueSecond);
-        };
+            return switch (op) {
+                case "<" -> a < b;
+                case ">" -> a > b;
+                case "==" -> a == b;
+                case "!=" -> a != b;
+                case "+" -> a + b;
+                case "-" -> a - b;
+                case "*" -> a * b;
+                case "/" -> a / b;
+                default -> SemanticCheckerUtils.evaluateConstantTerm("=", null, left, right);
+            };
+        }
+
+        // ===== boolean =====
+        if (left instanceof Boolean && right instanceof Boolean) {
+            boolean a = (Boolean) left;
+            boolean b = (Boolean) right;
+
+            return switch (op) {
+                case "&&" -> a && b;
+                case "||" -> a || b;
+                case "==" -> a == b;
+                case "!=" -> a != b;
+                default -> throw new UnsupportedOperationException("Unknown operator: " + op);
+            };
+        }
+
+        // ===== string =====
+        if (left instanceof String || right instanceof String) {
+            String a = String.valueOf(left);
+            String b = String.valueOf(right);
+
+            return switch (op) {
+                case "==" -> a.equals(b);
+                case "!=" -> !a.equals(b);
+                case "+" -> a + b;
+                default -> throw new UnsupportedOperationException("Unsupported string operator: " + op);
+            };
+        }
+
+        throw new IllegalArgumentException(
+                "Unsupported operand types: " + left.getClass() + " and " + right.getClass());
     }
 
     private void assignValue(HybridRebecaActorState state, Variable var, Object value) {
