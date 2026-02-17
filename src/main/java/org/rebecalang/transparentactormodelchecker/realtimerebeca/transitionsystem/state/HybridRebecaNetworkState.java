@@ -51,6 +51,27 @@ public class HybridRebecaNetworkState implements Serializable {
         return minETA;
     }
 
+    public float getSecondMinETA() {
+        float min = Float.MAX_VALUE;
+        float secondMin = Float.MAX_VALUE;
+        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry: this.getReceivedMessages().entrySet()) {
+            ArrayList<HybridRebecaMessage> messages = entry.getValue();
+            for (HybridRebecaMessage message : messages) {
+                float eta = message.getMessageArrivalInterval().getFirst();
+
+                if (eta < min) {
+                    secondMin = min;
+                    min = eta;
+                }
+                else if (eta > min && eta < secondMin) {
+                    secondMin = eta;
+                }
+            }
+        }
+
+        return secondMin;
+    }
+
     public float getMinETE() {
         float minETE = Float.MAX_VALUE;
         for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : this.getReceivedMessages().entrySet()) {
@@ -62,6 +83,45 @@ public class HybridRebecaNetworkState implements Serializable {
         }
 
         return minETE;
+    }
+
+    public Pair<Float, Float> getTwoSmallestDistinctETAs() {
+        float min = Float.MAX_VALUE;
+        float secondMin = Float.MAX_VALUE;
+        for (Map.Entry<Pair<String, String>, ArrayList<HybridRebecaMessage>> entry : this.getReceivedMessages().entrySet()) {
+            ArrayList<HybridRebecaMessage> messages = entry.getValue();
+            for (HybridRebecaMessage message : messages) {
+                float lower = message.getMessageArrivalInterval().getFirst();
+                float upper = message.getMessageArrivalInterval().getSecond();
+                // process both bounds
+                float[] values = { lower, upper };
+                for (float eta : values) {
+                    if (eta < min) {
+                        secondMin = min;
+                        min = eta;
+                    }
+                    else if (eta > min && eta < secondMin) {
+                        secondMin = eta;
+                    }
+                }
+            }
+        }
+        if (secondMin == Float.MAX_VALUE) {
+            return null; // or new Pair<>(min, null) depending on your semantics
+        }
+        return new Pair<>(min, secondMin);
+    }
+
+    public boolean isEmpty() {
+        if (receivedMessages == null || receivedMessages.isEmpty()) {
+            return true;
+        }
+        for (ArrayList<HybridRebecaMessage> messages : receivedMessages.values()) {
+            if (messages != null && !messages.isEmpty()) {
+                return false; // found at least one message
+            }
+        }
+        return true; // all lists were empty
     }
 
 }

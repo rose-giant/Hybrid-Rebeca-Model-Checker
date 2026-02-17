@@ -26,8 +26,12 @@ public class HybridRebecaNetworkEnvSync1SOSRule extends AbstractHybridSOSRule<Hy
 
         progress.setFirst(now.getSecond().floatValue());
         TimeSyncHelper timeSyncHelper = new TimeSyncHelper();
-        if ( (!(minEta < now.getSecond().floatValue()) ) && (!(minEte == now.getSecond().floatValue())) ) {
-            progress.setSecond(timeSyncHelper.Up(now.getSecond().floatValue(), firstB, secondB));
+//        if ( (!(minEta < now.getSecond().floatValue()) ) && (!(minEte == now.getSecond().floatValue())) ) {
+//            progress.setSecond(timeSyncHelper.Up(now.getSecond().floatValue(), firstB, secondB));
+//        }
+        if (!source.isEmpty()) {
+            progress.setFirst(firstB);
+            progress.setSecond(secondB);
         }
 
         HybridRebecaNetworkState backup = HybridRebecaStateSerializationUtils.clone(source);

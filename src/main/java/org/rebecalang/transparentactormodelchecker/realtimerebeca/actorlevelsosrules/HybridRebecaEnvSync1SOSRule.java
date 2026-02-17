@@ -23,12 +23,15 @@ public class HybridRebecaEnvSync1SOSRule extends AbstractHybridSOSRule<HybridReb
         TimeSyncHelper timeSyncHelper = new TimeSyncHelper();
 
         progress.setFirst(now.getSecond());
-        if ((now.getFirst().floatValue() < resumeTime.getFirst().floatValue()) ||
-            (now.getSecond().floatValue() == resumeTime.getFirst().floatValue() &&
-            now.getFirst().floatValue() != now.getSecond().floatValue() &&
-                    resumeTime.getFirst().floatValue() != resumeTime.getSecond().floatValue())
+        if (
+                (now.getFirst().floatValue() != resumeTime.getFirst().floatValue()) ||
+                (now.getFirst().floatValue() == resumeTime.getFirst().floatValue() &&
+                        now.getFirst().floatValue() == now.getSecond().floatValue() &&
+                        resumeTime.getFirst().floatValue() != resumeTime.getSecond().floatValue())
         ) {
-            progress.setSecond(timeSyncHelper.Up(now.getSecond(), resumeTime.getFirst(), resumeTime.getSecond()));
+//            progress.setSecond(timeSyncHelper.Up(now.getSecond(), resumeTime.getFirst(), resumeTime.getSecond()));
+            progress.setFirst(resumeTime.getFirst());
+            progress.setSecond(resumeTime.getSecond());
         }
 
         //considered the maximum time progress:
@@ -40,10 +43,6 @@ public class HybridRebecaEnvSync1SOSRule extends AbstractHybridSOSRule<HybridReb
                 new HybridRebecaDeterministicTransition<HybridRebecaActorState>();
         result.setAction(action);
         result.setDestination(backup);
-
-        if (progress.getSecond() == null) {
-            System.out.println();
-        }
 
         return result;
     }
