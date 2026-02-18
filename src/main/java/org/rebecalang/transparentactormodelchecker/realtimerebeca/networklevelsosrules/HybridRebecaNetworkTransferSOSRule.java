@@ -69,7 +69,7 @@ public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<Hy
 
 //                    interleaving case
                     if (message.getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue() &&
-                            (now.getFirst().floatValue() < secondMinETA && now.getSecond().floatValue() < secondMinETA)
+                            (now.getFirst().floatValue() < secondMinETA && secondMinETA < now.getSecond().floatValue() )
                     ) {
                         HybridRebecaNetworkState backup2 = HybridRebecaStateSerializationUtils.clone(source);
                         HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> clonedMap = new HashMap<>();
@@ -91,7 +91,7 @@ public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<Hy
                     //postpone case
                     if (message.getMessageArrivalInterval().getFirst().floatValue() == source.getNow().getFirst().floatValue() &&
                             source.getNow().getSecond().floatValue() < message.getMessageArrivalInterval().getSecond().floatValue() &&
-                            !(now.getFirst().floatValue() < secondMinETA && now.getSecond().floatValue() < secondMinETA)
+                            !(now.getFirst().floatValue() < secondMinETA && secondMinETA < now.getSecond().floatValue() )
                     ) {
 
                         HybridRebecaNetworkState backup3 = HybridRebecaStateSerializationUtils.clone(source);

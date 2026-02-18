@@ -15,13 +15,14 @@ public class HybridRebecaEnvSync2SOSRule extends AbstractHybridSOSRule<HybridReb
 
     @Override
     public HybridRebecaAbstractTransition<HybridRebecaActorState> applyRule(HybridRebecaActorState source) {
+        Pair<Float, Float> now = source.getNow();
 //        TODO: check it here?? or somewhere at a higher level
         if (!source.isSuspent() && source.messageQueueIsEmpty()) {
 
         }
         HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
-        float lowerBound = source.getNow().getFirst().floatValue();
         float upperBound = Float.MAX_VALUE;
+        float lowerBound = Float.MAX_VALUE;
         backup.setNow(new Pair<>(lowerBound, upperBound));
         HybridRebecaDeterministicTransition<HybridRebecaActorState> result = new HybridRebecaDeterministicTransition<>();
         result.setDestination(backup);

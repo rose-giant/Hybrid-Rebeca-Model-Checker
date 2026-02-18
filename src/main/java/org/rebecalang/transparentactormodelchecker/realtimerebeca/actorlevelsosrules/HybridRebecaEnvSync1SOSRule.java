@@ -8,7 +8,6 @@ import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsyst
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.utils.HybridRebecaStateSerializationUtils;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.utils.TimeSyncHelper;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,18 +17,14 @@ public class HybridRebecaEnvSync1SOSRule extends AbstractHybridSOSRule<HybridReb
         HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source);
         Pair<Float, Float> now = backup.getNow();
         Pair<Float, Float> resumeTime = backup.getResumeTime();
-        Pair<Float, Float> progress = new Pair<>(0f, 0f);
+        Pair<Float, Float> progress = new Pair<>();
 
-        TimeSyncHelper timeSyncHelper = new TimeSyncHelper();
-
-        progress.setFirst(now.getSecond());
         if (
                 (now.getFirst().floatValue() != resumeTime.getFirst().floatValue()) ||
                 (now.getFirst().floatValue() == resumeTime.getFirst().floatValue() &&
                         now.getFirst().floatValue() == now.getSecond().floatValue() &&
                         resumeTime.getFirst().floatValue() != resumeTime.getSecond().floatValue())
         ) {
-//            progress.setSecond(timeSyncHelper.Up(now.getSecond(), resumeTime.getFirst(), resumeTime.getSecond()));
             progress.setFirst(resumeTime.getFirst());
             progress.setSecond(resumeTime.getSecond());
         }

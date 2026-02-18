@@ -34,14 +34,17 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         }
 
         // compute the correct intersection
-        float left = source.getNow().getSecond().floatValue();
+        float left = Float.MAX_VALUE;
         float right = Float.MAX_VALUE;
         for (Pair<Float, Float> interval: progressIntervals) {
-            if (interval.getSecond() == null) {
-                System.out.println();
-            }
             if (interval.getSecond() < right) {
                 right = interval.getSecond();
+            }
+        }
+
+        for (Pair<Float, Float> interval: progressIntervals) {
+            if (interval.getSecond() < left) {
+                left = interval.getFirst();
             }
         }
 
