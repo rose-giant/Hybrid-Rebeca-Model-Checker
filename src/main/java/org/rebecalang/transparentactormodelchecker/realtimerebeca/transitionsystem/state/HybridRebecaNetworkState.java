@@ -106,9 +106,9 @@ public class HybridRebecaNetworkState implements Serializable {
                 }
             }
         }
-        if (secondMin == Float.MAX_VALUE) {
-            return null; // or new Pair<>(min, null) depending on your semantics
-        }
+//        if (secondMin == Float.MAX_VALUE) {
+//            return null; // or new Pair<>(min, null) depending on your semantics
+//        }
         return new Pair<>(min, secondMin);
     }
 

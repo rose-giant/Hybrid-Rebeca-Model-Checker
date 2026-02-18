@@ -22,7 +22,7 @@ public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<Hy
         float secondMinETA = source.getSecondMinETA();
         Pair<Float, Float> now = source.getNow();
         Pair<Float, Float> bounds = source.getTwoSmallestDistinctETAs();
-        float firstB = bounds.getFirst();
+//        float firstB = bounds.getFirst();
         float secondB = bounds.getSecond();
 
         //Nondeterministic case of both transfer and postpone
@@ -80,7 +80,8 @@ public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<Hy
                         ArrayList<HybridRebecaMessage> ms = clonedMap.get(entry.getKey());
                         ms.remove(message); // safe: source is untouched
                         HybridRebecaMessage clonedMessage = HybridRebecaStateSerializationUtils.clone(message);
-                        clonedMessage.setMessageArrivalInterval(new Pair<>(secondB, message.getMessageArrivalInterval().getSecond()));
+                        clonedMessage.setMessageArrivalInterval(new Pair<>(secondB, message.getMessageArrivalInterval().getSecond().floatValue()));
+//                        clonedMessage.setMessageArrivalInterval(new Pair<>(message.getMessageArrivalInterval().getSecond().floatValue(), now.getSecond().floatValue()));
                         ms.add(clonedMessage);
                         clonedMap.put(entry.getKey(), ms);
                         backup2.setReceivedMessages(clonedMap);
@@ -103,7 +104,8 @@ public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<Hy
                         ArrayList<HybridRebecaMessage> ms = clonedMap.get(entry.getKey());
                         ms.remove(message); // safe: source is untouched
                         HybridRebecaMessage clonedMessage = HybridRebecaStateSerializationUtils.clone(message);
-                        clonedMessage.setMessageArrivalInterval(new Pair<>(secondB, message.getMessageArrivalInterval().getSecond()));
+//                        clonedMessage.setMessageArrivalInterval(new Pair<>(secondB, message.getMessageArrivalInterval().getSecond()));
+                        clonedMessage.setMessageArrivalInterval(new Pair<>(now.getSecond().floatValue(), message.getMessageArrivalInterval().getSecond().floatValue()));
                         ms.add(clonedMessage);
                         clonedMap.put(entry.getKey(), ms);
                         backup3.setReceivedMessages(clonedMap);
