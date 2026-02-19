@@ -36,6 +36,7 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         // compute the correct intersection
         float left = Float.MAX_VALUE;
         float right = Float.MAX_VALUE;
+        float maxLeft = Float.MIN_VALUE;
         for (Pair<Float, Float> interval: progressIntervals) {
             if (interval.getSecond() < right) {
                 right = interval.getSecond();
@@ -46,8 +47,13 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
             if (interval.getSecond() < left) {
                 left = interval.getFirst();
             }
+            if (interval.getFirst().floatValue() < right && interval.getFirst().floatValue() != left) {
+                //maxLeft = interval.getFirst();
+                right = interval.getFirst();
+            }
         }
 
+//        right = Math.min(maxLeft, right);
         Pair<Float, Float> newNow = new Pair<>(left, right);
         HybridRebecaNetworkState networkState = source.getNetworkState();
         networkState.setNow(newNow);
@@ -63,6 +69,9 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
             if (!actorState.isSuspent()) {
                 actorState.setResumeTime(newNow);
             }
+//            if (actorState.isSuspent() && actorState.getResumeTime().getFirst().floatValue() < newNow.getFirst().floatValue()) {
+//                actorState.setResumeTime(new Pair<>(newNow.getFirst().floatValue(), actorState.getResumeTime().getSecond().floatValue()));
+//            }
         }
 
         HybridRebecaDeterministicTransition<HybridRebecaSystemState> result = new HybridRebecaDeterministicTransition<>();
@@ -87,7 +96,6 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
                 bounds.add(actorState.getResumeTime().getSecond());
             }
         }
-//        bounds.add(source.getNow().getSecond());
 
         List<Float> uniqueSortedBounds = bounds.stream().distinct().sorted().toList();
         bounds.clear();
@@ -99,15 +107,19 @@ public class HybridRebecaCompositionLevelEnvProgressSOSRule extends AbstractHybr
         float right = Float.MAX_VALUE;
 
         if (bounds.size() > 1) {
-            if (backup.getNow().getFirst().floatValue() == bounds.get(0).floatValue() && backup.getNow().getSecond().floatValue() != 0) {
-                left = bounds.get(1);
-                right = bounds.get(2);
-            } else {
+//            if (backup.getNow().getFirst().floatValue() == bounds.get(0).floatValue() && backup.getNow().getSecond().floatValue() != 0) {
+//                left = bounds.get(1);
+//                right = bounds.get(2);
+//            } else
+            {
                 left = bounds.get(0);
                 right = bounds.get(1);
             }
         }
-//        if (bounds.size() == 1) left = bounds.get(0);
+//        if (left < Float.MAX_VALUE)
+//            left = Math.round(left * 10f) / 10f;
+//        if (right < Float.MAX_VALUE)
+//            right = Math.round(right * 10f) / 10f;
 
         Pair<Float, Float> newNow = new Pair<>(left, right);
         networkState.setNow(newNow);

@@ -80,7 +80,7 @@ public class HybridRebecaNetworkTransferSOSRule extends AbstractHybridSOSRule<Hy
                         ArrayList<HybridRebecaMessage> ms = clonedMap.get(entry.getKey());
                         ms.remove(message); // safe: source is untouched
                         HybridRebecaMessage clonedMessage = HybridRebecaStateSerializationUtils.clone(message);
-                        clonedMessage.setMessageArrivalInterval(new Pair<>(secondB, message.getMessageArrivalInterval().getSecond().floatValue()));
+                        clonedMessage.setMessageArrivalInterval(new Pair<>(secondB, now.getSecond().floatValue()));
 //                        clonedMessage.setMessageArrivalInterval(new Pair<>(message.getMessageArrivalInterval().getSecond().floatValue(), now.getSecond().floatValue()));
                         ms.add(clonedMessage);
                         clonedMap.put(entry.getKey(), ms);

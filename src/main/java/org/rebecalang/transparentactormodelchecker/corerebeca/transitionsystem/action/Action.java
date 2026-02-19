@@ -7,6 +7,13 @@ public abstract class Action {
 			return "tau";
 		}
 	};
+
+	public final static Action Resume = new Action() {
+		@Override
+		public String getActionLable() {
+			return "resume";
+		}
+	};
 	
 	public abstract String getActionLable();
 }

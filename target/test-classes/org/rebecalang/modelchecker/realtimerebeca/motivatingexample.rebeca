@@ -18,7 +18,7 @@ reactiveclass Alarm(2) {
     Alarm() {}
 
     msgsrv notify() {
-        count = 3;
+        count = 2;
         self.beep();
     }
 
@@ -44,15 +44,15 @@ reactiveclass AbstractSensor(2) {
     }
 
     msgsrv trigger() {
-         temp = ?(18, 19);
-        //temp = 18.2;
+        temp = ?(18, 19);
         delay(1,2);
         c.control(temp) after (0.5,1);
-
         temp = ?(21, 23);
         delay(2,5);
-        //temp = ?()
+        self.donothing();
     }
+
+    msgsrv donothing(){}
 }
 
 main {

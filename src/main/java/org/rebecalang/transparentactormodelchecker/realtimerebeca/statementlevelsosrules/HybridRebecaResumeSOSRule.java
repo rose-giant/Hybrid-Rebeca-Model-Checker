@@ -22,7 +22,7 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
         Pair<Float, Float> now = source.getFirst().getNow();
         Pair<Float, Float> resumeTime = source.getFirst().getResumeTime();
         if (resumeTime.getFirst().floatValue() == now.getFirst().floatValue() &&
-                now.getSecond().floatValue() > resumeTime.getSecond().floatValue() ) {
+                now.getSecond().floatValue() < resumeTime.getSecond().floatValue() ) {
             HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result = new HybridRebecaNondeterministicTransition<>();
             HybridRebecaActorState backup1 = HybridRebecaStateSerializationUtils.clone(source.getFirst());
             backup1.setSuspent(false);
@@ -36,11 +36,14 @@ public class HybridRebecaResumeSOSRule extends AbstractHybridSOSRule<Pair<Hybrid
             backup2.setSuspent(true);
             Pair<HybridRebecaActorState, InstructionBean> newSource2 = new Pair<>(backup2, source.getSecond());
             result.addDestination(Action.TAU, newSource2);
-//            System.out.println("Resume and Postpone" + backup2.getResumeTime() + backup1.getResumeTime());
+//            System.out.println("Resume and Postpone" + backup2.getResumeTime() + backup1.getResumeTime() + " now is " + backup1.getNow());
             return result;
         }
+
+//        if ((resumeTime.getFirst().floatValue() >= now.getFirst().floatValue())
+//                && (now.getSecond().floatValue() > resumeTime.getFirst().floatValue()) ) {
         if ((resumeTime.getFirst().floatValue() == now.getFirst().floatValue())
-                && (now.getSecond().floatValue() <= resumeTime.getSecond().floatValue()) ) {
+                && (now.getSecond().floatValue() >= resumeTime.getSecond().floatValue()) ) {
             HybridRebecaActorState backup = HybridRebecaStateSerializationUtils.clone(source.getFirst());
             backup.setResumeTime(backup.getNow());
             backup.setSuspent(false);
