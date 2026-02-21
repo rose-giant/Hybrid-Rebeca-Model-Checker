@@ -143,11 +143,9 @@ public class ApplySystemLevelRules {
             return result;
         }
 
-        RealTimeRebecaNetworkEnvSync3SOSRule networkEnvSync3SOSRule = new RealTimeRebecaNetworkEnvSync3SOSRule();
         // ===== network delivery =====
         if (!state.getNetworkState().getReceivedMessages().isEmpty()) {
             result = networkDeliverySOSRule.applyRule(state);
-//            HybridRebecaAbstractTransition<HybridRebecaNetworkState> result2 = networkEnvSync3SOSRule.applyRule(state.getNetworkState());
             if (result != null) {
                 return result;
             }
@@ -155,7 +153,8 @@ public class ApplySystemLevelRules {
 
         // ===== environment progress =====
         RealTimeRebecaCompositionLevelEnvProgressSOSRule envRule = new RealTimeRebecaCompositionLevelEnvProgressSOSRule();
-        return envRule.applyRule(state);
+        result = envRule.applyRule(state);
+        return result;
     }
 
     public boolean systemCanExecuteStatements(RealTimeRebecaSystemState initialState) {

@@ -21,14 +21,11 @@ public class RealTimeRebecaDelaySOSRule extends AbstractRealTimeSOSRule<Pair<Rea
         Float delayUpperBound = (float) 0;
         if (delayParam instanceof ContnuousNonDetInstructionBean) {
             ContnuousNonDetInstructionBean delayInterval = (ContnuousNonDetInstructionBean) delayParam;
-//            Object a = delayInterval.getLowerBound().toString();
-//            Object b = delayInterval.getUpperBound().getClass();
             delayLowerBound = Float.parseFloat(delayInterval.getLowerBound().toString());
             delayUpperBound = Float.parseFloat(delayInterval.getUpperBound().toString());
         }
 
         source.getFirst().setResumeTime(new Pair<>(source.getFirst().getResumeTime().getFirst() + delayLowerBound, source.getFirst().getResumeTime().getSecond() + delayUpperBound));
-//        System.out.println(source.getFirst().getId() + ", " +  source.getFirst().getResumeTime());
         RealTimeRebecaDeterministicTransition<Pair<RealTimeRebecaActorState, InstructionBean>> result =
                 new RealTimeRebecaDeterministicTransition<Pair<RealTimeRebecaActorState,InstructionBean>>();
 

@@ -2,9 +2,14 @@ package org.rebecalang.transparentactormodelchecker.realtimerebeca.compositionle
 
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.EndMethodInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.JumpIfNotInstructionBean;
+import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.PushARInstructionBean;
 import org.rebecalang.transparentactormodelchecker.AbstractRealTimeSOSRule;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.actorlevelsosrules.RealTimeRebecaInternalProgressSOSRule;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.networklevelsosrules.RealTimeRebecaNetworkReceiveSOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.statementlevelsosrules.RealTimeRebecaResumeSOSRule;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
@@ -35,9 +40,19 @@ public class RealTimeRebecaCompositionLevelExecuteStatementSOSRule extends Abstr
     public RealTimeRebecaAbstractTransition<RealTimeRebecaSystemState> applyRule(RealTimeRebecaSystemState source) {
         ArrayList<RealTimeRebecaAbstractTransition> transitions = new ArrayList<>();
         RealTimeRebecaSystemState backup = HybridRebecaStateSerializationUtils.clone(source);
-            for(String actorId : backup.getActorsState().keySet()) {
+
+        for(String actorId : backup.getActorsState().keySet()) {
                 RealTimeRebecaActorState realTimeRebecaActorState = source.getActorState(actorId);
                 realTimeRebecaActorState.setNow(source.getNow());
+//                if (realTimeRebecaActorState.isSuspent()) {
+//                    EndMethodInstructionBean endMethodInstructionBean = new EndMethodInstructionBean();
+//                    RealTimeRebecaResumeSOSRule rebecaResumeSOSRule = new RealTimeRebecaResumeSOSRule();
+//                    RealTimeRebecaAbstractTransition<Pair<RealTimeRebecaActorState, InstructionBean>> executionResult2 =
+//                            rebecaResumeSOSRule.applyRule(new Pair<>(realTimeRebecaActorState, endMethodInstructionBean));
+//                    if (executionResult2 != null) {
+//
+//                    }
+//                }
                 if (realTimeRebecaActorState.noScopeInstructions()) {
                     continue;
                 }

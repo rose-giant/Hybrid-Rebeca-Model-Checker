@@ -56,6 +56,7 @@ public class RealTimeRebecaResumeSOSRule extends AbstractRealTimeSOSRule<Pair<Re
             return transitions.get(0);
         }
 
+        if (transitions.isEmpty()) return null;
         //TODO: what if none is applicable?
         RealTimeRebecaDeterministicTransition<Pair<RealTimeRebecaActorState, InstructionBean>> result = new RealTimeRebecaDeterministicTransition<>();
         result.setAction(null);
