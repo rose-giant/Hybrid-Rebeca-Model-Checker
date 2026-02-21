@@ -1,37 +1,37 @@
 package org.rebecalang.transparentactormodelchecker;
 
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaSystemState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaSystemState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaAbstractTransition;
 
 import java.util.ArrayList;
 
 public class AbstractTransparentActorState {
-    private HybridRebecaSystemState systemState = new HybridRebecaSystemState();
-    private HybridRebecaAbstractTransition abstractTransition;
-    private ArrayList<HybridRebecaAbstractTransition> transitions = new ArrayList<>();
+    private RealTimeRebecaSystemState systemState = new RealTimeRebecaSystemState();
+    private RealTimeRebecaAbstractTransition abstractTransition;
+    private ArrayList<RealTimeRebecaAbstractTransition> transitions = new ArrayList<>();
 
-    public void addTransition(HybridRebecaAbstractTransition<HybridRebecaSystemState> transition) {
+    public void addTransition(RealTimeRebecaAbstractTransition<RealTimeRebecaSystemState> transition) {
         transitions.add(transition);
     }
 
-    public void AbstractTransparentActorState(HybridRebecaSystemState newSystemState, HybridRebecaAbstractTransition newAbstractTransition) {
+    public void AbstractTransparentActorState(RealTimeRebecaSystemState newSystemState, RealTimeRebecaAbstractTransition newAbstractTransition) {
         systemState = newSystemState;
         abstractTransition = newAbstractTransition;
     }
 
-    public HybridRebecaAbstractTransition getAbstractTransition() {
+    public RealTimeRebecaAbstractTransition getAbstractTransition() {
         return abstractTransition;
     }
 
-    public void setAbstractTransition(HybridRebecaAbstractTransition abstractTransition) {
+    public void setAbstractTransition(RealTimeRebecaAbstractTransition abstractTransition) {
         this.abstractTransition = abstractTransition;
     }
 
-    public HybridRebecaSystemState getSystemState() {
+    public RealTimeRebecaSystemState getSystemState() {
         return systemState;
     }
 
-    public void setSystemState(HybridRebecaSystemState systemState) {
+    public void setSystemState(RealTimeRebecaSystemState systemState) {
         this.systemState = systemState;
     }
 }

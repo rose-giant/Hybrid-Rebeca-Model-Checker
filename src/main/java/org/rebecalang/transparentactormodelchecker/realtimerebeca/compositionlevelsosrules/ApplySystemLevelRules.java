@@ -2,45 +2,46 @@ package org.rebecalang.transparentactormodelchecker.realtimerebeca.compositionle
 
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.transparentactormodelchecker.TransparentActorStateSpace;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.statementlevelsosrules.HybridRebecaResumeSOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.networklevelsosrules.RealTimeRebecaNetworkEnvSync3SOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.statementlevelsosrules.RealTimeRebecaResumeSOSRule;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.action.Action;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.action.MessageAction;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.action.TimeProgressAction;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaSystemState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaSystemState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaAbstractTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaDeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaNondeterministicTransition;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.utils.HybridRebecaStateSerializationUtils;
 
 import java.util.*;
 
 public class ApplySystemLevelRules {
-    Map<HybridRebecaSystemState, Integer> stateIds = new IdentityHashMap<>();
+    Map<RealTimeRebecaSystemState, Integer> stateIds = new IdentityHashMap<>();
     int nextStateId = 0;
 
-    private int getStateId(HybridRebecaSystemState s) {
+    private int getStateId(RealTimeRebecaSystemState s) {
         return stateIds.computeIfAbsent(s, k -> nextStateId++);
     }
 
-    ArrayList<HybridRebecaSystemState> states = new ArrayList<>();
+    ArrayList<RealTimeRebecaSystemState> states = new ArrayList<>();
     TransparentActorStateSpace transparentActorStateSpace = new TransparentActorStateSpace();
-    HybridRebecaSystemState initialState;
-    public ApplySystemLevelRules(HybridRebecaSystemState initialState) {
-        levelExecuteStatementSOSRule = new HybridRebecaCompositionLevelExecuteStatementSOSRule();
+    RealTimeRebecaSystemState initialState;
+    public ApplySystemLevelRules(RealTimeRebecaSystemState initialState) {
+        levelExecuteStatementSOSRule = new RealTimeRebecaCompositionLevelExecuteStatementSOSRule();
         this.initialState = initialState;
         startApplyingRules(initialState);
         dot.writeToFile("output.dot");
         System.out.println(currentStateIdx);
     }
 
-    HybridRebecaCompositionLevelExecuteStatementSOSRule levelExecuteStatementSOSRule;
-    HybridRebecaCompositionLevelNetworkDeliverySOSRule networkDeliverySOSRule =
-            new HybridRebecaCompositionLevelNetworkDeliverySOSRule();
+    RealTimeRebecaCompositionLevelExecuteStatementSOSRule levelExecuteStatementSOSRule;
+    RealTimeRebecaCompositionLevelNetworkDeliverySOSRule networkDeliverySOSRule =
+            new RealTimeRebecaCompositionLevelNetworkDeliverySOSRule();
 
-    public void startApplyingRules(HybridRebecaSystemState initialState) {
-        HybridRebecaDeterministicTransition<HybridRebecaSystemState> t =
-                new HybridRebecaDeterministicTransition<>();
+    public void startApplyingRules(RealTimeRebecaSystemState initialState) {
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState> t =
+                new RealTimeRebecaDeterministicTransition<>();
 
         t.setDestination(initialState);
         t.setAction(Action.TAU);
@@ -55,7 +56,7 @@ public class ApplySystemLevelRules {
             int sourceId,
             String transitionType,
             Object action,
-            HybridRebecaSystemState destState
+            RealTimeRebecaSystemState destState
     ) {
         int destId = getStateId(destState);
         currentStateIdx++;
@@ -71,33 +72,33 @@ public class ApplySystemLevelRules {
         dot.addTransition(sourceId, transitionType, actionStr, destId);
     }
 
-    public void runSystemRules(HybridRebecaSystemState sourceState,
-            HybridRebecaAbstractTransition<HybridRebecaSystemState> executionResult) {
+    public void runSystemRules(RealTimeRebecaSystemState sourceState,
+                               RealTimeRebecaAbstractTransition<RealTimeRebecaSystemState> executionResult) {
 
-        if (executionResult instanceof HybridRebecaDeterministicTransition) {
-            HybridRebecaDeterministicTransition<HybridRebecaSystemState> t =
-                    (HybridRebecaDeterministicTransition<HybridRebecaSystemState>) executionResult;
-            HybridRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(t.getDestination());
+        if (executionResult instanceof RealTimeRebecaDeterministicTransition) {
+            RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState> t =
+                    (RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState>) executionResult;
+            RealTimeRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(t.getDestination());
             printState(getStateId(sourceState), "", t.getAction(), dest);
             if (dest.getNow().getFirst() >= dest.getInputInterval().getSecond()) {
                 return;
             }
 
-            HybridRebecaAbstractTransition<HybridRebecaSystemState> next = runApplicableRule(dest);
+            RealTimeRebecaAbstractTransition<RealTimeRebecaSystemState> next = runApplicableRule(dest);
             runSystemRules(dest, next);
         }
 
-        else if (executionResult instanceof HybridRebecaNondeterministicTransition) {
-            HybridRebecaNondeterministicTransition<HybridRebecaSystemState> t =
-                    (HybridRebecaNondeterministicTransition<HybridRebecaSystemState>) executionResult;
+        else if (executionResult instanceof RealTimeRebecaNondeterministicTransition) {
+            RealTimeRebecaNondeterministicTransition<RealTimeRebecaSystemState> t =
+                    (RealTimeRebecaNondeterministicTransition<RealTimeRebecaSystemState>) executionResult;
 
             int sourceId = getStateId(sourceState);
 
-            List<HybridRebecaSystemState> successors = new ArrayList<>();
+            List<RealTimeRebecaSystemState> successors = new ArrayList<>();
 
             // Phase 1: print all nondet edges
-            for (Pair<? extends Action, HybridRebecaSystemState> p : t.getDestinations()) {
-                HybridRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(p.getSecond());
+            for (Pair<? extends Action, RealTimeRebecaSystemState> p : t.getDestinations()) {
+                RealTimeRebecaSystemState dest = HybridRebecaStateSerializationUtils.clone(p.getSecond());
                 printState(sourceId, "", p.getFirst(), dest);
                 if (dest.getNow().getFirst() <= dest.getInputInterval().getSecond()) {
                     successors.add(dest);
@@ -105,8 +106,8 @@ public class ApplySystemLevelRules {
             }
 
             // Phase 2: explore
-            for (HybridRebecaSystemState dest : successors) {
-                HybridRebecaAbstractTransition<HybridRebecaSystemState> next = runApplicableRule(dest);
+            for (RealTimeRebecaSystemState dest : successors) {
+                RealTimeRebecaAbstractTransition<RealTimeRebecaSystemState> next = runApplicableRule(dest);
                 runSystemRules(dest, next);
             }
         }
@@ -114,12 +115,12 @@ public class ApplySystemLevelRules {
     }
 
     int currentStateIdx = 0;
-    public HybridRebecaAbstractTransition<HybridRebecaSystemState> runApplicableRule(HybridRebecaSystemState state) {
-        HybridRebecaAbstractTransition<HybridRebecaSystemState> result;
+    public RealTimeRebecaAbstractTransition<RealTimeRebecaSystemState> runApplicableRule(RealTimeRebecaSystemState state) {
+        RealTimeRebecaAbstractTransition<RealTimeRebecaSystemState> result;
 
         // ===== highest priority: resume =====
         if (state.thereIsSuspension()) {
-            HybridRebecaResumeSOSRule rule = new HybridRebecaResumeSOSRule();
+            RealTimeRebecaResumeSOSRule rule = new RealTimeRebecaResumeSOSRule();
             result = rule.systemLevelResumePostpone(state);
             if (result != null) {
                 return result;
@@ -135,31 +136,32 @@ public class ApplySystemLevelRules {
         }
 
         // ===== take message =====
-        HybridRebecaCompositionLevelTakeMessageSOSRule takeRule =
-                new HybridRebecaCompositionLevelTakeMessageSOSRule();
+        RealTimeRebecaCompositionLevelTakeMessageSOSRule takeRule =
+                new RealTimeRebecaCompositionLevelTakeMessageSOSRule();
         result = takeRule.applyRule(state);
         if (result != null) {
             return result;
         }
 
+        RealTimeRebecaNetworkEnvSync3SOSRule networkEnvSync3SOSRule = new RealTimeRebecaNetworkEnvSync3SOSRule();
         // ===== network delivery =====
         if (!state.getNetworkState().getReceivedMessages().isEmpty()) {
             result = networkDeliverySOSRule.applyRule(state);
+//            HybridRebecaAbstractTransition<HybridRebecaNetworkState> result2 = networkEnvSync3SOSRule.applyRule(state.getNetworkState());
             if (result != null) {
                 return result;
             }
         }
 
         // ===== environment progress =====
-        HybridRebecaCompositionLevelEnvProgressSOSRule envRule =
-                new HybridRebecaCompositionLevelEnvProgressSOSRule();
+        RealTimeRebecaCompositionLevelEnvProgressSOSRule envRule = new RealTimeRebecaCompositionLevelEnvProgressSOSRule();
         return envRule.applyRule(state);
     }
 
-    public boolean systemCanExecuteStatements(HybridRebecaSystemState initialState) {
+    public boolean systemCanExecuteStatements(RealTimeRebecaSystemState initialState) {
         for(String actorId : initialState.getActorsState().keySet()) {
-            HybridRebecaActorState hybridRebecaActorState = initialState.getActorState(actorId);
-            if (!hybridRebecaActorState.noScopeInstructions() && !hybridRebecaActorState.isSuspent()) {
+            RealTimeRebecaActorState realTimeRebecaActorState = initialState.getActorState(actorId);
+            if (!realTimeRebecaActorState.noScopeInstructions() && !realTimeRebecaActorState.isSuspent()) {
                 return true;
             }
         }

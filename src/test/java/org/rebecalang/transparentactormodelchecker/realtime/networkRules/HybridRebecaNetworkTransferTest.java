@@ -2,12 +2,12 @@ package org.rebecalang.transparentactormodelchecker.realtime.networkRules;
 
 import org.junit.jupiter.api.Test;
 import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.networklevelsosrules.HybridRebecaNetworkTransferSOSRule;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaMessage;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaNetworkState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.networklevelsosrules.RealTimeRebecaNetworkTransferSOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaMessage;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaNetworkState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaDeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaNondeterministicTransition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,44 +16,44 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HybridRebecaNetworkTransferTest {
-    HybridRebecaNetworkTransferSOSRule hybridRebecaNetworkTransferSOSRule =
-            new HybridRebecaNetworkTransferSOSRule();
-    HybridRebecaNetworkState hybridRebecaNetworkState = new HybridRebecaNetworkState();
-    HybridRebecaActorState hybridRebecaActorState1 = new HybridRebecaActorState("actor1");
-    HybridRebecaActorState hybridRebecaActorState2 = new HybridRebecaActorState("actor2");
-    HybridRebecaMessage hybridRebecaMessage = new HybridRebecaMessage();
-    HybridRebecaMessage hybridRebecaMessage2 = new HybridRebecaMessage();
-    HybridRebecaMessage hybridRebecaMessage3 = new HybridRebecaMessage();
-    ArrayList<HybridRebecaMessage> messagesArrayList = new ArrayList<>();
-    ArrayList<HybridRebecaMessage> messagesArrayList2 = new ArrayList<>();
+    RealTimeRebecaNetworkTransferSOSRule realTimeRebecaNetworkTransferSOSRule =
+            new RealTimeRebecaNetworkTransferSOSRule();
+    RealTimeRebecaNetworkState realTimeRebecaNetworkState = new RealTimeRebecaNetworkState();
+    RealTimeRebecaActorState realTimeRebecaActorState1 = new RealTimeRebecaActorState("actor1");
+    RealTimeRebecaActorState realTimeRebecaActorState2 = new RealTimeRebecaActorState("actor2");
+    RealTimeRebecaMessage realTimeRebecaMessage = new RealTimeRebecaMessage();
+    RealTimeRebecaMessage realTimeRebecaMessage2 = new RealTimeRebecaMessage();
+    RealTimeRebecaMessage realTimeRebecaMessage3 = new RealTimeRebecaMessage();
+    ArrayList<RealTimeRebecaMessage> messagesArrayList = new ArrayList<>();
+    ArrayList<RealTimeRebecaMessage> messagesArrayList2 = new ArrayList<>();
 
     @Test
     public void GivenOneMessageInNetworkBufferAndBothTransferAndPostponeAreApplicable() {
         Pair<Float, Float> now = new Pair<>((float)1, (float)4);
-        hybridRebecaNetworkState.setNow(now);
+        realTimeRebecaNetworkState.setNow(now);
 
-        hybridRebecaMessage.setSender(hybridRebecaActorState1);
-        hybridRebecaMessage.setReceiver(hybridRebecaActorState2);
-        hybridRebecaMessage.setName("happiness");
+        realTimeRebecaMessage.setSender(realTimeRebecaActorState1);
+        realTimeRebecaMessage.setReceiver(realTimeRebecaActorState2);
+        realTimeRebecaMessage.setName("happiness");
         Pair<Float, Float> arrivalTime = new Pair<>((float)1, (float)5);
-        hybridRebecaMessage.setMessageArrivalInterval(arrivalTime);
+        realTimeRebecaMessage.setMessageArrivalInterval(arrivalTime);
         Pair<Float, Float> arrivalTime2 = new Pair<>((float)2, (float)4);
 //        Pair<Float, Float> arrivalTime3 = new Pair<>((float)12, (float)14);
-        hybridRebecaMessage2.setMessageArrivalInterval(arrivalTime2);
+        realTimeRebecaMessage2.setMessageArrivalInterval(arrivalTime2);
 //        hybridRebecaMessage3.setMessageArrivalInterval(arrivalTime3);
-        messagesArrayList.add(hybridRebecaMessage);
-        messagesArrayList2.add(hybridRebecaMessage2);
+        messagesArrayList.add(realTimeRebecaMessage);
+        messagesArrayList2.add(realTimeRebecaMessage2);
 //        messagesArrayList2.add(hybridRebecaMessage3);
-        Pair<String, String> senderReceiver = new Pair<>(hybridRebecaActorState1.getId(), hybridRebecaActorState2.getId());
-        Pair<String, String> senderReceiver2 = new Pair<>(hybridRebecaActorState2.getId(), hybridRebecaActorState1.getId());
+        Pair<String, String> senderReceiver = new Pair<>(realTimeRebecaActorState1.getId(), realTimeRebecaActorState2.getId());
+        Pair<String, String> senderReceiver2 = new Pair<>(realTimeRebecaActorState2.getId(), realTimeRebecaActorState1.getId());
 
-        HashMap<Pair<String, String>,ArrayList<HybridRebecaMessage>> messages = new HashMap<>();
+        HashMap<Pair<String, String>,ArrayList<RealTimeRebecaMessage>> messages = new HashMap<>();
         messages.put(senderReceiver, messagesArrayList);
         messages.put(senderReceiver2, messagesArrayList2);
-        hybridRebecaNetworkState.setReceivedMessages(messages);
-        HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> result =
-                (HybridRebecaNondeterministicTransition<HybridRebecaNetworkState>)
-                        hybridRebecaNetworkTransferSOSRule.applyRule(hybridRebecaNetworkState);
+        realTimeRebecaNetworkState.setReceivedMessages(messages);
+        RealTimeRebecaNondeterministicTransition<RealTimeRebecaNetworkState> result =
+                (RealTimeRebecaNondeterministicTransition<RealTimeRebecaNetworkState>)
+                        realTimeRebecaNetworkTransferSOSRule.applyRule(realTimeRebecaNetworkState);
 
         assertTrue(result.getDestinations().size() == 3);
     }
@@ -61,57 +61,57 @@ public class HybridRebecaNetworkTransferTest {
     @Test
     public void GivenOneMessageInNetworkBufferAndTransferIsOnlyApplicable() {
         Pair<Float, Float> now = new Pair<>((float)1, (float)3);
-        hybridRebecaNetworkState.setNow(now);
+        realTimeRebecaNetworkState.setNow(now);
 
-        hybridRebecaMessage.setSender(hybridRebecaActorState1);
-        hybridRebecaMessage.setReceiver(hybridRebecaActorState2);
-        hybridRebecaMessage.setName("happiness");
+        realTimeRebecaMessage.setSender(realTimeRebecaActorState1);
+        realTimeRebecaMessage.setReceiver(realTimeRebecaActorState2);
+        realTimeRebecaMessage.setName("happiness");
         Pair<Float, Float> arrivalTime = new Pair<>((float)1, (float)2);
-        hybridRebecaMessage.setMessageArrivalInterval(arrivalTime);
+        realTimeRebecaMessage.setMessageArrivalInterval(arrivalTime);
         Pair<Float, Float> arrivalTime2 = new Pair<>((float)1, (float)4);
-        hybridRebecaMessage2.setMessageArrivalInterval(arrivalTime2);
-        messagesArrayList.add(hybridRebecaMessage);
-        messagesArrayList2.add(hybridRebecaMessage2);
-        Pair<String, String> senderReceiver = new Pair<>(hybridRebecaActorState1.getId(), hybridRebecaActorState2.getId());
-        Pair<String, String> senderReceiver2 = new Pair<>(hybridRebecaActorState2.getId(), hybridRebecaActorState1.getId());
+        realTimeRebecaMessage2.setMessageArrivalInterval(arrivalTime2);
+        messagesArrayList.add(realTimeRebecaMessage);
+        messagesArrayList2.add(realTimeRebecaMessage2);
+        Pair<String, String> senderReceiver = new Pair<>(realTimeRebecaActorState1.getId(), realTimeRebecaActorState2.getId());
+        Pair<String, String> senderReceiver2 = new Pair<>(realTimeRebecaActorState2.getId(), realTimeRebecaActorState1.getId());
 
-        HashMap<Pair<String, String>,ArrayList<HybridRebecaMessage>> messages = new HashMap<>();
+        HashMap<Pair<String, String>,ArrayList<RealTimeRebecaMessage>> messages = new HashMap<>();
         messages.put(senderReceiver, messagesArrayList);
         messages.put(senderReceiver2, messagesArrayList2);
-        hybridRebecaNetworkState.setReceivedMessages(messages);
-        HybridRebecaDeterministicTransition<HybridRebecaNetworkState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaNetworkState>)
-                        hybridRebecaNetworkTransferSOSRule.applyRule(hybridRebecaNetworkState);
+        realTimeRebecaNetworkState.setReceivedMessages(messages);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaNetworkState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaNetworkState>)
+                        realTimeRebecaNetworkTransferSOSRule.applyRule(realTimeRebecaNetworkState);
         assertEquals( 1, result.getDestination().getReceivedMessages().size());
     }
 
     @Test
     public void GivenTwoMessageInNetworkBufferAndBothTransferAndPostponeAreApplicable() {
         Pair<Float, Float> now = new Pair<>((float)1, (float)3);
-        hybridRebecaNetworkState.setNow(now);
+        realTimeRebecaNetworkState.setNow(now);
 
-        hybridRebecaMessage.setSender(hybridRebecaActorState1);
-        hybridRebecaMessage.setReceiver(hybridRebecaActorState2);
-        hybridRebecaMessage.setName("happiness");
+        realTimeRebecaMessage.setSender(realTimeRebecaActorState1);
+        realTimeRebecaMessage.setReceiver(realTimeRebecaActorState2);
+        realTimeRebecaMessage.setName("happiness");
         Pair<Float, Float> arrivalTime = new Pair<>((float)1, (float)4);
-        hybridRebecaMessage.setMessageArrivalInterval(arrivalTime);
+        realTimeRebecaMessage.setMessageArrivalInterval(arrivalTime);
         Pair<Float, Float> arrivalTime2 = new Pair<>((float)1, (float)4);
-        hybridRebecaMessage2.setMessageArrivalInterval(arrivalTime2);
-        hybridRebecaMessage2.setSender(hybridRebecaActorState2);
-        hybridRebecaMessage2.setReceiver(hybridRebecaActorState1);
+        realTimeRebecaMessage2.setMessageArrivalInterval(arrivalTime2);
+        realTimeRebecaMessage2.setSender(realTimeRebecaActorState2);
+        realTimeRebecaMessage2.setReceiver(realTimeRebecaActorState1);
 
-        messagesArrayList.add(hybridRebecaMessage);
-        messagesArrayList2.add(hybridRebecaMessage2);
-        Pair<String, String> senderReceiver = new Pair<>(hybridRebecaActorState1.getId(), hybridRebecaActorState2.getId());
-        Pair<String, String> senderReceiver2 = new Pair<>(hybridRebecaActorState2.getId(), hybridRebecaActorState1.getId());
+        messagesArrayList.add(realTimeRebecaMessage);
+        messagesArrayList2.add(realTimeRebecaMessage2);
+        Pair<String, String> senderReceiver = new Pair<>(realTimeRebecaActorState1.getId(), realTimeRebecaActorState2.getId());
+        Pair<String, String> senderReceiver2 = new Pair<>(realTimeRebecaActorState2.getId(), realTimeRebecaActorState1.getId());
 
-        HashMap<Pair<String, String>,ArrayList<HybridRebecaMessage>> messages = new HashMap<>();
+        HashMap<Pair<String, String>,ArrayList<RealTimeRebecaMessage>> messages = new HashMap<>();
         messages.put(senderReceiver, messagesArrayList);
         messages.put(senderReceiver2, messagesArrayList2);
-        hybridRebecaNetworkState.setReceivedMessages(messages);
-        HybridRebecaNondeterministicTransition<HybridRebecaNetworkState> result =
-                (HybridRebecaNondeterministicTransition<HybridRebecaNetworkState>)
-                        hybridRebecaNetworkTransferSOSRule.applyRule(hybridRebecaNetworkState);
+        realTimeRebecaNetworkState.setReceivedMessages(messages);
+        RealTimeRebecaNondeterministicTransition<RealTimeRebecaNetworkState> result =
+                (RealTimeRebecaNondeterministicTransition<RealTimeRebecaNetworkState>)
+                        realTimeRebecaNetworkTransferSOSRule.applyRule(realTimeRebecaNetworkState);
 
         assertTrue(result.getDestinations().size() == 4);
     }

@@ -2,62 +2,62 @@ package org.rebecalang.transparentactormodelchecker.realtime.actorLevelRules;
 
 import org.junit.jupiter.api.Test;
 import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.actorlevelsosrules.HybridRebecaEnvSync1SOSRule;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.actorlevelsosrules.HybridRebecaEnvSync2SOSRule;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.actorlevelsosrules.RealTimeRebecaEnvSync1SOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.actorlevelsosrules.RealTimeRebecaEnvSync2SOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaDeterministicTransition;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HybridRebecaEnvSync1Test {
 
-    HybridRebecaActorState hybridRebecaActorState1 = new HybridRebecaActorState("actor1");
-    HybridRebecaEnvSync2SOSRule envSync2SOSRule = new HybridRebecaEnvSync2SOSRule();
+    RealTimeRebecaActorState realTimeRebecaActorState1 = new RealTimeRebecaActorState("actor1");
+    RealTimeRebecaEnvSync2SOSRule envSync2SOSRule = new RealTimeRebecaEnvSync2SOSRule();
 
-    HybridRebecaEnvSync1SOSRule envSync1SOSRule = new HybridRebecaEnvSync1SOSRule();
+    RealTimeRebecaEnvSync1SOSRule envSync1SOSRule = new RealTimeRebecaEnvSync1SOSRule();
 
     @Test
     public void testEnvSync2Result() {
-        hybridRebecaActorState1.setNow(new Pair<>((float) 1, (float) 3));
-        envSync2SOSRule.applyRule(hybridRebecaActorState1);
+        realTimeRebecaActorState1.setNow(new Pair<>((float) 1, (float) 3));
+        envSync2SOSRule.applyRule(realTimeRebecaActorState1);
     }
 
     @Test
     public void testEnvSync1ResultCase1() {
-        hybridRebecaActorState1.setNow(new Pair<>((float) 1, (float) 3));
-        hybridRebecaActorState1.setResumeTime(new Pair<>((float) 3, (float) 4));
+        realTimeRebecaActorState1.setNow(new Pair<>((float) 1, (float) 3));
+        realTimeRebecaActorState1.setResumeTime(new Pair<>((float) 3, (float) 4));
 
-        HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaActorState>) envSync1SOSRule.applyRule(hybridRebecaActorState1);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaActorState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaActorState>) envSync1SOSRule.applyRule(realTimeRebecaActorState1);
 
-        HybridRebecaActorState destination = result.getDestination();
-        assertTrue(destination.getNow().getFirst().floatValue() == hybridRebecaActorState1.getNow().getSecond().floatValue());
-        assertTrue(destination.getNow().getSecond().floatValue() == hybridRebecaActorState1.getResumeTime().getSecond().floatValue());
+        RealTimeRebecaActorState destination = result.getDestination();
+        assertTrue(destination.getNow().getFirst().floatValue() == realTimeRebecaActorState1.getNow().getSecond().floatValue());
+        assertTrue(destination.getNow().getSecond().floatValue() == realTimeRebecaActorState1.getResumeTime().getSecond().floatValue());
     }
 
     @Test
     public void testEnvSync1ResultCase2() {
-        hybridRebecaActorState1.setNow(new Pair<>((float) 1, (float) 2));
-        hybridRebecaActorState1.setResumeTime(new Pair<>((float) 3, (float) 4));
+        realTimeRebecaActorState1.setNow(new Pair<>((float) 1, (float) 2));
+        realTimeRebecaActorState1.setResumeTime(new Pair<>((float) 3, (float) 4));
 
-        HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaActorState>) envSync1SOSRule.applyRule(hybridRebecaActorState1);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaActorState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaActorState>) envSync1SOSRule.applyRule(realTimeRebecaActorState1);
 
-        HybridRebecaActorState destination = result.getDestination();
-        assertTrue(destination.getNow().getFirst().floatValue() == hybridRebecaActorState1.getNow().getSecond().floatValue());
-        assertTrue(destination.getNow().getSecond().floatValue() == hybridRebecaActorState1.getResumeTime().getFirst().floatValue());
+        RealTimeRebecaActorState destination = result.getDestination();
+        assertTrue(destination.getNow().getFirst().floatValue() == realTimeRebecaActorState1.getNow().getSecond().floatValue());
+        assertTrue(destination.getNow().getSecond().floatValue() == realTimeRebecaActorState1.getResumeTime().getFirst().floatValue());
     }
 
     @Test
     public void testEnvSync1ResultCase3() {
-        hybridRebecaActorState1.setNow(new Pair<>((float) 1, (float) 2));
-        hybridRebecaActorState1.setResumeTime(new Pair<>((float) 2, (float) 4));
+        realTimeRebecaActorState1.setNow(new Pair<>((float) 1, (float) 2));
+        realTimeRebecaActorState1.setResumeTime(new Pair<>((float) 2, (float) 4));
 
-        HybridRebecaDeterministicTransition<HybridRebecaActorState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaActorState>) envSync1SOSRule.applyRule(hybridRebecaActorState1);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaActorState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaActorState>) envSync1SOSRule.applyRule(realTimeRebecaActorState1);
 
-        HybridRebecaActorState destination = result.getDestination();
-        assertTrue(destination.getNow().getFirst().floatValue() == hybridRebecaActorState1.getResumeTime().getFirst().floatValue());
-        assertTrue(destination.getNow().getSecond().floatValue() == hybridRebecaActorState1.getResumeTime().getSecond().floatValue());
+        RealTimeRebecaActorState destination = result.getDestination();
+        assertTrue(destination.getNow().getFirst().floatValue() == realTimeRebecaActorState1.getResumeTime().getFirst().floatValue());
+        assertTrue(destination.getNow().getSecond().floatValue() == realTimeRebecaActorState1.getResumeTime().getSecond().floatValue());
     }
 }

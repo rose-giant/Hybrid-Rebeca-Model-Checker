@@ -7,17 +7,17 @@ import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.AssignmentI
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.NonDetValue;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.Variable;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.statementlevelsosrules.HybridRebecaAssignmentSOSRule;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.statementlevelsosrules.RealTimeRebecaAssignmentSOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaNondeterministicTransition;
 
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HybridRebecaAssignmentTest {
-    HybridRebecaAssignmentSOSRule assignmentSOSRule = new HybridRebecaAssignmentSOSRule();
-    HybridRebecaActorState actorState = new HybridRebecaActorState("actor1");
+    RealTimeRebecaAssignmentSOSRule assignmentSOSRule = new RealTimeRebecaAssignmentSOSRule();
+    RealTimeRebecaActorState actorState = new RealTimeRebecaActorState("actor1");
     Object left = new Variable("a");
     // Object leftVarName, Object firstOperand, Object secondOperand, String operator
 //    AssignmentInstructionBean instructionBean = new AssignmentInstructionBean();
@@ -39,9 +39,9 @@ public class HybridRebecaAssignmentTest {
         rightSide.setNondetValues(values);
         actorState.addVariableToScope("a", new Pair<>("a", 0));
         AssignmentInstructionBean instructionBean = new AssignmentInstructionBean(left, rightSide, 1, "=");
-        Pair<HybridRebecaActorState, InstructionBean> input = new Pair<>(actorState, instructionBean);
-        HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>> result =
-                (HybridRebecaNondeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) assignmentSOSRule.applyRule(input);
+        Pair<RealTimeRebecaActorState, InstructionBean> input = new Pair<>(actorState, instructionBean);
+        RealTimeRebecaNondeterministicTransition<Pair<RealTimeRebecaActorState, InstructionBean>> result =
+                (RealTimeRebecaNondeterministicTransition<Pair<RealTimeRebecaActorState, InstructionBean>>) assignmentSOSRule.applyRule(input);
         assertTrue(result.getDestinations().size() == 2);
 
     }

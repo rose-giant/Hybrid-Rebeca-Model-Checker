@@ -67,18 +67,18 @@ public class StateSpaceGenTest {
 
     @Test
     public void messageSerialization() {
-        HybridRebecaMessage message = new HybridRebecaMessage();
-        message.setReceiver(new HybridRebecaActorState("sender"));
-        message.setSender(new HybridRebecaActorState("receiver"));
+        RealTimeRebecaMessage message = new RealTimeRebecaMessage();
+        message.setReceiver(new RealTimeRebecaActorState("sender"));
+        message.setSender(new RealTimeRebecaActorState("receiver"));
         message.setMessageArrivalInterval(new Pair<>((float)1,(float)3));
         message.setName("message");
-        HybridRebecaMessage clone = HybridRebecaStateSerializationUtils.clone(message);
+        RealTimeRebecaMessage clone = HybridRebecaStateSerializationUtils.clone(message);
         System.out.println(clone);
     }
 
     @Test
     public void actorSerialization() {
-        HybridRebecaActorState actorState = new HybridRebecaActorState("actor");
+        RealTimeRebecaActorState actorState = new RealTimeRebecaActorState("actor");
         actorState.addScope("method0");
         actorState.setRilEquivalentActorClass(new RILEquivalentActorClass());
         actorState.setNow(new Pair<>((float)1,(float)3));
@@ -95,38 +95,38 @@ public class StateSpaceGenTest {
 
 //        actorState.setSigma(instructions);
 
-        HybridRebecaActorState clone = HybridRebecaStateSerializationUtils.clone(actorState);
+        RealTimeRebecaActorState clone = HybridRebecaStateSerializationUtils.clone(actorState);
         System.out.println(clone);
 
-        HybridRebecaSystemState systemState = new HybridRebecaSystemState();
+        RealTimeRebecaSystemState systemState = new RealTimeRebecaSystemState();
         systemState.setInputInterval(new Pair<>((float)1,(float)3));
         systemState.setActorState("actor", actorState);
-        systemState.setNetworkState(new HybridRebecaNetworkState());
+        systemState.setNetworkState(new RealTimeRebecaNetworkState());
         systemState.setEnvironment(new Environment());
         systemState.setNow(new Pair<>((float)1,(float)3));
 
-        HybridRebecaSystemState clone2 = HybridRebecaStateSerializationUtils.clone(systemState);
+        RealTimeRebecaSystemState clone2 = HybridRebecaStateSerializationUtils.clone(systemState);
         System.out.println(clone2);
     }
 
     @Test
     public void networkSerialization() {
-        HybridRebecaNetworkState networkState = new HybridRebecaNetworkState();
+        RealTimeRebecaNetworkState networkState = new RealTimeRebecaNetworkState();
         Pair<String, String > firstPair = new Pair<>("sender", "receiver");
-        ArrayList<HybridRebecaMessage> messages = new ArrayList<>();
+        ArrayList<RealTimeRebecaMessage> messages = new ArrayList<>();
 
-        HybridRebecaMessage message = new HybridRebecaMessage();
-        message.setReceiver(new HybridRebecaActorState("sender"));
-        message.setSender(new HybridRebecaActorState("receiver"));
+        RealTimeRebecaMessage message = new RealTimeRebecaMessage();
+        message.setReceiver(new RealTimeRebecaActorState("sender"));
+        message.setSender(new RealTimeRebecaActorState("receiver"));
         message.setMessageArrivalInterval(new Pair<>((float)1,(float)3));
         message.setName("message");
 
         messages.add(message);
 
-        HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> receivedMessages = new HashMap<>();
+        HashMap<Pair<String, String>, ArrayList<RealTimeRebecaMessage>> receivedMessages = new HashMap<>();
         receivedMessages.put(firstPair, messages);
         networkState.setReceivedMessages(receivedMessages);
-        HybridRebecaNetworkState clone_ = HybridRebecaStateSerializationUtils.clone(networkState);
+        RealTimeRebecaNetworkState clone_ = HybridRebecaStateSerializationUtils.clone(networkState);
     }
 
     @Test
@@ -141,9 +141,9 @@ public class StateSpaceGenTest {
 
     @Test
     public void systemStateSerialization() {
-        HybridRebecaSystemState systemState = new HybridRebecaSystemState();
+        RealTimeRebecaSystemState systemState = new RealTimeRebecaSystemState();
 //        HybridRebecaActorState actorState = new HybridRebecaActorState("actor0");
-        HybridRebecaActorState actorState = new HybridRebecaActorState("actor");
+        RealTimeRebecaActorState actorState = new RealTimeRebecaActorState("actor");
 //        actorState.setSigma(new ArrayList<>());
         RILEquivalentActorClass rilEq = new RILEquivalentActorClass();
         ArrayList<InstructionBean> instructions = new ArrayList<>();
@@ -164,23 +164,23 @@ public class StateSpaceGenTest {
 
 //        actorState.setSigma(instructions);
 
-        HybridRebecaMessage message2 = new HybridRebecaMessage();
-        message2.setReceiver(new HybridRebecaActorState("sender"));
-        message2.setSender(new HybridRebecaActorState("receiver"));
+        RealTimeRebecaMessage message2 = new RealTimeRebecaMessage();
+        message2.setReceiver(new RealTimeRebecaActorState("sender"));
+        message2.setSender(new RealTimeRebecaActorState("receiver"));
         message2.setMessageArrivalInterval(new Pair<>((float)1,(float)3));
         message2.setName("message");
         actorState.receiveMessage(message2);
 
-        HybridRebecaNetworkState networkState = new HybridRebecaNetworkState();
+        RealTimeRebecaNetworkState networkState = new RealTimeRebecaNetworkState();
         Pair<String, String > firstPair = new Pair<>("sender", "receiver");
-        ArrayList<HybridRebecaMessage> messages = new ArrayList<>();
-        HybridRebecaMessage message = new HybridRebecaMessage();
-        message.setReceiver(new HybridRebecaActorState("sender"));
-        message.setSender(new HybridRebecaActorState("receiver"));
+        ArrayList<RealTimeRebecaMessage> messages = new ArrayList<>();
+        RealTimeRebecaMessage message = new RealTimeRebecaMessage();
+        message.setReceiver(new RealTimeRebecaActorState("sender"));
+        message.setSender(new RealTimeRebecaActorState("receiver"));
         message.setMessageArrivalInterval(new Pair<>((float)1,(float)3));
         message.setName("message");
         messages.add(message);
-        HashMap<Pair<String, String>, ArrayList<HybridRebecaMessage>> receivedMessages = new HashMap<>();
+        HashMap<Pair<String, String>, ArrayList<RealTimeRebecaMessage>> receivedMessages = new HashMap<>();
         receivedMessages.put(firstPair, messages);
         networkState.setReceivedMessages(receivedMessages);
 
@@ -198,12 +198,12 @@ public class StateSpaceGenTest {
         systemState.setActorState("actor0",actorState);
         systemState.setNetworkState(networkState);
         systemState.setEnvironment(environment);
-        HybridRebecaSystemState clone = HybridRebecaStateSerializationUtils.clone(systemState);
+        RealTimeRebecaSystemState clone = HybridRebecaStateSerializationUtils.clone(systemState);
     }
 
     @Test
     public void newTests() {
-        String modelName = "motivatingexample";  // Using the simple "main" model here
+        String modelName = "e";  // Using the simple "main" model here
         File model = new File(HYBRID_MODEL_FILES_BASE + modelName + ".rebeca");
         System.out.println("model is" + model);
         Set<CompilerExtension> extension;

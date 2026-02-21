@@ -4,18 +4,18 @@ import org.junit.jupiter.api.Test;
 import org.rebecalang.compiler.utils.Pair;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.ContnuousNonDetInstructionBean;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.statementlevelsosrules.HybridRebecaDelaySOSRule;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaAbstractTransition;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaNondeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.statementlevelsosrules.RealTimeRebecaDelaySOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaAbstractTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaDeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaNondeterministicTransition;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HybridRebecaDelayTest {
-    HybridRebecaDelaySOSRule hybridRebecaDelaySOSRule = new HybridRebecaDelaySOSRule();
-    HybridRebecaActorState hybridRebecaActorState1 = new HybridRebecaActorState("actor1");
+    RealTimeRebecaDelaySOSRule realTimeRebecaDelaySOSRule = new RealTimeRebecaDelaySOSRule();
+    RealTimeRebecaActorState realTimeRebecaActorState1 = new RealTimeRebecaActorState("actor1");
 
     @Test
     public void nonDetDelayMakesResumeTimeProgress() {
@@ -24,14 +24,14 @@ public class HybridRebecaDelayTest {
         Float delayUpperBound = (float)2;
         Pair<Float, Float> resumeTime = new Pair<>((float)0, (float)1.5);
         Pair<Float, Float> now = new Pair<>((float)1, (float)3.5);
-        hybridRebecaActorState1.setResumeTime(resumeTime);
-        hybridRebecaActorState1.setNow(now);
+        realTimeRebecaActorState1.setResumeTime(resumeTime);
+        realTimeRebecaActorState1.setNow(now);
         ContnuousNonDetInstructionBean contnuousNonDetInstructionBean = new ContnuousNonDetInstructionBean(assignee, delayLowerBound, delayUpperBound);
-        Pair<HybridRebecaActorState, InstructionBean> delayInput = new Pair<>(hybridRebecaActorState1, contnuousNonDetInstructionBean);
-        HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> result =  hybridRebecaDelaySOSRule.applyRule(delayInput);
-        HybridRebecaDeterministicTransition hdt = (HybridRebecaDeterministicTransition)result;
+        Pair<RealTimeRebecaActorState, InstructionBean> delayInput = new Pair<>(realTimeRebecaActorState1, contnuousNonDetInstructionBean);
+        RealTimeRebecaAbstractTransition<Pair<RealTimeRebecaActorState, InstructionBean>> result =  realTimeRebecaDelaySOSRule.applyRule(delayInput);
+        RealTimeRebecaDeterministicTransition hdt = (RealTimeRebecaDeterministicTransition)result;
 
-        HybridRebecaActorState destination = ((HybridRebecaDeterministicTransition<Pair<HybridRebecaActorState, InstructionBean>>) result).getDestination().getFirst();
+        RealTimeRebecaActorState destination = ((RealTimeRebecaDeterministicTransition<Pair<RealTimeRebecaActorState, InstructionBean>>) result).getDestination().getFirst();
         assertEquals(resumeTime.getFirst()+delayLowerBound, destination.getResumeTime().getFirst());
         assertEquals((float) 3.5, destination.getResumeTime().getSecond());
     }
@@ -43,12 +43,12 @@ public class HybridRebecaDelayTest {
         Float delayUpperBound = (float)2;
         Pair<Float, Float> resumeTime = new Pair<>((float)1, (float)1.5);
         Pair<Float, Float> now = new Pair<>((float)2, (float)2.5);
-        hybridRebecaActorState1.setResumeTime(resumeTime);
-        hybridRebecaActorState1.setNow(now);
+        realTimeRebecaActorState1.setResumeTime(resumeTime);
+        realTimeRebecaActorState1.setNow(now);
         ContnuousNonDetInstructionBean contnuousNonDetInstructionBean = new ContnuousNonDetInstructionBean(assignee, delayLowerBound, delayUpperBound);
-        Pair<HybridRebecaActorState, InstructionBean> delayInput = new Pair<>(hybridRebecaActorState1, contnuousNonDetInstructionBean);
-        HybridRebecaAbstractTransition<Pair<HybridRebecaActorState, InstructionBean>> result =  hybridRebecaDelaySOSRule.applyRule(delayInput);
-        HybridRebecaNondeterministicTransition hdt = (HybridRebecaNondeterministicTransition)result;
+        Pair<RealTimeRebecaActorState, InstructionBean> delayInput = new Pair<>(realTimeRebecaActorState1, contnuousNonDetInstructionBean);
+        RealTimeRebecaAbstractTransition<Pair<RealTimeRebecaActorState, InstructionBean>> result =  realTimeRebecaDelaySOSRule.applyRule(delayInput);
+        RealTimeRebecaNondeterministicTransition hdt = (RealTimeRebecaNondeterministicTransition)result;
         assertTrue(hdt.getDestinations().size() == 2);
     }
 

@@ -5,8 +5,8 @@ reactiveclass A(2) {
     }
 
     A() {
-       b.m1() after(1, 2);
-       b.m2() after(1, 2);
+       b.m1() after(1, 4);
+       b.m2() after(2, 5);
     }
 
 }

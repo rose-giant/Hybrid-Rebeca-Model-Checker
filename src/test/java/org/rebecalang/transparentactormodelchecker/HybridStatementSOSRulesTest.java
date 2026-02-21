@@ -14,11 +14,11 @@ import org.rebecalang.modeltransformer.ModelTransformerConfig;
 import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.Rebeca2RILModelTransformer;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.HybridRebecaSOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.RealTimeRebecaSOSRule;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.Environment;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaNetworkState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaSystemState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaNetworkState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaSystemState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -33,8 +33,8 @@ import java.util.Set;
 public class HybridStatementSOSRulesTest {
 
     @Autowired
-    HybridRebecaSOSRule sosRule;
-    HybridRebecaSystemState hybridRebecaSystemState;
+    RealTimeRebecaSOSRule sosRule;
+    RealTimeRebecaSystemState realTimeRebecaSystemState;
 
     @Autowired
     RebecaModelCompiler rebecaModelCompiler;
@@ -51,11 +51,11 @@ public class HybridStatementSOSRulesTest {
 
     @BeforeEach
     public void setup() {
-        hybridRebecaSystemState = new HybridRebecaSystemState();
-        hybridRebecaSystemState.setEnvironment(new Environment());
-        hybridRebecaSystemState.setNetworkState(new HybridRebecaNetworkState());
-        hybridRebecaSystemState.setActorState(ACTOR_1_ID, new HybridRebecaActorState(ACTOR_1_ID));
-        hybridRebecaSystemState.setActorState(ACTOR_2_ID, new HybridRebecaActorState(ACTOR_2_ID));
+        realTimeRebecaSystemState = new RealTimeRebecaSystemState();
+        realTimeRebecaSystemState.setEnvironment(new Environment());
+        realTimeRebecaSystemState.setNetworkState(new RealTimeRebecaNetworkState());
+        realTimeRebecaSystemState.setActorState(ACTOR_1_ID, new RealTimeRebecaActorState(ACTOR_1_ID));
+        realTimeRebecaSystemState.setActorState(ACTOR_2_ID, new RealTimeRebecaActorState(ACTOR_2_ID));
     }
 
     private String HYBRID_MODEL_FILES_BASE = "src/test/resources/org/rebecalang/modelchecker/hybridrebeca/";

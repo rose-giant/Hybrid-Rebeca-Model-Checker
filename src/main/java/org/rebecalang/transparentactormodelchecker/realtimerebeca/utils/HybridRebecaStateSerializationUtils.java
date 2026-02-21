@@ -7,8 +7,8 @@ import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsyst
 import org.springframework.util.SerializationUtils;
 
 public class HybridRebecaStateSerializationUtils {
-    public static HybridRebecaNetworkState clone(HybridRebecaNetworkState object) {
-        HybridRebecaNetworkState clone = SerializationUtils.clone(object);
+    public static RealTimeRebecaNetworkState clone(RealTimeRebecaNetworkState object) {
+        RealTimeRebecaNetworkState clone = SerializationUtils.clone(object);
         return clone;
     }
 
@@ -22,22 +22,22 @@ public class HybridRebecaStateSerializationUtils {
         return clone;
     }
 
-    public static HybridRebecaActorState clone(HybridRebecaActorState object) {
-        HybridRebecaActorState clone = SerializationUtils.clone(object);
+    public static RealTimeRebecaActorState clone(RealTimeRebecaActorState object) {
+        RealTimeRebecaActorState clone = SerializationUtils.clone(object);
         return clone;
     }
-    public static HybridRebecaSystemState clone(HybridRebecaSystemState object) {
-        HybridRebecaSystemState clone = SerializationUtils.clone(object);
+    public static RealTimeRebecaSystemState clone(RealTimeRebecaSystemState object) {
+        RealTimeRebecaSystemState clone = SerializationUtils.clone(object);
 
         RILModel rilModel = object.getActorsState().values().iterator().next().getRILModel();
-        for(HybridRebecaActorState state : clone.getActorsStatesValues())
+        for(RealTimeRebecaActorState state : clone.getActorsStatesValues())
             state.setRILModel(rilModel);
 
         return clone;
     }
 
-    public static HybridRebecaMessage clone(HybridRebecaMessage object) {
-        HybridRebecaMessage clone = SerializationUtils.clone(object);
+    public static RealTimeRebecaMessage clone(RealTimeRebecaMessage object) {
+        RealTimeRebecaMessage clone = SerializationUtils.clone(object);
         return clone;
     }
 

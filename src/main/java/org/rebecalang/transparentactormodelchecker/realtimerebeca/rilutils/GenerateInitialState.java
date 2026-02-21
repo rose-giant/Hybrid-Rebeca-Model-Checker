@@ -5,9 +5,9 @@ import org.rebecalang.modeltransformer.ril.RILModel;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.InstructionBean;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.RebecInstantiationInstructionBean;
 import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.Environment;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaNetworkState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaSystemState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaNetworkState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaSystemState;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class GenerateInitialState {
 
 //    ActorClassMakerFromRIL maker;sda
     RILModel rilModel = new RILModel();
-    HybridRebecaSystemState initialState = new HybridRebecaSystemState();
+    RealTimeRebecaSystemState initialState = new RealTimeRebecaSystemState();
     Pair<Float, Float> inputInterval;
     public GenerateInitialState(RILModel rilModel, Pair<Float, Float> inputInterval2) {
 //        this.maker = actorClassMakerFromRIL;
@@ -26,11 +26,11 @@ public class GenerateInitialState {
         this.initialState = this.processMainBlock();
     }
 
-    public HybridRebecaSystemState getInitialState() {
+    public RealTimeRebecaSystemState getInitialState() {
         return initialState;
     }
 
-    public HybridRebecaSystemState processMainBlock() {
+    public RealTimeRebecaSystemState processMainBlock() {
         ArrayList<InstructionBean> main = rilModel.getInstructionList("main");
         ArrayList<RebecInstantiationInstructionBean> instantiations =
                 (ArrayList<RebecInstantiationInstructionBean>)
@@ -39,8 +39,8 @@ public class GenerateInitialState {
                 .map(i -> (RebecInstantiationInstructionBean) i)
                 .collect(Collectors.toList());
 
-        HybridRebecaSystemState systemStateZero = new HybridRebecaSystemState();
-        HybridRebecaNetworkState networkState = new HybridRebecaNetworkState();
+        RealTimeRebecaSystemState systemStateZero = new RealTimeRebecaSystemState();
+        RealTimeRebecaNetworkState networkState = new RealTimeRebecaNetworkState();
         systemStateZero.setNetworkState(networkState);
 
         Pair<Float, Float> now = new Pair<>((float)0, (float)0);
@@ -52,7 +52,7 @@ public class GenerateInitialState {
         systemStateZero.setEnvironment(environment);
 
         for (RebecInstantiationInstructionBean instantiation: instantiations) {
-            HybridRebecaActorState newActor = new HybridRebecaActorState(instantiation.getInstanceName());
+            RealTimeRebecaActorState newActor = new RealTimeRebecaActorState(instantiation.getInstanceName());
             newActor.setResumeTime(new Pair<>(0f, 0f));
             newActor.setNow(new Pair<>(0f, 0f));
             String actorType = instantiation.getType().getTypeName();

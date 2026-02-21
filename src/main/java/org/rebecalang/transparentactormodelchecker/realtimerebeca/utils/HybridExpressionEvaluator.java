@@ -1,18 +1,15 @@
 package org.rebecalang.transparentactormodelchecker.realtimerebeca.utils;
 
-import org.rebecalang.compiler.modelcompiler.SemanticCheckerUtils;
 import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.modelchecker.corerebeca.RebecaRuntimeInterpreterException;
 import org.rebecalang.modeltransformer.ril.corerebeca.rilinstruction.*;
 import org.rebecalang.modeltransformer.ril.hybrid.rilinstruction.StartUnbreakableConditionInstructionBean;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HybridExpressionEvaluator {
 
-    public static Object hybridExpressionEvaluator(Pair<HybridRebecaActorState, InstructionBean> source) {
+    public static Object hybridExpressionEvaluator(Pair<RealTimeRebecaActorState, InstructionBean> source) {
         if (source.getSecond() instanceof JumpIfNotInstructionBean) {
             return evaluate(((JumpIfNotInstructionBean) source.getSecond()).getCondition(), source.getFirst());
         }
@@ -26,11 +23,11 @@ public class HybridExpressionEvaluator {
         return evaluate(expression, source.getFirst());
     }
 
-    private static Object unbreakableExpressionEvaluator(Object expression, HybridRebecaActorState state) {
+    private static Object unbreakableExpressionEvaluator(Object expression, RealTimeRebecaActorState state) {
         return evaluate(expression, state);
     }
 
-    private static Object evaluateOperand(Object operand, HybridRebecaActorState state) {
+    private static Object evaluateOperand(Object operand, RealTimeRebecaActorState state) {
         if (operand instanceof StartUnbreakableConditionInstructionBean) {
             return evaluate(operand, state);
         }
@@ -40,7 +37,7 @@ public class HybridExpressionEvaluator {
         return operand;
     }
 
-    private static Object evaluate(Object expression, HybridRebecaActorState state) {
+    private static Object evaluate(Object expression, RealTimeRebecaActorState state) {
         if (!(expression instanceof StartUnbreakableConditionInstructionBean bean)) {
             return expression;
         }
@@ -274,7 +271,7 @@ public class HybridExpressionEvaluator {
     }
 
 
-    private static Object getValue(Object reference, HybridRebecaActorState actorState) {
+    private static Object getValue(Object reference, RealTimeRebecaActorState actorState) {
         if (reference instanceof Variable) {
             String varName = ((Variable) reference).getVarName();
             return actorState.getVariableValue(varName);

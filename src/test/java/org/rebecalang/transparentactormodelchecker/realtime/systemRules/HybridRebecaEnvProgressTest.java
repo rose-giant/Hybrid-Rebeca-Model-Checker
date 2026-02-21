@@ -2,26 +2,26 @@ package org.rebecalang.transparentactormodelchecker.realtime.systemRules;
 
 import org.junit.jupiter.api.Test;
 import org.rebecalang.compiler.utils.Pair;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.compositionlevelsosrules.HybridRebecaCompositionLevelEnvProgressSOSRule;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaActorState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaMessage;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaNetworkState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.HybridRebecaSystemState;
-import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.HybridRebecaDeterministicTransition;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.compositionlevelsosrules.RealTimeRebecaCompositionLevelEnvProgressSOSRule;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaActorState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaMessage;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaNetworkState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.state.RealTimeRebecaSystemState;
+import org.rebecalang.transparentactormodelchecker.realtimerebeca.transitionsystem.transition.RealTimeRebecaDeterministicTransition;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HybridRebecaEnvProgressTest {
-    HybridRebecaCompositionLevelEnvProgressSOSRule hybridRebecaCompositionLevelEnvProgressSOSRule =
-            new HybridRebecaCompositionLevelEnvProgressSOSRule();
-    HybridRebecaSystemState systemState = new HybridRebecaSystemState();
-    HybridRebecaActorState actorState1 = new HybridRebecaActorState("actor1");
-    HybridRebecaActorState actorState2 = new HybridRebecaActorState("actor2");
-    HybridRebecaNetworkState networkState = new HybridRebecaNetworkState();
+    RealTimeRebecaCompositionLevelEnvProgressSOSRule realTimeRebecaCompositionLevelEnvProgressSOSRule =
+            new RealTimeRebecaCompositionLevelEnvProgressSOSRule();
+    RealTimeRebecaSystemState systemState = new RealTimeRebecaSystemState();
+    RealTimeRebecaActorState actorState1 = new RealTimeRebecaActorState("actor1");
+    RealTimeRebecaActorState actorState2 = new RealTimeRebecaActorState("actor2");
+    RealTimeRebecaNetworkState networkState = new RealTimeRebecaNetworkState();
 
-    HybridRebecaMessage message1 = new HybridRebecaMessage();
-    HybridRebecaMessage message2 = new HybridRebecaMessage();
-    HybridRebecaMessage message3 = new HybridRebecaMessage();
+    RealTimeRebecaMessage message1 = new RealTimeRebecaMessage();
+    RealTimeRebecaMessage message2 = new RealTimeRebecaMessage();
+    RealTimeRebecaMessage message3 = new RealTimeRebecaMessage();
 
     @Test
     public void test1() {
@@ -52,11 +52,11 @@ public class HybridRebecaEnvProgressTest {
         Pair<Float, Float> now = new Pair<>((float)0, (float)0.5);
         systemState.setNow(now);
 
-        HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaSystemState>)
-                        hybridRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState>)
+                        realTimeRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
 
-        HybridRebecaSystemState resultState = result.getDestination();
+        RealTimeRebecaSystemState resultState = result.getDestination();
         assertEquals((float) 0.5, resultState.getNow().getFirst().floatValue());
         assertEquals((float) 1, resultState.getNow().getSecond().floatValue());
     }
@@ -90,11 +90,11 @@ public class HybridRebecaEnvProgressTest {
         Pair<Float, Float> now = new Pair<>((float)0.5, (float)1);
         systemState.setNow(now);
 
-        HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaSystemState>)
-                        hybridRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState>)
+                        realTimeRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
 
-        HybridRebecaSystemState resultState = result.getDestination();
+        RealTimeRebecaSystemState resultState = result.getDestination();
         assertEquals((float) 0.6, resultState.getNow().getFirst().floatValue());
         assertEquals((float) 1, resultState.getNow().getSecond().floatValue());
     }
@@ -128,11 +128,11 @@ public class HybridRebecaEnvProgressTest {
         Pair<Float, Float> now = new Pair<>((float)1, (float)2);
         systemState.setNow(now);
 
-        HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaSystemState>)
-                        hybridRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState>)
+                        realTimeRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
 
-        HybridRebecaSystemState resultState = result.getDestination();
+        RealTimeRebecaSystemState resultState = result.getDestination();
         assertEquals((float) 1.5, resultState.getNow().getFirst().floatValue());
         assertEquals((float) 2, resultState.getNow().getSecond().floatValue());
     }
@@ -166,11 +166,11 @@ public class HybridRebecaEnvProgressTest {
         Pair<Float, Float> now = new Pair<>((float)1, (float)2);
         systemState.setNow(now);
 
-        HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaSystemState>)
-                        hybridRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState>)
+                        realTimeRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
 
-        HybridRebecaSystemState resultState = result.getDestination();
+        RealTimeRebecaSystemState resultState = result.getDestination();
         assertEquals((float) 1.5, resultState.getNow().getFirst().floatValue());
         assertEquals((float) 2, resultState.getNow().getSecond().floatValue());
     }
@@ -204,11 +204,11 @@ public class HybridRebecaEnvProgressTest {
         Pair<Float, Float> now = new Pair<>((float)1, (float)2);
         systemState.setNow(now);
 
-        HybridRebecaDeterministicTransition<HybridRebecaSystemState> result =
-                (HybridRebecaDeterministicTransition<HybridRebecaSystemState>)
-                        hybridRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
+        RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState> result =
+                (RealTimeRebecaDeterministicTransition<RealTimeRebecaSystemState>)
+                        realTimeRebecaCompositionLevelEnvProgressSOSRule.applyRule(systemState);
 
-        HybridRebecaSystemState resultState = result.getDestination();
+        RealTimeRebecaSystemState resultState = result.getDestination();
         assertEquals((float) 2, resultState.getNow().getFirst().floatValue());
         assertEquals((float) 2.5, resultState.getNow().getSecond().floatValue());
     }
